@@ -21,13 +21,19 @@ import { useTranslation } from "react-i18next";
 interface TournamentPlayer {
   id: string;
   name: string;
+  points: number;
+  ippons: number;
   wins: number;
   losses: number;
-  points: number;
+  ties: number;
 }
+
+// const to be changed when match time is got from api
+const MATCH_TIME = 300000;
 
 const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
   const { t } = useTranslation();
+
   const generateTableCells = (player: TournamentPlayer): React.ReactNode[] => {
     return Object.values(player).map((value, index) => {
       if (index === 0) {
@@ -48,9 +54,11 @@ const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
 
     const tableHeaders = [
       t("tournament_view_labels.name"),
+      t("tournament_view_labels.points"),
+      t("tournament_view_labels.ippons"),
       t("tournament_view_labels.wins"),
       t("tournament_view_labels.losses"),
-      t("tournament_view_labels.points")
+      t("tournament_view_labels.ties")
     ];
 
     return (
@@ -87,20 +95,20 @@ const Matches: React.FC<{
     <div>
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.ongoing_matches")}:
+          {t("tournament_view_labels.ongoing_matches")}
         </Typography>
       </div>
       <div>{ongoingMatchElements}</div>
 
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.upcoming_matches")}:
+          {t("tournament_view_labels.upcoming_matches")}
         </Typography>
       </div>
       <div>{upcomingMatchElements}</div>
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.past_matches")}:
+          {t("tournament_view_labels.past_matches")}
         </Typography>
       </div>
       <div>{pastMatchElements}</div>
@@ -145,9 +153,11 @@ const RoundRobinTournamentView: React.FC = () => {
             updatedPlayers.push({
               id: playerObject.id,
               name: playerObject.firstName,
+              points: 0,
+              ippons: 0,
               wins: 0,
               losses: 0,
-              points: 0
+              ties: 0
             });
           }
         }
@@ -165,17 +175,17 @@ const RoundRobinTournamentView: React.FC = () => {
 
       setOngoingMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime > 0 && match.winner === undefined
+          (match) => match.elapsedTime > 0 && match.endTimestamp === undefined
         )
       );
       setUpcomingMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime <= 0 && match.winner === undefined
+          (match) => match.elapsedTime <= 0 && match.endTimestamp === undefined
         )
       );
       setPastMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime > 0 && match.winner !== undefined
+          (match) => match.elapsedTime > 0 && match.endTimestamp !== undefined
         )
       );
     }
@@ -191,7 +201,17 @@ const RoundRobinTournamentView: React.FC = () => {
         if (processedMatches.has(match.id)) {
           continue;
         }
+        const [player1Id, player2Id] = match.players.map((player) => player.id);
 
+        // Find the TournamentPlayer objects corresponding to the player IDs
+        const player1 = updatedPlayers.find(
+          (player) => player.id === player1Id
+        );
+        const player2 = updatedPlayers.find(
+          (player) => player.id === player2Id
+        );
+
+        // Add wins and losses
         if (match.winner !== undefined) {
           const winner = updatedPlayers.find(
             (player) => player.id === match.winner
@@ -200,21 +220,34 @@ const RoundRobinTournamentView: React.FC = () => {
             (player) => player.id !== match.winner
           );
 
+          // Update stats, win equals 3 points
           if (winner !== undefined && loser !== undefined) {
             winner.wins += 1;
+            winner.points += 3;
             loser.losses += 1;
           }
-
-          for (const matchPlayer of match.players) {
-            const player = updatedPlayers.find(
-              (player) => player.id === matchPlayer.id
-            );
-            if (player !== undefined) {
-              player.points += matchPlayer.points.length;
-            }
-          }
-          processedMatches.add(match.id);
         }
+
+        // Add ties
+        if (
+          match.winner === undefined &&
+          (match.endTimestamp !== undefined || match.elapsedTime >= MATCH_TIME)
+        ) {
+          // Update their stats, tie equals 1 point
+          if (player1 !== undefined && player2 !== undefined) {
+            player1.ties += 1;
+            player1.points += 1;
+            player2.ties += 1;
+            player2.points += 1;
+          }
+        }
+
+        // Add ippons
+        if (player1 !== undefined && player2 !== undefined) {
+          player1.ippons += match.player1Score;
+          player2.ippons += match.player2Score;
+        }
+        processedMatches.add(match.id);
       }
       return updatedPlayers;
     });
@@ -229,6 +262,26 @@ const RoundRobinTournamentView: React.FC = () => {
     const player2 = players.find((player) => player.id === match.players[1].id)
       ?.name;
 
+    let officialsInfo = "";
+
+    if (match.elapsedTime <= 0) {
+      // Match is upcoming
+      const timerPerson = match.timeKeeper ?? undefined;
+      const pointMaker = match.pointMaker ?? undefined;
+
+      // depending on which roles are missing for the match, print them under button
+      if (timerPerson === undefined && pointMaker === undefined) {
+        officialsInfo = t("tournament_view_labels.missing_both");
+      } else {
+        if (timerPerson === undefined) {
+          officialsInfo += t("tournament_view_labels.missing_timer");
+        }
+        if (pointMaker === undefined) {
+          officialsInfo += t("tournament_view_labels.missing_point_maker");
+        }
+      }
+    }
+
     return (
       <div style={{ marginBottom: "10px" }} key={match.id}>
         <Button
@@ -239,6 +292,9 @@ const RoundRobinTournamentView: React.FC = () => {
         >
           {`${player1} - ${player2}`}
         </Button>
+        {officialsInfo !== undefined && (
+          <Typography variant="body2">{officialsInfo}</Typography>
+        )}
       </div>
     );
   };

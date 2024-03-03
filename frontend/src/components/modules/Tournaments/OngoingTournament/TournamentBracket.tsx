@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { type Match, type User } from "types/models";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface BracketProps {
   match: Match;
@@ -16,7 +17,8 @@ interface BracketProps {
 
 const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const navigate = useNavigate();
-  //  Find the players in the players array using their IDs
+  const { t } = useTranslation();
+  // Find the players in the players array using their IDs
   const player1 = players.find(
     (player) => player.id === match.players[0].id
   ) as User;
@@ -31,31 +33,6 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const player1Name = `${player1.firstName} ${player1.lastName}`;
   const player2Name = `${player2.firstName} ${player2.lastName}`;
 
-  // Initialize variables for player points
-  let player1Points = 0;
-  let player2Points = 0;
-
-  // Increments the total points of the player by 1 for each scored point
-  // If the point type is "hansoku", the opponent receives 0.5 points
-  for (const point of match.players[0].points) {
-    if (point.type === "hansoku") {
-      player2Points += 0.5;
-    }
-    else {
-      player1Points++;
-    }
-  }
-  for (const point of match.players[1].points) {
-    if (point.type === "hansoku") {
-      player1Points += 0.5;
-    }
-    else {
-      player2Points ++;
-    }
-  }
-  // Round down each player's total points to the nearest integer
-  player1Points = Math.floor(player1Points);
-  player2Points = Math.floor(player2Points);
 
   let player1Color = "black";
   let player2Color = "black";
@@ -63,6 +40,30 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   if (isWinnerDeclared) {
     player1Color = winner === player1.id ? "#f44336" : "#666666";
     player2Color = winner === player2.id ? "#f44336" : "#666666";
+  }
+
+  const officialsInfo = [];
+
+  if (match.elapsedTime <= 0) {
+    // Match is upcoming
+    const timerPerson = match.timeKeeper ?? undefined;
+    const pointMaker = match.pointMaker ?? undefined;
+
+    // depending on which roles are missing for the match, print them under button
+
+    if (timerPerson === undefined && pointMaker === undefined) {
+      officialsInfo.push(
+        t("tournament_view_labels.missing_timer"),
+        t("tournament_view_labels.missing_and")
+      );
+    } else {
+      if (timerPerson === undefined) {
+        officialsInfo.push(t("tournament_view_labels.missing_timer"));
+      }
+      if (pointMaker === undefined) {
+        officialsInfo.push(t("tournament_view_labels.missing_point_maker"));
+      }
+    }
   }
 
   return (
@@ -90,11 +91,17 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
             </Typography>
             {isWinnerDeclared && (
               <Typography textAlign="center" variant="h6">
-                <span style={{ color: player1Color }}>{player1Points}</span>
+                <span style={{ color: player1Color }}>{match.player1Score}</span>
                   - 
-                <span style={{ color: player2Color }}>{player2Points}</span>
+                <span style={{ color: player2Color }}>{match.player2Score}</span>
               </Typography>
             )}
+            {match.elapsedTime <= 0 &&
+              officialsInfo.map((info, index) => (
+                <Typography textAlign="center" key={index} variant="body2">
+                  {info}
+                </Typography>
+              ))}
           </CardContent>
         </CardActionArea>
       </Card>
