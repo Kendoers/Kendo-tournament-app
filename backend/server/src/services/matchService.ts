@@ -472,10 +472,17 @@ export class MatchService {
         // Determine if the match had ended with this point
         const wasMatchEndingPoint = match.endTimestamp !== undefined;
 
+        console.log("End Timestamp before:", match.endTimestamp);
         // If the removed point ended the match, revert match to ongoing
         if (wasMatchEndingPoint) {
+          const previousWinnerId = match.winner as Types.ObjectId; // Get previous winner's ID
           match.winner = undefined; // Clear the winner
           match.endTimestamp = undefined; // Clear the end timestamp
+          console.log("End Timestamp after:", match.endTimestamp);
+          console.log("wasmatchendingpoint");
+          if (match.type === "playoff") {
+            await this.updatePlayoffSchedule(match.id, previousWinnerId);
+          }
         }
 
         await match.save();
@@ -772,29 +779,71 @@ export class MatchService {
 
     const nextRound = currentRound + 1;
 
+    const nextRoundPlayers = playedMatches
+      .filter(
+        (match) =>
+          match.tournamentRound === nextRound && match.type === "playoff"
+      )
+      .flatMap((match) => [match.players[0].id, match.players[1].id]);
+
+    const previousWinnerId = currentMatch.winner; // Get the previous winner from the current match
+
     const winners = playedMatches
       .filter(
         (match) =>
           match.tournamentRound === currentRound &&
-          match.winner !== null &&
+          match.winner !== undefined &&
+          (previousWinnerId === undefined ||
+            match.winner.equals(previousWinnerId) || // Optional chaining here
+            match.winner.equals(winnerId)) && // Optional chaining here
           match.type === "playoff"
       )
-      .map((match) => match.winner)
+      .map((match) => match.winner as Types.ObjectId)
       .filter((winner): winner is Types.ObjectId => winner != null);
 
-    // Find eligible winners who don't have a match in the next round
-    const eligibleWinners = winners.filter((winner) => {
-      if (winner === null || winner === undefined) {
-        return false;
-      }
-      return !playedMatches.some(
-        (match) =>
-          match.tournamentRound === nextRound &&
-          match.players.some(
-            (player) => player.id.toString() === winner.toString()
-          )
+    // Remove any matches involving winners that have been replaced
+    const matchesToRemove: Match[] = [];
+
+    for (const match of playedMatches) {
+      const player1Id: Types.ObjectId = Types.ObjectId.createFromHexString(
+        match.players[0].id.toString()
       );
-    });
+      const player2Id: Types.ObjectId = Types.ObjectId.createFromHexString(
+        match.players[1].id.toString()
+      );
+
+      if (
+        winners.some((winnerId) => winnerId.equals(player1Id)) ||
+        winners.some((winnerId) => winnerId.equals(player2Id))
+      ) {
+        matchesToRemove.push(match);
+      }
+    }
+
+    console.log("winners:", winners[0]);
+    console.log("matchestoremove", matchesToRemove);
+
+    // Remove matches involving replaced winners
+    for (const matchToRemove of matchesToRemove) {
+      const index = tournament.matchSchedule.findIndex(
+        (m) => m.id.toString() === matchToRemove.id.toString()
+      );
+      if (index !== -1) {
+        // Remove match from match schedule
+        tournament.matchSchedule.splice(index, 1);
+      }
+      // Remove match
+      await this.deleteMatchById(matchToRemove.id.toString());
+    }
+
+    // Find eligible winners who don't have a match in the next round
+    const eligibleWinners = winners.filter((winner) =>
+      nextRoundPlayers.every(
+        (playerId) => playerId.toString() !== winner.toString()
+      )
+    );
+
+    console.log("eligible winners:", eligibleWinners);
 
     // Pair current winner with eligible winners for the next round
     for (const pairWithWinnerId of eligibleWinners) {
@@ -824,7 +873,7 @@ export class MatchService {
     }
 
     // Save the tournament if new matches were added
-    if (eligibleWinners.length > 0) {
+    if (eligibleWinners.length > 0 || matchesToRemove.length > 0) {
       await tournament.save();
       await MatchService.divideMatchesToCourts(tournament.id);
     }
