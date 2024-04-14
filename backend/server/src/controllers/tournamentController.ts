@@ -15,14 +15,17 @@ import {
 import { TournamentService } from "../services/tournamentService.js";
 import { UnsavedMatch } from "../models/tournamentModel.js";
 import type { Tournament } from "../models/tournamentModel.js";
+import type { Match } from "../models/matchModel.js";
 import {
   CreateTournamentRequest,
   EditTournamentRequest,
   ObjectIdString,
-  SignupForTournamentRequest
+  SignupForTournamentRequest,
+  UpdateMatchPairsRequest
 } from "../models/requestModel.js";
 import type { JwtPayload } from "jsonwebtoken";
 import type * as express from "express";
+import { MatchController } from "./matchController.js";
 
 @Route("tournaments")
 export class TournamentController extends Controller {
@@ -119,6 +122,17 @@ export class TournamentController extends Controller {
       requestBody,
       updaterId
     );
+  }
+
+  @Put("{tournamentId}/update-pairs")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async updateMatchPairs(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UpdateMatchPairsRequest
+  ): Promise<void> {
+    await this.service.updateMatchPairs(tournamentId, requestBody.pairs);
   }
 
   @Delete("{tournamentId}/delete")

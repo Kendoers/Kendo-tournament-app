@@ -11,11 +11,14 @@ import { type HydratedDocument, Types } from "mongoose";
 import MatchModel, {
   type MatchType,
   type Match,
-  type MatchTime
+  type MatchTime,
+  type MatchPlayer
 } from "../models/matchModel.js";
 import {
   type EditTournamentRequest,
-  type CreateTournamentRequest
+  type CreateTournamentRequest,
+  type UpdateMatchPairsRequest,
+  PlayerPair
 } from "../models/requestModel.js";
 import { MatchService } from "./matchService.js";
 
@@ -223,6 +226,39 @@ export class TournamentService {
       throw new NotFoundError({
         message: "Tournament not found or already deleted"
       });
+    }
+  }
+
+  public async updateMatchPairs(tournamentId: string, pairs: PlayerPair[]): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId).exec();
+    if (!tournament || tournament.matchSchedule.length !== pairs.length) return;
+  
+    // First pass: Unset all players
+    for (const matchId of tournament.matchSchedule) {
+      await MatchModel.findByIdAndUpdate(matchId, { $unset: { players: "" } }).exec();
+    }
+  
+    let i = 0;
+    for (const matchId of tournament.matchSchedule) {
+      let newPlayers = [];
+
+      newPlayers.push({
+          id: new Types.ObjectId(pairs[i].firstPlayerId),
+          points: [],
+          color: "white"
+      });
+  
+      if (pairs[i].secondPlayerId) {
+          newPlayers.push({
+              id: new Types.ObjectId(pairs[i].secondPlayerId),
+              points: [],
+              color: "red"
+          });
+      }
+  
+      await MatchModel.findByIdAndUpdate(matchId, { players: newPlayers }).exec();
+  
+      i++;
     }
   }
 
