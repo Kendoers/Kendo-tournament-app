@@ -12,13 +12,12 @@ import MatchModel, {
   type MatchType,
   type Match,
   type MatchTime,
-  type MatchPlayer
+  type MatchPlayer,
+  type PlayerPair
 } from "../models/matchModel.js";
 import {
   type EditTournamentRequest,
   type CreateTournamentRequest,
-  type UpdateMatchPairsRequest,
-  PlayerPair
 } from "../models/requestModel.js";
 import { MatchService } from "./matchService.js";
 

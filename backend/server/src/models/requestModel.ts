@@ -2,7 +2,8 @@ import type {
   MatchTime,
   MatchType,
   PlayerColor,
-  PointType
+  PointType,
+  PlayerPair
 } from "./matchModel.js";
 import type { Tournament } from "./tournamentModel.js";
 
@@ -131,6 +132,10 @@ export type CreateTournamentRequest = Pick<
 
 export interface SignupForTournamentRequest {
   playerId: ObjectIdString;
+}
+
+export interface UpdateMatchPairsRequest {
+  pairs: PlayerPair[];
 }
 
 /* Note that we get the data validations from the registerRequest interface also */
