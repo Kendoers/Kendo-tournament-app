@@ -26,6 +26,7 @@ import GameInterface from "components/modules/GameInterface/GameInterface";
 import PasswordControl from "components/modules/PasswordControl/PasswordControl";
 import PrivacyPolicy from "components/modules/Legal/PrivacyPolicy";
 import OwnTournament from "components/modules/Tournaments/OwnTournament";
+import UpdateMatchPairsView from "components/modules/Tournaments/UpdateMatchPairs/UpdateMatchPairsView";
 
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
@@ -55,6 +56,7 @@ const routes = createRoutesFromElements(
               path="match/:matchId"
               element={<SocketProvider>{<GameInterface />}</SocketProvider>}
             ></Route>
+            <Route path="modify-pairs" element={<UpdateMatchPairsView />} />
           </Route>
         </Route>
       </Route>
