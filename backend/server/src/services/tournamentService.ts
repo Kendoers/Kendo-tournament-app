@@ -104,7 +104,6 @@ export class TournamentService {
       });
     }
 
-    /*
     const currentDate = new Date();
     const startDate = new Date(tournament.startDate);
     if (currentDate > startDate) {
@@ -112,7 +111,6 @@ export class TournamentService {
         message: `Cannot add new players as the tournament has already started on ${startDate.toDateString()}`
       });
     }
-    */
 
     if (tournament.players.length >= tournament.maxPlayers) {
       throw new BadRequestError({
