@@ -26,7 +26,6 @@ import {
 } from "../models/requestModel.js";
 import type { JwtPayload } from "jsonwebtoken";
 import type * as express from "express";
-import { MatchController } from "./matchController.js";
 
 @Route("tournaments")
 export class TournamentController extends Controller {

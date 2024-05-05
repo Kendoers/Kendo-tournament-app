@@ -12,7 +12,6 @@ import MatchModel, {
   type MatchType,
   type Match,
   type MatchTime,
-  type MatchPlayer,
   type PlayerPair
 } from "../models/matchModel.js";
 import {
@@ -373,7 +372,7 @@ export class TournamentService {
   ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
-    if (!tournament || tournament.groups.length !== groups.length) {
+    if (tournament === null || tournament.groups.length !== groups.length) {
       throw new BadRequestError({
         message: "Updating groups failed. Has the tournament already started?"
       });
@@ -419,7 +418,10 @@ export class TournamentService {
   ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
-    if (!tournament || tournament.matchSchedule.length !== pairs.length) {
+    if (
+      tournament === null ||
+      tournament.matchSchedule.length !== pairs.length
+    ) {
       throw new BadRequestError({
         message:
           "Updating match pairs failed. Has the tournament already started?"
@@ -460,16 +462,13 @@ export class TournamentService {
     for (const matchId of tournament.matchSchedule) {
       const newPlayers = [];
 
-      // Only needed for preliminary playoffs
-      const groupIndex = Math.floor(i / (tournament.groupsSizePreference ?? 1));
-
       newPlayers.push({
         id: new Types.ObjectId(pairs[i].firstPlayerId),
         points: [],
         color: "white"
       });
 
-      if (pairs[i].secondPlayerId) {
+      if (pairs[i].secondPlayerId !== null) {
         newPlayers.push({
           id: new Types.ObjectId(pairs[i].secondPlayerId),
           points: [],
