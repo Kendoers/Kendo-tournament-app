@@ -26,6 +26,8 @@ import {
 import PlayoffTournamentView from "./PlayoffTournamentView";
 import CopyToClipboardButton from "./CopyToClipboardButton";
 import { checkSameNames } from "../PlayerNames";
+import { useAuth } from "context/AuthContext";
+import ModifyGroupsButton from "./ModifyGroupsButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
@@ -89,6 +91,8 @@ const PreliminaryPlayoffView: React.FC = () => {
   const [haveSameNames, setHaveSameNames] = useState<boolean>(false);
   const tabTypes = ["preliminary", "playoff"] as const;
   const currentTab = searchParams.get("tab") ?? defaultTab;
+  const { userId } = useAuth();
+  const isUserTheCreator = tournament.creator.id === userId;
 
   useEffect(() => {
     const result = checkSameNames(tournament);
@@ -245,6 +249,7 @@ const PreliminaryPlayoffView: React.FC = () => {
         <Grid item>
           <CopyToClipboardButton />
         </Grid>
+        <Grid item>{isUserTheCreator && <ModifyGroupsButton />}</Grid>
       </Grid>
 
       <Tabs

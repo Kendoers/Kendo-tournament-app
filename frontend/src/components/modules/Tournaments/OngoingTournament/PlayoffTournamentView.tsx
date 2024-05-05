@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "context/AuthContext";
 import DeleteUserFromTournament from "./DeleteUserFromTournament";
 import CopyToClipboardButton from "./CopyToClipboardButton";
+import ModifyPairsButton from "./ModifyPairsButton";
 
 interface Rounds extends Record<number, Match[]> {}
 
@@ -95,6 +96,7 @@ const PlayoffTournamentView: React.FC = () => {
           <Grid item>
             <CopyToClipboardButton />
           </Grid>
+          <Grid item>{isUserTheCreator && <ModifyPairsButton />}</Grid>
         </Grid>
 
         <Grid

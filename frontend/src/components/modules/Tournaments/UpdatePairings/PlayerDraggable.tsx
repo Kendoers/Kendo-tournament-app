@@ -4,7 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 interface PlayerDraggableProps {
   playerId: string;
   playerName: string;
-  matchId: string;
+  matchId: string; // May also be group id
   slotIndex: number;
 }
 

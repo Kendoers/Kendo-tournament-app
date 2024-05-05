@@ -20,7 +20,7 @@ const MatchDroppable: React.FC<MatchDroppableProps> = (
   const style = (isOver: boolean): CSSProperties => ({
     color: isOver ? "green" : "black",
     padding: "5px",
-    border: "0px",
+    border: "1px",
     margin: "5px",
     minHeight: "50px"
   });
@@ -31,16 +31,32 @@ const MatchDroppable: React.FC<MatchDroppableProps> = (
         display: "flex",
         flexDirection: "column",
         gap: "10px",
-        border: "2px solid gray"
+        border: "2px solid gray",
+        alignItems: "left"
       }}
     >
       {/* Slot 1 */}
       <div ref={setNodeRefSlot1} style={style(isOverSlot1)}>
-        <div style={{ marginBottom: "10px" }}>{props.children[0]}</div>
+        <div style={{ marginBottom: "5px" }}>{props.children[0]}</div>
       </div>
+
+      <div
+        style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          padding: "0px 0px 0px 25px",
+          borderRadius: "5px",
+          background: "lightgray",
+          width: "70px",
+          marginLeft: "10px"
+        }}
+      >
+        vs
+      </div>
+
       {/* Slot 2 */}
       <div ref={setNodeRefSlot2} style={style(isOverSlot2)}>
-        <div style={{ marginBottom: "10px" }}>{props.children[1]}</div>
+        <div style={{ marginBottom: "5px" }}>{props.children[1]}</div>
       </div>
     </div>
   );
