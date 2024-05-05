@@ -124,6 +124,21 @@ export class TournamentController extends Controller {
     );
   }
 
+  @Put("{tournamentId}/update-groups")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async updateGroups(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UpdateGroupsRequest
+  ): Promise<void> {
+    await this.service.updateGroups(
+      tournamentId,
+      requestBody.groups,
+      requestBody.creatorId
+    );
+  }
+
   @Put("{tournamentId}/update-pairs")
   @Tags("Tournaments")
   @Security("jwt")
@@ -132,7 +147,11 @@ export class TournamentController extends Controller {
     @Path() tournamentId: ObjectIdString,
     @Body() requestBody: UpdateMatchPairsRequest
   ): Promise<void> {
-    await this.service.updateMatchPairs(tournamentId, requestBody.pairs);
+    await this.service.updateMatchPairs(
+      tournamentId,
+      requestBody.pairs,
+      requestBody.creatorId
+    );
   }
 
   @Delete("{tournamentId}/delete")

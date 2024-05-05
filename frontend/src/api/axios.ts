@@ -8,7 +8,9 @@ import type {
   AddPointRequest,
   EditUserRequest,
   ResetPasswordRequest,
-  EditTournamentRequest
+  EditTournamentRequest,
+  UpdateMatchPairsRequest,
+  UpdateGroupsRequest
 } from "types/requests";
 
 export const API_BASE_URL =
@@ -141,6 +143,20 @@ const tournaments = {
   update: async (tournamentId: string, body: EditTournamentRequest) => {
     return await request.put<Tournament>(
       `${TOURNAMENTS_API}/${tournamentId}/update`,
+      body
+    );
+  },
+
+  updatePairs: async (tournamentId: string, body: UpdateMatchPairsRequest) => {
+    return await request.put(
+      `${TOURNAMENTS_API}/${tournamentId}/update-pairs`,
+      body
+    );
+  },
+
+  updateGroups: async (tournamentId: string, body: UpdateGroupsRequest) => {
+    return await request.put(
+      `${TOURNAMENTS_API}/${tournamentId}/update-groups`,
       body
     );
   },

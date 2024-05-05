@@ -30,6 +30,21 @@ export interface SignupForTournamentRequest {
   playerId: string;
 }
 
+export interface PlayerPair {
+  firstPlayerId: string;
+  secondPlayerId?: string;
+}
+
+export interface UpdateMatchPairsRequest {
+  pairs: PlayerPair[];
+  creatorId: string;
+}
+
+export interface UpdateGroupsRequest {
+  groups: string[][];
+  creatorId: string;
+}
+
 export interface AddPointRequest {
   pointType: PointType;
   pointColor: PlayerColor;

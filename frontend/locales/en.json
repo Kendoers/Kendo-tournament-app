@@ -70,7 +70,9 @@
     "modify_or_delete": "Modify or delete recent point",
     "delete": "Delete",
 	  "withdraw_user": "Withdraw player from tournament",
-    "copy_to_clipboard": "Share tournament"
+    "copy_to_clipboard": "Share tournament",
+    "modify_pairs": "Edit match pairs",
+    "modify_groups": "Edit groups"
   },
   "titles": {
     "login": "Sign in",

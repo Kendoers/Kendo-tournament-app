@@ -17,7 +17,7 @@ import MatchModel, {
 } from "../models/matchModel.js";
 import {
   type EditTournamentRequest,
-  type CreateTournamentRequest,
+  type CreateTournamentRequest
 } from "../models/requestModel.js";
 import { MatchService } from "./matchService.js";
 
@@ -104,6 +104,7 @@ export class TournamentService {
       });
     }
 
+    /*
     const currentDate = new Date();
     const startDate = new Date(tournament.startDate);
     if (currentDate > startDate) {
@@ -111,6 +112,56 @@ export class TournamentService {
         message: `Cannot add new players as the tournament has already started on ${startDate.toDateString()}`
       });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    */
 
     if (tournament.players.length >= tournament.maxPlayers) {
       throw new BadRequestError({
@@ -164,6 +215,7 @@ export class TournamentService {
       });
     }
 
+    /*
     const currentDate = new Date();
     const startDate = new Date(tournament.startDate);
     if (currentDate > startDate) {
@@ -171,6 +223,94 @@ export class TournamentService {
         message: `Cannot add new players as the tournament has already started on ${startDate.toDateString()}`
       });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    */
 
     for (const player of unsavedMatch.players) {
       // player.id is a String from the requestBody. conversion is necessary here.
@@ -226,37 +366,129 @@ export class TournamentService {
     }
   }
 
-  public async updateMatchPairs(tournamentId: string, pairs: PlayerPair[]): Promise<void> {
+  public async updateGroups(
+    tournamentId: string,
+    groups: string[][],
+    creatorId: string
+  ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
-    if (!tournament || tournament.matchSchedule.length !== pairs.length) return;
-  
-    // First pass: Unset all players
-    for (const matchId of tournament.matchSchedule) {
-      await MatchModel.findByIdAndUpdate(matchId, { $unset: { players: "" } }).exec();
+
+    if (!tournament || tournament.groups.length !== groups.length) {
+      throw new BadRequestError({
+        message: "Updating groups failed. Has the tournament already started?"
+      });
     }
-  
+    if (tournament.creator.id.toString("hex") !== creatorId) {
+      throw new BadRequestError({
+        message: "Only the tournament creator can modify the tournament!"
+      });
+    }
+    if (tournament.type !== TournamentType.PreliminaryPlayoff) {
+      throw new BadRequestError({
+        message: "Only playoff match pairs can be modified!"
+      });
+    }
+
+    // Check if any match has started before updating pairs
+    const matches = await MatchModel.find({
+      _id: { $in: tournament.matchSchedule }
+    });
+
+    matches.forEach((match) => {
+      if (match.elapsedTime !== 0) {
+        throw new BadRequestError({
+          message: "A match in the tournament has already started!"
+        });
+      }
+    });
+
+    const newGroups: Types.ObjectId[][] = groups.map((group) => {
+      return group.map((id) => new Types.ObjectId(id));
+    });
+    tournament.groups = newGroups;
+
+    tournament.matchSchedule =
+      await this.generateTournamentSchedule(tournament);
+    await tournament.save();
+  }
+
+  public async updateMatchPairs(
+    tournamentId: string,
+    pairs: PlayerPair[],
+    creatorId: string
+  ): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId).exec();
+
+    if (!tournament || tournament.matchSchedule.length !== pairs.length) {
+      throw new BadRequestError({
+        message:
+          "Updating match pairs failed. Has the tournament already started?"
+      });
+    }
+    if (tournament.creator.id.toString("hex") !== creatorId) {
+      throw new BadRequestError({
+        message: "Only the tournament creator can modify the tournament!"
+      });
+    }
+    if (tournament.type !== TournamentType.Playoff) {
+      throw new BadRequestError({
+        message: "Only playoff match pairs can be modified!"
+      });
+    }
+
+    // Check if any match has started before updating pairs
+    const matches = await MatchModel.find({
+      _id: { $in: tournament.matchSchedule }
+    });
+
+    matches.forEach((match) => {
+      if (match.elapsedTime !== 0) {
+        throw new BadRequestError({
+          message: "A match in the tournament has already started!"
+        });
+      }
+    });
+
+    // First pass: Unset all players and wins (from possible byes)
+    for (const matchId of tournament.matchSchedule) {
+      await MatchModel.findByIdAndUpdate(matchId, {
+        $unset: { players: "", winner: "" }
+      }).exec();
+    }
+
     let i = 0;
     for (const matchId of tournament.matchSchedule) {
-      let newPlayers = [];
+      const newPlayers = [];
+
+      // Only needed for preliminary playoffs
+      const groupIndex = Math.floor(i / (tournament.groupsSizePreference ?? 1));
 
       newPlayers.push({
-          id: new Types.ObjectId(pairs[i].firstPlayerId),
-          points: [],
-          color: "white"
+        id: new Types.ObjectId(pairs[i].firstPlayerId),
+        points: [],
+        color: "white"
       });
-  
+
       if (pairs[i].secondPlayerId) {
-          newPlayers.push({
-              id: new Types.ObjectId(pairs[i].secondPlayerId),
-              points: [],
-              color: "red"
-          });
+        newPlayers.push({
+          id: new Types.ObjectId(pairs[i].secondPlayerId),
+          points: [],
+          color: "red"
+        });
+        await MatchModel.findByIdAndUpdate(matchId, {
+          players: newPlayers
+        }).exec();
+      } else {
+        // Add the first player as the winner of the bye match
+        await MatchModel.findByIdAndUpdate(matchId, {
+          players: newPlayers,
+          winner: pairs[i].firstPlayerId
+        }).exec();
       }
-  
-      await MatchModel.findByIdAndUpdate(matchId, { players: newPlayers }).exec();
-  
+
       i++;
     }
+    await tournament.save();
   }
 
   public async markUserMatchesLost(

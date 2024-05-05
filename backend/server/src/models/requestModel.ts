@@ -136,6 +136,12 @@ export interface SignupForTournamentRequest {
 
 export interface UpdateMatchPairsRequest {
   pairs: PlayerPair[];
+  creatorId: string;
+}
+
+export interface UpdateGroupsRequest {
+  groups: string[][];
+  creatorId: string;
 }
 
 /* Note that we get the data validations from the registerRequest interface also */
