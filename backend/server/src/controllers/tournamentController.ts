@@ -21,6 +21,7 @@ import {
   EditTournamentRequest,
   ObjectIdString,
   SignupForTournamentRequest,
+  UpdateGroupsRequest,
   UpdateMatchPairsRequest
 } from "../models/requestModel.js";
 import type { JwtPayload } from "jsonwebtoken";
