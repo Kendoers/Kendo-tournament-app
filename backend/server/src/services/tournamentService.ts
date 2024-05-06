@@ -369,7 +369,11 @@ export class TournamentService {
     });
 
     matches.forEach((match) => {
-      if (match.elapsedTime !== 0 || match.player1Score !== 0 || match.player2Score !== 0) {
+      if (
+        match.elapsedTime !== 0 ||
+        match.player1Score !== 0 ||
+        match.player2Score !== 0
+      ) {
         throw new BadRequestError({
           message: "A match in the tournament has already started!"
         });
