@@ -15,7 +15,6 @@ import {
 import { TournamentService } from "../services/tournamentService.js";
 import { UnsavedMatch } from "../models/tournamentModel.js";
 import type { Tournament } from "../models/tournamentModel.js";
-import type { Match } from "../models/matchModel.js";
 import {
   CreateTournamentRequest,
   EditTournamentRequest,
@@ -173,6 +172,7 @@ export class TournamentController extends Controller {
       requestBody.creatorId
     );
   }
+
   /*
    * Update playoff match pairs
    */
