@@ -29,7 +29,9 @@
     "minimum_player_to_playoff": "At least one player has to proceed",
     "number_of_courts_error": "Tournament must have at least 1 court",
     "copy_success": "Tournament link copied to clipboard!",
-    "copy_failure": "Failed to copy tournament link"
+    "copy_failure": "Failed to copy tournament link",
+    "groups_updated": "Tournaments groups updated! Please refresh the tournament page to see the changes.",
+    "pairs_updated": "Tournaments pairs updated! Please refresh the tournament page to see the changes."
   },
   "game_interface": {
     "player": "Player",

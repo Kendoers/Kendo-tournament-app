@@ -29,7 +29,9 @@
     "minimum_player_to_playoff": "Vähintään yhden pelaajan täytyy edetä",
     "number_of_courts_error": "Turnauksella tulee olla ainakin 1 kenttä",
     "copy_success": "Linkki kopioitu leikepöydälle!",
-    "copy_failure": "Linkin kopioinnissa tapahtui virhe"
+    "copy_failure": "Linkin kopioinnissa tapahtui virhe",
+    "groups_updated": "Lohkot päivitetty! Päivitä turnaussivu nähdäksesi muutokset.",
+    "pairs_updated": "Turnausparit päivitetty! Päivitä turnaussivu nähdäksesi muutokset."
   },
   "game_interface": {
     "player": "Pelaaja",

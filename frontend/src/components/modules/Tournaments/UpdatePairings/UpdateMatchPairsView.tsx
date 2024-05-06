@@ -8,12 +8,14 @@ import { type PlayerPair } from "types/requests";
 import { Button } from "@mui/material";
 import { useAuth } from "context/AuthContext";
 import useToast from "hooks/useToast";
+import { useTranslation } from "react-i18next";
 
 const UpdateMatchPairsView: React.FC = () => {
   const { matchSchedule, players } = useTournament();
   const tournament = useTournament();
   const user = useAuth();
   const showToast = useToast();
+  const { t } = useTranslation();
 
   if (user === null || user.userId !== tournament.creator.id) {
     return;
@@ -52,6 +54,7 @@ const UpdateMatchPairsView: React.FC = () => {
         pairs: playerPairs,
         creatorId: user.userId ?? ""
       });
+      showToast(t("messages.pairs_updated"), "success");
     } catch (error) {
       showToast(error, "error");
       console.error("Failed to update pairs", error);
@@ -113,7 +116,7 @@ const UpdateMatchPairsView: React.FC = () => {
     <DndContext onDragEnd={handleDragEnd}>
       <div>
         <Button variant="outlined" onClick={handleConfirm}>
-          Confirm
+          {t("buttons.confirm_button")}
         </Button>
         {Object.entries(pairs).map(([matchId, playerIds]) => (
           <MatchDroppable key={matchId} matchId={matchId}>

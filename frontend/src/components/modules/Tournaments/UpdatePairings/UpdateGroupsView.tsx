@@ -34,6 +34,7 @@ const UpdateGroupsView: React.FC = () => {
         groups,
         creatorId: user.userId ?? ""
       });
+      showToast(t("messages.groups_updated"), "success");
     } catch (error) {
       showToast(error, "error");
       console.error("Failed to update pairs", error);
@@ -87,7 +88,7 @@ const UpdateGroupsView: React.FC = () => {
     <DndContext onDragEnd={handleDragEnd}>
       <div>
         <Button variant="outlined" onClick={handleConfirm}>
-          Confirm
+          {t("buttons.confirm_button")}
         </Button>
         {groups.map((group, groupIndex) => (
           <div key={groupIndex}>
