@@ -32,6 +32,7 @@ import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
 import { useAuth } from "context/AuthContext";
+import ModifyGroupsButton from "../ModifyGroupsButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
