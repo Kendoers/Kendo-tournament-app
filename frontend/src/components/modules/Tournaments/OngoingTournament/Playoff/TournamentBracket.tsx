@@ -9,7 +9,7 @@ import {
 import { type Match, type User } from "types/models";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import PlayerName, { checkSameNames } from "../PlayerNames";
+import PlayerName, { checkSameNames } from "../../PlayerNames";
 import { useTournament } from "context/TournamentContext";
 
 interface BracketProps {
@@ -23,11 +23,22 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const tournament = useTournament();
 
   const [haveSameNames, setHaveSameNames] = useState<boolean>(false);
+  const [winner, setWinner] = useState<string | undefined>(match.winner);
+  const [player1Font, setPlayer1Font] = useState<string>("regular");
+  const [player2Font, setPlayer2Font] = useState<string>("regular");
+  const [player1Color, setPlayer1Color] = useState<string>("black");
+  const [player2Color, setPlayer2Color] = useState<string>("black");
+  const [player1Lining, setPlayer1Lining] = useState<string>("");
+  const [player2Lining, setPlayer2Lining] = useState<string>("");
 
   useEffect(() => {
     const result = checkSameNames(tournament);
     setHaveSameNames(result);
   }, []);
+
+  useEffect(() => {
+    setWinner(match.winner);
+  }, [match]);
 
   // Find the players in the players array using their IDs
   const player1 = players.find(
@@ -37,8 +48,16 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
     (player) => player.id === match.players[1]?.id
   ) as User;
 
-  const winner = match.winner;
   const isWinnerDeclared = winner !== undefined;
+
+  useEffect(() => {
+    setPlayer1Font(winner === player1.id ? "700" : "400");
+    setPlayer2Font(winner === player2?.id ? "700" : "400");
+    setPlayer1Color(winner === player1.id ? "black" : "#666666");
+    setPlayer2Color(winner === player2?.id ? "black" : "#666666");
+    setPlayer1Lining(winner === player1.id ? "underline" : "");
+    setPlayer2Lining(winner === player2?.id ? "underline" : "");
+  }, [winner, players]);
 
   // Get the names of the players
   const player1Name = (
@@ -58,24 +77,6 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
     ) : (
       <PlayerName firstName="BYE" lastName="" sameNames={false} />
     );
-
-  let player1Font = "regular";
-  let player2Font = "regular";
-  let player1Color = "black";
-  let player2Color = "black";
-  let player1Lining = "";
-  let player2Lining = "";
-
-  if (isWinnerDeclared) {
-    player1Font = winner === player1.id ? "700" : "regular";
-    player2Font = winner === player2?.id ? "700" : "regular";
-
-    player1Color = winner === player1.id ? "black" : "#666666";
-    player2Color = winner === player2?.id ? "black" : "#666666";
-
-    player1Lining = winner === player1.id ? "underline" : "";
-    player2Lining = winner === player2?.id ? "underline" : "";
-  }
 
   const officialsInfo = [];
 

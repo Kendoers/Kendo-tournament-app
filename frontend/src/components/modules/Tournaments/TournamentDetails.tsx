@@ -1,7 +1,7 @@
 import React from "react";
-import PlayoffTournamentView from "./OngoingTournament/PlayoffTournamentView";
-import RoundRobinTournamentView from "./OngoingTournament/RoundRobinTournamentView";
-import PreliminaryPlayoffView from "./OngoingTournament/PreliminaryPlayoffView";
+import PlayoffTournamentView from "./OngoingTournament/Playoff/PlayoffTournamentView";
+import RoundRobinTournamentView from "./OngoingTournament/RoundRobin/RoundRobinTournamentView";
+import PreliminaryPlayoffView from "./OngoingTournament/PremPlayoff/PreliminaryPlayoffView";
 import UpcomingTournamentView from "./UpcomingTournamentView";
 import ErrorModal from "components/common/ErrorModal";
 import { type Tournament } from "types/models";
@@ -9,6 +9,7 @@ import { useTournament } from "context/TournamentContext";
 import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
 import { useTranslation } from "react-i18next";
+import SwissTournamentView from "./OngoingTournament/Swiss/SwissTournamentView";
 
 const getTournamentComponent = (
   tournament: Tournament
@@ -20,6 +21,8 @@ const getTournamentComponent = (
       return <PlayoffTournamentView />;
     case "Preliminary Playoff":
       return <PreliminaryPlayoffView />;
+    case "Swiss":
+      return <SwissTournamentView />;
     default:
       return undefined;
   }

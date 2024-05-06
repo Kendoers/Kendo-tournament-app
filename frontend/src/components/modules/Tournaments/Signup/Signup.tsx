@@ -79,8 +79,16 @@ const Signup: React.FC = (): ReactElement => {
         </Typography>
 
         <Typography variant="body1" className="dates">
-          {new Date(tournament.startDate).toLocaleString("fi")} -{" "}
-          {new Date(tournament.endDate).toLocaleString("fi")}
+          {new Date(tournament.startDate).toLocaleString("fi", {
+            // dont show seconds
+            dateStyle: "short",
+            timeStyle: "short"
+          })}{" "}
+          -{" "}
+          {new Date(tournament.endDate).toLocaleString("fi", {
+            dateStyle: "short",
+            timeStyle: "short"
+          })}
         </Typography>
       </Box>
 

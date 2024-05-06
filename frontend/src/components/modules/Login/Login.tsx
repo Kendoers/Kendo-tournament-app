@@ -95,6 +95,9 @@ const LoginForm: React.FC = () => {
             type="text"
             fullWidth
             margin="normal"
+            validation={{
+              required: t("login_form.required_text")
+            }}
           />
 
           <PasswordElement
@@ -103,6 +106,9 @@ const LoginForm: React.FC = () => {
             label={t("user_info_labels.password_label")}
             fullWidth
             margin="normal"
+            validation={{
+              required: t("login_form.required_text")
+            }}
           />
 
           <Box margin="auto" width="200px">

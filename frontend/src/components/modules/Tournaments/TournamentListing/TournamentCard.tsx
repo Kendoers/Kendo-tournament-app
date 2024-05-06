@@ -18,6 +18,7 @@ import {
   DialogContentText,
   DialogTitle
 } from "@mui/material";
+import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -39,6 +40,8 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   const isUserTheCreator = tournament.creator.id === userId;
   const tournamentHasNotStarted = new Date() < new Date(tournament.startDate);
   const [openDialog, setOpenDialog] = useState(false);
+
+  const finished = allMatchesPlayed(tournament);
 
   const handleOpenDialog = (): void => {
     setOpenDialog(true);
@@ -104,10 +107,18 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           title={tournament.name}
           titleTypographyProps={{ fontWeight: "500" }}
         />
-        <CardContent sx={{ marginBottom: "32px" }}>
+        <CardContent sx={{ marginBottom: "64px" }}>
           {tournamentFull && type === "upcoming" && (
             <Typography variant="subtitle1" marginBottom="32px">
               {t("upcoming_tournament_view.tournament_full")}
+            </Typography>
+          )}
+          {finished && (
+            <Typography color="text.secondary">
+              <strong>
+                {t("frontpage_labels.winner")}:{" "}
+                {findTournamentWinner(tournament)}
+              </strong>
             </Typography>
           )}
           {(type === "ongoing" || type === "upcoming") && (
@@ -145,6 +156,18 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           >
             {t("buttons.sign_up_button")}
           </Button>
+          {userAlreadySigned && tournamentHasNotStarted && (
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                navigate(`${tournament.id}/cancel-sign-up`);
+              }}
+              sx={{ position: "absolute", bottom: 10, right: 10 }}
+            >
+              {t("buttons.cancel_sign_up")}
+            </Button>
+          )}
           {isUserTheCreator && tournamentHasNotStarted && (
             <Button
               color="error"
@@ -153,6 +176,18 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               sx={{ position: "absolute", bottom: 10, left: 10 }}
             >
               {t("buttons.delete")}
+            </Button>
+          )}
+          {isUserTheCreator && tournamentHasNotStarted && (
+            <Button
+              color="error"
+              variant="outlined"
+              onClick={() => {
+                navigate(`edit-tournament-info/${tournament.id}`);
+              }}
+              sx={{ position: "absolute", bottom: 60, right: 10 }}
+            >
+              {t("buttons.edit_button")}
             </Button>
           )}
         </>

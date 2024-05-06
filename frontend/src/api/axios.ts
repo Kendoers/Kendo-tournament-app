@@ -121,6 +121,10 @@ const tournaments = {
     });
   },
 
+  getTournament: async (tournamentId: string) => {
+    return await request.get<Tournament>(`${TOURNAMENTS_API}/${tournamentId}`);
+  },
+
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}`, body);
   },
@@ -137,6 +141,17 @@ const tournaments = {
     return await request.put(
       `${TOURNAMENTS_API}/${tournamentId}/sign-up`,
       body
+    );
+  },
+
+  cancelSignup: async (tournamentId: string, userId: string) => {
+    return await request.delete(
+      `${TOURNAMENTS_API}/${tournamentId}/cancel-signup`,
+      {
+        data: {
+          playerId: userId
+        }
+      }
     );
   },
 
@@ -217,6 +232,12 @@ const match = {
     await request.patch(`${MATCH_API}/${matchId}/modify-recent`, {
       newPointType
     });
+  },
+  resetMatch: async (matchId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/reset-match`);
+  },
+  resetRoles: async (matchId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/reset-roles`);
   }
 };
 

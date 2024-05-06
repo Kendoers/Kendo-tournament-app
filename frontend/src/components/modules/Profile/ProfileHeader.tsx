@@ -1,39 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 
 import routePaths from "routes/route-paths";
-import useToast from "hooks/useToast";
-import { useAuth } from "context/AuthContext";
-import api from "api/axios";
-import ConfirmUserDeletionModal from "./ConfirmUserDeleteModal";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import type { UseFormReturn } from "react-hook-form";
+import type { EditUserRequest } from "types/requests";
 
-const ProfileHeader: React.FC = () => {
-  const showToast = useToast();
-  const navigate = useNavigate();
+interface ProfileHeaderProps {
+  editingEnabled: boolean;
+  setEditingEnabled: (value: any) => void;
+  formContext: UseFormReturn<EditUserRequest>;
+}
+
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({
+  editingEnabled,
+  setEditingEnabled,
+  formContext
+}: ProfileHeaderProps) => {
   const { t } = useTranslation();
-  const { userId, logout } = useAuth();
-  const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
-  const handleDeleteUser = async (): Promise<void> => {
-    try {
-      // This whole component wont be rendered if this is undefined.
-      // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
-      await api.user.delete(userId!);
-      await logout();
-      showToast(t("messages.deletion_success"), "success");
-      navigate(routePaths.homeRoute, {
-        replace: true,
-        state: { refresh: true }
-      });
-    } catch (error) {
-      showToast(error, "error");
-    }
-  };
 
   return (
     <Box
@@ -43,14 +31,6 @@ const ProfileHeader: React.FC = () => {
       gap={2}
       marginBottom={1}
     >
-      <ConfirmUserDeletionModal
-        isOpen={isConfirmationDialogOpen}
-        onClose={() => {
-          setConfirmationDialogOpen(false);
-        }}
-        onConfirm={handleDeleteUser}
-      />
-
       <Box display="flex" flexDirection="column">
         <Typography component="h1" variant="h5" fontWeight="bold">
           {t("user_info_labels.profile_info")}
@@ -63,18 +43,34 @@ const ProfileHeader: React.FC = () => {
         </Typography>
       </Box>
 
-      <Button
-        type="button"
-        variant="contained"
-        color="error"
-        size="small"
-        onClick={() => {
-          setConfirmationDialogOpen(true);
-        }}
-        sx={{ alignSelf: "flex-end" }}
-      >
-        {t("buttons.delete_account_button")}
-      </Button>
+      {!editingEnabled ? (
+        <Button
+          type="button"
+          variant="outlined"
+          color="primary"
+          sx={{ mt: 3, mb: 2 }}
+          onClick={() => {
+            setEditingEnabled(true);
+          }}
+        >
+          {t("buttons.edit_info_button")}
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="outlined"
+          color="primary"
+          onClick={() => {
+            setEditingEnabled(() => {
+              formContext.reset();
+              return false;
+            });
+          }}
+          sx={{ mt: 3, mb: 2 }}
+        >
+          {t("buttons.cancel_button")}
+        </Button>
+      )}
     </Box>
   );
 };

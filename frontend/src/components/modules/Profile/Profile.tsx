@@ -11,15 +11,36 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import type { Tournament } from "types/models";
+import { useSearchParams } from "react-router-dom";
 
 const Profile: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState("info");
   const [userCreatedTournaments, setUserCreatedTournaments] = useState<
     Tournament[]
   >([]);
   const { t } = useTranslation();
   const mobile = useMediaQuery("(max-width:600px)");
   const { userId } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabTypes = ["info", "games", "points", "created_t"] as const;
+  const defaultTab = "info";
+
+  const currentTab = searchParams.get("tab") ?? defaultTab;
+  useEffect(() => {
+    if (currentTab === null || !tabTypes.some((tab) => tab === currentTab)) {
+      setSearchParams((params) => {
+        params.set("tab", defaultTab);
+        return params;
+      });
+    }
+  }, [currentTab]);
+
+  const handleTabChange = (tab: string): void => {
+    setSearchParams((params) => {
+      params.set("tab", tab);
+      return params;
+    });
+    sessionStorage.clear();
+  };
 
   useEffect(() => {
     const fetchUserCreatedTournaments = async (): Promise<void> => {
@@ -35,22 +56,15 @@ const Profile: React.FC = () => {
     void fetchUserCreatedTournaments();
   }, [userId]);
 
-  const handleTabChange = (
-    _event: React.ChangeEvent<unknown>,
-    newValue: string
-  ): void => {
-    setSelectedTab(newValue);
-  };
-
   return (
     <Container sx={{ position: "relative", paddingBottom: "30px" }}>
       {/* If the device is mobile */}
       {mobile ? (
         <Fragment>
           <Select
-            value={selectedTab}
+            value={currentTab}
             onChange={(event) => {
-              setSelectedTab(event.target.value);
+              handleTabChange(event.target.value);
             }}
             style={{ marginBottom: "10px", alignItems: "center" }}
             sx={{
@@ -76,7 +90,12 @@ const Profile: React.FC = () => {
           sx={{ borderBottom: 1, borderColor: "divider", marginBottom: "10px" }}
         >
           {/* If the device is desktop */}
-          <Tabs value={selectedTab} onChange={handleTabChange}>
+          <Tabs
+            value={currentTab}
+            onChange={(_, value) => {
+              handleTabChange(value);
+            }}
+          >
             <Tab label={t("profile.profile_info")} value="info" />
             <Tab label={t("profile.my_games")} value="games" />
             <Tab label={t("profile.my_points")} value="points" />
@@ -86,10 +105,10 @@ const Profile: React.FC = () => {
           </Tabs>
         </Box>
       )}
-      {selectedTab === "info" && <ProfileInfo />}
-      {selectedTab === "games" && <ProfileGames />}
-      {selectedTab === "points" && <ProfilePoints />}
-      {selectedTab === "created_t" && <CreatedTournaments />}
+      {currentTab === "info" && <ProfileInfo />}
+      {currentTab === "games" && <ProfileGames />}
+      {currentTab === "points" && <ProfilePoints />}
+      {currentTab === "created_t" && <CreatedTournaments />}
     </Container>
   );
 };

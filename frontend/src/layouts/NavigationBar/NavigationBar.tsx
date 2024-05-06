@@ -16,6 +16,7 @@ import Toolbar from "@mui/material/Toolbar";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 import MenuIcon from "@mui/icons-material/Menu";
+import HelpIcon from "@mui/icons-material/Help";
 
 import NavigationDrawer from "./NavigationDrawer";
 import NavigationUserMenu from "./NavigationUserMenu";
@@ -58,6 +59,10 @@ const NavigationBar: React.FC<Props> = (props) => {
     navigate(navigationItem.link);
   };
 
+  const handleHelpButton = (): void => {
+    navigate(routePaths.help);
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -93,6 +98,16 @@ const NavigationBar: React.FC<Props> = (props) => {
                 ))}
               </Box>
               <LogoButton logoName={APP_NAME} />
+              {/* Help Page Button */}
+              <IconButton
+                color="inherit"
+                aria-label="help page"
+                onClick={() => {
+                  handleHelpButton();
+                }}
+              >
+                <HelpIcon />
+              </IconButton>
               {isAuthenticated ? (
                 <NavigationUserMenu settings={props.settings} />
               ) : null}

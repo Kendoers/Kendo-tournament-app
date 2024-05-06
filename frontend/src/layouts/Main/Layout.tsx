@@ -49,8 +49,24 @@ const Layout = (): ReactElement => {
     if (
       // Define tabs, from which app needs to go to frontpage
       tabParam !== null &&
-      ["scoreboard", "matches", "preliminary", "playoff"].includes(tabParam)
+      [
+        "scoreboard",
+        "matches",
+        "preliminary",
+        "playoff",
+        "info",
+        "games",
+        "points",
+        "created_t"
+      ].includes(tabParam)
     ) {
+      setSearchParams((params) => {
+        params.set("tab", defaultTab);
+        return params;
+      });
+      navigate("/");
+    } else if (location.pathname === "/profile") {
+      // If tabParam is null and location is on the profile page, navigate to the front page ("/")
       setSearchParams((params) => {
         params.set("tab", defaultTab);
         return params;

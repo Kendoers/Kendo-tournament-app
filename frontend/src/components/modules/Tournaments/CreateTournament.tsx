@@ -61,6 +61,7 @@ export interface CreateTournamentFormData {
   linkToPay?: string;
   linkToSite?: string;
   numberOfCourts: number;
+  swissRounds?: number;
 }
 
 const defaultValues: CreateTournamentFormData = {
@@ -101,10 +102,14 @@ const CreateTournamentForm: React.FC = () => {
 
   const onSubmit = async (data: CreateTournamentFormData): Promise<void> => {
     try {
+      // Round dates to the nearest minute down
+      const roundedStartDate = data.startDate.startOf("minute");
+      const roundedEndDate = data.endDate.startOf("minute");
+
       await api.tournaments.createNew({
         ...data,
-        startDate: data.startDate.toString(),
-        endDate: data.endDate.toString()
+        startDate: roundedStartDate.toString(),
+        endDate: roundedEndDate.toString()
       });
       showToast(
         t("messages.creations_success", { name: data.name }),
@@ -124,7 +129,7 @@ const CreateTournamentForm: React.FC = () => {
     await formContext.handleSubmit(onSubmit)();
   };
 
-  const renderPreliminaryPlayoffFields = (): JSX.Element | null => {
+  const renderTournamentTypeSpecificFields = (): JSX.Element | null => {
     if (type === "Preliminary Playoff") {
       return (
         <React.Fragment>
@@ -162,6 +167,25 @@ const CreateTournamentForm: React.FC = () => {
         </React.Fragment>
       );
     }
+    if (type === "Swiss") {
+      return (
+        <React.Fragment>
+          <TextFieldElement
+            required
+            name="swissRounds"
+            type="number"
+            label={t("create_tournament_form.swiss_rounds")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return value >= 1 || `${t("messages.swiss_rounds_error")}`;
+              }
+            }}
+          />
+        </React.Fragment>
+      );
+    }
     return null;
   };
 
@@ -182,6 +206,9 @@ const CreateTournamentForm: React.FC = () => {
           label={t("create_tournament_form.tournament_name")}
           fullWidth
           margin="normal"
+          validation={{
+            required: t("create_tournament_form.required_text")
+          }}
         />
 
         <TextFieldElement
@@ -190,6 +217,9 @@ const CreateTournamentForm: React.FC = () => {
           label={t("create_tournament_form.location")}
           fullWidth
           margin="normal"
+          validation={{
+            required: t("create_tournament_form.required_text")
+          }}
         />
 
         <Stack spacing={2} marginY={2}>
@@ -234,6 +264,9 @@ const CreateTournamentForm: React.FC = () => {
           label={t("create_tournament_form.description")}
           fullWidth
           margin="normal"
+          validation={{
+            required: t("create_tournament_form.required_text")
+          }}
         />
 
         <TextFieldElement
@@ -262,6 +295,9 @@ const CreateTournamentForm: React.FC = () => {
               label={t("create_tournament_form.payment_link")}
               fullWidth
               margin="normal"
+              validation={{
+                required: t("create_tournament_form.required_text")
+              }}
             />
           </React.Fragment>
         )}
@@ -301,6 +337,10 @@ const CreateTournamentForm: React.FC = () => {
             {
               id: "Preliminary Playoff",
               label: t("create_tournament_form.preliminary_playoff")
+            },
+            {
+              id: "Swiss",
+              label: t("create_tournament_form.swiss")
             }
           ]}
           fullWidth
@@ -329,7 +369,7 @@ const CreateTournamentForm: React.FC = () => {
           margin="normal"
         />
 
-        {renderPreliminaryPlayoffFields()}
+        {renderTournamentTypeSpecificFields()}
 
         <TextFieldElement
           required
@@ -381,6 +421,9 @@ const CreateTournamentForm: React.FC = () => {
               label={t("create_tournament_form.organizer_email")}
               fullWidth
               margin="normal"
+              validation={{
+                required: t("create_tournament_form.required_text")
+              }}
             />
 
             <TextFieldElement

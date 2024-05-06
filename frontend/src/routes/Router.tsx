@@ -25,9 +25,12 @@ import { SocketProvider } from "context/SocketContext";
 import GameInterface from "components/modules/GameInterface/GameInterface";
 import PasswordControl from "components/modules/PasswordControl/PasswordControl";
 import PrivacyPolicy from "components/modules/Legal/PrivacyPolicy";
+import CancelSignup from "components/modules/Tournaments/Signup/CancelSignup";
+import EditTournametInfo from "components/modules/Tournaments/EditTournament/EditInfo";
 import OwnTournament from "components/modules/Tournaments/OwnTournament";
 import UpdateMatchPairsView from "components/modules/Tournaments/UpdatePairings/UpdateMatchPairsView";
 import UpdateGroupsView from "components/modules/Tournaments/UpdatePairings/UpdateGroupsView";
+import Help from "components/modules/Help/Help";
 
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
@@ -45,11 +48,22 @@ const routes = createRoutesFromElements(
         </Route>
 
         <Route
+          path="edit-tournament-info/:tournamentId"
+          element={<EditTournametInfo />}
+        />
+        <Route
           path="own-tournament/:tournamentId"
           element={<OwnTournament />}
         />
 
-        <Route path=":id" element={<TournamentProvider />}>
+        <Route
+          path=":id"
+          element={
+            <SocketProvider>
+              <TournamentProvider />
+            </SocketProvider>
+          }
+        >
           <Route index element={<TournamentDetails />} />
           <Route element={<AuthenticationGuard />}>
             <Route path="sign-up" element={<Signup />} />
@@ -59,7 +73,12 @@ const routes = createRoutesFromElements(
             ></Route>
             <Route path="modify-pairs" element={<UpdateMatchPairsView />} />
             <Route path="modify-groups" element={<UpdateGroupsView />} />
+            <Route path="cancel-sign-up" element={<CancelSignup />} />
           </Route>
+          <Route
+            path="match/:matchId"
+            element={<SocketProvider>{<GameInterface />}</SocketProvider>}
+          />
         </Route>
       </Route>
 
@@ -77,6 +96,8 @@ const routes = createRoutesFromElements(
       />
 
       <Route path={routePaths.privacy} element={<PrivacyPolicy />} />
+
+      <Route path={routePaths.help} element={<Help />} />
 
       <Route element={<AuthenticationGuard />}>
         <Route path={routePaths.profile} element={<Profile />} />

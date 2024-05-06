@@ -27,11 +27,15 @@
     "missing_timekeeper": "Matsilta puuttuu kellokalle!",
     "minimum_groupsize_error": "Lohkon minimikoko on  ",
     "minimum_player_to_playoff": "Vähintään yhden pelaajan täytyy edetä",
+    "cancel_success": "Ilmoittautuminen turnaukseen {{name}} peruttiin onnistuneesti",
     "number_of_courts_error": "Turnauksella tulee olla ainakin 1 kenttä",
     "copy_success": "Linkki kopioitu leikepöydälle!",
     "copy_failure": "Linkin kopioinnissa tapahtui virhe",
     "groups_updated": "Lohkot päivitetty! Päivitä turnaussivu nähdäksesi muutokset.",
-    "pairs_updated": "Turnausparit päivitetty! Päivitä turnaussivu nähdäksesi muutokset."
+    "pairs_updated": "Turnausparit päivitetty! Päivitä turnaussivu nähdäksesi muutokset.",
+    "swiss_rounds_error": "Kierrosten määrä oltava vähintään 1",
+    "role_reset": "Toimitsijaroolien nollaus onnistui!",
+    "match_reset": "Ottelun nollaus onnistui!"
   },
   "game_interface": {
     "player": "Pelaaja",
@@ -48,7 +52,9 @@
     "select_role": "Valitse toimitsijarooli",
     "time_keeper": "Kellokalle",
     "point_maker": "Pistevastaava",
-    "tie": "Tasapeli!"
+    "tie": "Tasapeli!",
+    "reset": "Nollaa ottelu",
+    "reset_roles": "Nollaa toimitsijaroolit"
   },
   "buttons": {
     "add_point_player_1": "Lisää piste pelaajalle 1",
@@ -71,10 +77,15 @@
     "save_button": "Tallenna",
     "modify_or_delete": "Muokkaa tai poista viimeisin piste",
     "delete": "Poista",
-	  "withdraw_user": "Keskeytä pelaajan turnaus",
-    "copy_to_clipboard": "Jaa turnaus",
     "modify_pairs": "Muokkaa ottelupareja",
-    "modify_groups": "Muokkaa lohkoja"
+    "modify_groups": "Muokkaa lohkoja",
+    "cancel_sign_up": "Peruuta ilmoittautuminen",
+    "withdraw_user": "Keskeytä pelaajan turnaus",
+    "copy_to_clipboard": "Jaa turnaus",
+    "save_changes_button": "Tallenna muutokset",
+    "edit_button": "Muokkaa",
+    "filter": "Suodata",
+    "reset": "Tyhjennä"
   },
   "titles": {
     "login": "Kirjaudu sisään",
@@ -88,11 +99,14 @@
     "select_new_type": "Valitse uusi tyyppi viimeisimmälle pisteelle:",
     "confirm_tournament_deletion": "Vahvista turnauksen poistaminen",
     "withdraw_user_from_tournament": "Keskeytä pelaajan turnaus",
-    "confirm_user_withdrawal": "Vahvista pelaajan turnauksen keskeyttäminen"
+    "confirm_user_withdrawal": "Vahvista pelaajan turnauksen keskeyttäminen",
+    "confirm_tournament_editing": "Vahvista turnauksen muokkaus"
+
   },
   "login_form": {
     "forgot_password": "Unohtuiko salasana?",
-    "sign_up": "Ei vielä käyttäjätiliä? Rekisteröidy"
+    "sign_up": "Ei vielä käyttäjätiliä? Rekisteröidy",
+    "required_text": "Tämä kenttä on pakollinen"
   },
   "password_recovery_form": {
     "email_helper_text": "Kirjoita sähköpostiosoitteesi, ja lähetämme sinulle linkin salasanan palauttamiseen"
@@ -124,7 +138,9 @@
   "register_labels": {
     "sign_in": "Kirjaudu sisään",
     "field_required_notice": "Täytä alla olevat kentät. Kentät, jotka on merkitty *, ovat pakollisia.",
-    "already_have_account": "Onko sinulla jo tili?"
+    "already_have_account": "Onko sinulla jo tili?",
+    "required_text": "Tämä kenttä on pakollinen",
+    "password_match": "Salasanojen tulisi täsmätä"
   },
   "tournament_view_labels": {
     "final": "Finaali",
@@ -145,7 +161,11 @@
     "missing_point_maker": "Puuttuu: pistevastaava",
     "missing_and": "ja pistevastaava",
     "group": "Lohko",
-    "playoff_stage_not_started": "Pudotuspelivaihe ei ole vielä alkanut."
+    "playoff_stage_not_started": "Pudotuspelivaihe ei ole vielä alkanut.",
+    "court_number": "Kenttä",
+    "tournament_winner": "Turnauksen voittaja: ",
+    "no_winner": "Ei voittajaa",
+    "tiebreaker": "Lohkossa {{groupNr}} on uusi ratkaisuottelu"
   },
   "signup_labels": {
     "sign_up_for": "Ilmoittaudu: ",
@@ -153,7 +173,8 @@
     "click_here": "Klikkaa tästä",
     "user_info": "Ilmoittautumisen yhteydessä annettavat tiedot:",
     "user_info_table": "Käyttäjätiedot",
-    "player_table": "Pelaajataulu"
+    "player_table": "Pelaajataulu",
+    "cancel": "Peruuta ilmoittautuminen: "
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Käynnissä olevat turnaukset",
@@ -166,7 +187,8 @@
     "no_past": "Ei menneitä turnauksia.",
     "start_date": "Aloituspäivä",
     "end_date": "Päättymispäivä",
-    "welcome": "Tervetuloa KendoAppiin! Voit osallistua, luoda tai seurata turnauksia sivustollamme!"
+    "welcome": "Tervetuloa KendoAppiin! Voit osallistua, luoda tai seurata turnauksia sivustollamme!",
+    "winner": "VOITTAJA"
   },
   "created_tournament": {
     "signed_up": "Ilmottautuneet",
@@ -210,7 +232,16 @@
     "league": "Liiga",
     "site_link": "Linkki järjestäjän sivuille",
     "paid": "Tämä turnaus on maksullinen",
-    "payment_link": "Linkki maksusivustolle"
+    "payment_link": "Linkki maksusivustolle",
+    "required_text": "Tämä kenttä on pakollinen",
+    "swiss": "Sveitsiläinen",
+    "swiss_rounds": "Sveitsiläisiä kierroksia"
+  },
+  "edit_tournament_form": {
+    "confirmation_message": "Oletko varma, että haluat muokata turnausta annetuilla tiedoilla?"
+  },
+  "edit_tournament_labels": {
+    "edit_tournament": "Muokkaa turnausta"
   },
   "upcoming_tournament_view": {
     "date_header": "Milloin",
@@ -225,7 +256,8 @@
     "category_header": "Turnauksen kategoria",
     "link_to_payment_header": "Tämä turnaus vaatii maksun, vierailethan osoitteessa",
     "link_to_site_header": "Järjestäjän sivut",
-    "attendee_list": "Kirjaudu sisään nähdäksesi osallistujalistan"
+    "attendee_list": "Kirjaudu sisään nähdäksesi osallistujalistan",
+    "max_players": "Ilmoittautuneiden pelaajien määrä"
   },
   "navigation": {
     "back": "Takaisin",
@@ -244,7 +276,8 @@
     "round_robin": "Kaikki vastaan kaikki",
     "playoff": "Pudotuspelit",
     "preliminary_playoff": "Alkulohkot ja pudotuspelit",
-    "preliminary": "Alkulohkot"
+    "preliminary": "Alkulohkot",
+    "swiss": "Sveitsiläinen"
   },
   "sorting": {
     "orderBy": "Järjestä: ",
@@ -360,5 +393,41 @@
     "point_type": "Pistetyyppi",
     "points": "Pisteet",
     "created_tournaments": "Luodut turnaukset"
+  },
+  "filtering": {
+    "options": "Suodatusvalinnat",
+    "participation": "Osallistuminen",
+    "user_participates": "Turnaukset joihin osallistun",
+    "by_time": "Ajankohta",
+    "by_location": "Sijainti",
+    "no_location": "Ei valintaa",
+    "by_tournament_type": "Turnaustyyppi",
+    "by_tournament_category": "Kategoria",
+    "by_point_type": "Pistetyyppi"
+  },
+  "help": {
+    "title": "Ohjeet",
+    "about": "Sovellus koostuu kolmesta pääkomponentista: Käyttäjät, Turnaukset ja Ottelut.",
+    "users": "Käyttäjät",
+    "users1": "Jotta voit luoda turnauksia tai osallistua niihin, sinun on luotava tili. Tilin luominen vaatii joitakin käyttäjätietoja, kuten nimen, sähköpostin, puhelinnumeron ja dan-arvon. Näitä tietoja käytetään sovelluksessa kun esitetään pelaaja tietoja (nimi, seura ja arvo). Lisäksi jos osallistut turnaukseen, turnauksen järjestäjällä on mahdollisuus nähdä tietojasi, jotta hän voi ottaa sinuun yhteyttä (sähköposti ja puhelinnumero). Voit muuttaa tietojasi tai poistaa tilisi kokonaan profiiliosiossa. Profiiliosiossa näkyvät myös ottelusi \"Omat pelit\" -välilehdellä, jotta voit seurata niitä helposti, ja ipponit \"Omat pisteet\" -välilehdellä, jotta voit seurata edistymistäsi.",
+    "users2": "Voit seurata turnauksia ja otteluita ilman tiliä.",
+    "users3": "Käytettävissä olevat kielet ovat tällä hetkellä suomi ja englanti. Kielen voi vaihtaa navigointipalkin pudotusvalikosta (\"FI\" tai \"EN\"). Kehittäjille: Uusia kieliä voidaan lisätä luomalla niille uudet JSON-tiedostot.",
+    "tournaments": "Turnaukset",
+    "tournaments1": "Turnauksen luomiseksi turnauksen nimi, paikka, aika ja kuvaus on syötettävä turnauksen luomislomakkeeseen. Muiden vaadittujen tietojen, kuten turnaustyypin, ottelun pituuden, turnauskategorian (harraste-, arvokisa- tai liigaturnaus) ja osallistujien enimmäismäärän valitsemiseksi on myös joitakin pudotusvalikkoja. Syötettävät tiedot riippuvat hieman turnaustyypistä.",
+    "tournaments2": "Kun turnaus on luotu, se näkyy \"tulevat turnaukset\"-välilehdellä. Turnauksen luoja näkee luomansa turnaukset profiilissaan \"luodut turnaukset\"-välilehdellä. Välilehti näkyy vain silloin, kun käyttäjällä on joitakin luotuja turnauksia. Tällä välilehdellä on yksityiskohtaisempi luettelo osallistujista sekä heidän sähköpostiosoitteensa ja puhelinnumeronsa siltä varalta, että heihin tarvitsee ottaa yhteyttä. Jokainen kirjautunut käyttäjä voi ilmoittautua turnaukseen profiilitiedoillaan, kunnes turnaus alkaa. Voit myös nähdä turnauksen yksityiskohdat ja muut osallistujat napsauttamalla turnauskorttia. Turnauksen luojana on mahdollista muokata turnauksen tietoja tai poistaa turnaus ennen sen alkamista.",
+    "tournaments3": "Kun turnaus alkaa, ottelut luodaan automaattisesti. Napsauttamalla turnauskorttia näet kaikki ottelut ja lohkokaavion tai pistetaulukon turnaustyypistä riippuen. Tässä vaiheessa turnausta ei voi enää muokata. Turnauksen luoja voi keskyttää pelaajan turnauksen, esimerkiksi jos pelaaja loukkaantuu. Tällöin kaikki hänen ottelunsa merkitään häviöiksi ja vastustajille annetaan ilmaiset voitot.",
+    "tournaments4": "Turnausluetteloita voi lajitella ja suodattaa. Lajittelijoita on nimien A-Ö ja Ö-A, ajan ja paikan mukaan. Suodattimia on osallistumisen, ajan, paikan, turnaustyypin ja turnauskategorian mukaan.",
+    "tournaments5": "Turnauksia on neljää eri tyyppiä: Kaikki vastaan kaikki, Pudotuspeli, Alkulohkot, joissa on pudotuspelit ja Sveitsiläinen.",
+    "tournaments6": "Kaikki vastaan kaikki -muodossa nimensä mukaisesti kaikki osallistujat pelaavat kaikkia vastaan. Kaikki vastaan kaikki -näkymässä on kaksi välilehteä. Pisteet-välilehdellä näet taulukon kaikkien osallistujien voitoista, tappioista, tasapeleistä, pisteistä ja ipponeista. Ottelut-välilehdellä näet kaikki ottelut lajiteltuna tuleviin, käynnissä oleviin ja menneisiin.",
+    "tournaments7": "Pudotuspeliturnauksessa osallistujat lajitellaan pareittain satunnaisesti. Parin pelaajat pelaavat toisiaan vastaan, ja voittaja etenee seuraavalle kierrokselle, jossa kaikista edellisen kierroksen voittajista muodostetaan uudet parit. Tätä jatketaan, kunnes jäljellä on vain yksi ottelu, jossa on vain yksi voittaja. Tässä turnaustyypissä on vain yksi näkymä, josta näet lohkokaavion otteluineen ja pistemäärineen. Jos kierroksella on pariton määrä pelaajia (ei kahden potenssia), satunnainen pelaaja saa ilmaisen voiton, jota kutsutaan \"BYE\":ksi.",
+    "tournaments8": "Alkulohkot ja pudotuspeli -turnauksessa ensimmäiset ottelukierrokset ovat lohkovaihetta. Lohkojen määrä ja kustakin lohkosta etenevien pelaajien määrä määritetään turnausta luotaessa. Kukin osallistuja pelaa kaikkia muita saman lohkon osallistujia vastaan. Kun kaikki lohko-ottelut ovat pelattu loppuun, määritetty määrä osallistujia, joilla on parhaat pisteet, etenevät pudotuspelivaiheeseen. Pudotuspelivaihe pelataan samalla tavalla kuin pudotuspeliturnaus.",
+    "tournaments9": "Sveitsiläisessä turnauksessa on tietty määrä kierroksia. Kierrosten määrä määritetään turnausta luotaessa. Jokaisella kierroksella jokainen osallistuja pelaa jotakuta vastaan, jolla on sama tai mahdollisimman läheinen voitto-tappio-tulos. Kun kaikki kierrokset on pelattu, voittaja on se, jolla on eniten pisteitä. Turnausnäkymässä on kaksi välilehteä: taulukko kaikkien osallistujien voitoista, tappioista, tasapeleistä, pisteistä ja ipponeista sekä lohkokaavio, jossa näkyvät kunkin kierroksen ottelut.",
+    "tournaments10": "Kaikki vastaan kaikki, alkulohkovaiheessa ja sveitsiläisessä turnauksessa pisteet kertyvät siten, että jokainen voitto antaa 3 pistettä ja jokainen tasapeli 1 pisteen.",
+    "matches": "Ottelut",
+    "matches1": "Kunkin turnauksen ottelut luodaan automaattisesti. Voit siirtyä ottelunäkymään napsauttamalla ottelupainikkeita (kaikki vastaan kaikki ja alkulohkot) tai ottelukortteja (pudotuspelit, alkulohkojen jälkeiset pudotuspelit ja sveitsiläinen). Kukin ottelu tarvitsee pistevastaavan ja kellokallen, ennen kuin ottelu on mahdollista aloittaa. Voit ilmoittautua näihin rooleihin napsauttamalla \"Valitse toimitsijarooli\"-painiketta. Kellokalle hoitaa ajanottoa, ja hän on ainoa henkilö, joka näkee \"Aloita\"-painikkeen käynnistääkseen ajanoton. Pistevastaava on ainoa henkilö, joka voi lisätä pisteitä napsauttamalla \"Lisää piste pelaajalle x\" -painiketta. Hän voi myös muuttaa tai poistaa äskettäin antamansa pisteen, jos sattuu virheitä. Jos ottelu aloitettiin vahingossa, turnauksen luoja voi nollata ottelun niin, että sekä ajastin että pisteet nollataan. Hän voi nollata myös toimitsijaroolit ennen kuin ottelu on alkanut",
+    "matches2": "Ottelu päättyy, kun toinen pelaajista saa kaksi pistettä. Jos ajastin saavuttaa ottelun asetetun keston (kolme, neljä tai viisi minuuttia), enemmän pisteitä saanut pelaaja voittaa. Jos pisteet ovat tässä vaiheessa tasan, ottelu päättyy tasapeliin (kaikki vastaan kaikki, alkulohkot, sveitsiläinen) tai alkaa jatkoaika (pudotuspelit, pudotuspelit alkulohkojen jälkeen). Jatkoaikaa pelataan niin kauan kunnes toinen pelaajista tekee pisteen ja voittaa.",
+    "bugs": "Bugit",
+    "bugs1": "Jos haluat raportoida bugeja tai jos sinulla on ajatuksia asioista, joita meidän pitäisi lisätä sivustollemme, kerro niistä meille ",
+    "bugs_link": "GitHubimme Issues -välilehdellä"
   }
 }

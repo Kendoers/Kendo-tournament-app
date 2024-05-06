@@ -53,6 +53,7 @@ export interface Match {
   player1Score: number;
   player2Score: number;
   matchTime: MatchTime;
+  courtNumber: number;
 }
 
 export interface Tournament {
@@ -75,8 +76,14 @@ export interface Tournament {
   category: Category;
   linkToPay?: string;
   linkToSite?: string;
+  numberOfCourts: number;
+  swissRounds?: number;
 }
 
-export type TournamentType = "Round Robin" | "Playoff" | "Preliminary Playoff";
+export type TournamentType =
+  | "Round Robin"
+  | "Playoff"
+  | "Preliminary Playoff"
+  | "Swiss";
 
 export type Category = "championship" | "league" | "hobby";

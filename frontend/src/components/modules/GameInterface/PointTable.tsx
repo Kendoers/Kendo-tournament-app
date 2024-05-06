@@ -62,7 +62,7 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
       <Table>
         <TableBody>
           {cells.map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
+            <TableRow key={rowIndex} style={{ height: "75px" }}>
               {row.map((cell, columnIndex) => (
                 <TableCell key={columnIndex}>
                   {cell.filled ? (

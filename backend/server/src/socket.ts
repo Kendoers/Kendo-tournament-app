@@ -20,6 +20,14 @@ export function initSocket(server: http.Server): Server {
     socket.on("leave-match", async (matchId: string) => {
       await socket.leave(matchId);
     });
+
+    socket.on("join-tournament", async (tournamentId: string) => {
+      await socket.join(tournamentId);
+    });
+
+    socket.on("leave-tournament", async (tournamentId: string) => {
+      await socket.leave(tournamentId);
+    });
   });
 
   return io;

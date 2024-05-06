@@ -114,6 +114,9 @@ const RegisterForm: React.FC = () => {
             label={t("user_info_labels.first_name")}
             fullWidth
             margin="normal"
+            validation={{
+              required: t("register_labels.required_text")
+            }}
           />
 
           <TextFieldElement
@@ -122,6 +125,9 @@ const RegisterForm: React.FC = () => {
             label={t("user_info_labels.last_name")}
             fullWidth
             margin="normal"
+            validation={{
+              required: t("register_labels.required_text")
+            }}
           />
 
           <TextFieldElement
@@ -131,6 +137,9 @@ const RegisterForm: React.FC = () => {
             type="email"
             fullWidth
             margin="normal"
+            validation={{
+              required: t("register_labels.required_text")
+            }}
           />
 
           <TextFieldElement
@@ -141,6 +150,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             margin="normal"
             validation={{
+              required: t("register_labels.required_text"),
               validate: (value: string) => {
                 return (
                   isValidPhone(value) || t("messages.phonenumber_validation")
@@ -156,6 +166,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             margin="normal"
             validation={{
+              required: t("register_labels.required_text"),
               validate: (value: string) => {
                 return (
                   isValidPassword(value) || t("messages.password_validation")
@@ -171,6 +182,15 @@ const RegisterForm: React.FC = () => {
             label={t("user_info_labels.repeat_password_label")}
             fullWidth
             margin="normal"
+            parseError={(error) => {
+              // Return a custom error message based on the error type or message
+              if (error.type === "required") {
+                return t("register_labels.required_text");
+              } else if (error.message === "Password should match") {
+                return t("register_labels.password_match");
+              }
+              return error.message; // Default to using the error message as is
+            }}
           />
 
           <TextFieldElement
@@ -236,6 +256,9 @@ const RegisterForm: React.FC = () => {
               type="email"
               fullWidth
               margin="normal"
+              validation={{
+                required: t("register_labels.required_text")
+              }}
             />
           )}
 
@@ -251,6 +274,9 @@ const RegisterForm: React.FC = () => {
                 </Link>
               </>
             }
+            validation={{
+              required: t("register_labels.required_text")
+            }}
           />
 
           <Box margin="auto" width="200px">

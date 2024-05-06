@@ -12,16 +12,22 @@ import {
   Typography,
   Button,
   type ButtonProps,
-  Grid
+  Grid,
+  Box
 } from "@mui/material";
 import { type User, type Match, type Tournament } from "types/models";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "context/AuthContext";
-import DeleteUserFromTournament from "./DeleteUserFromTournament";
-import CopyToClipboardButton from "./CopyToClipboardButton";
-import PlayerName, { checkSameNames } from "../PlayerNames";
+import DeleteUserFromTournament from "../DeleteUserFromTournament";
+import CopyToClipboardButton from "../CopyToClipboardButton";
+import { useSocket } from "context/SocketContext";
+import { joinTournament, leaveTournament } from "sockets/emit";
+import PlayerName, { checkSameNames } from "../../PlayerNames";
+import api from "api/axios";
+import useToast from "hooks/useToast";
+import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
 
 export interface TournamentPlayer {
   id: string;
@@ -145,18 +151,22 @@ export const updatePlayerStats = (
   tournament: Tournament,
   setPlayers: React.Dispatch<React.SetStateAction<TournamentPlayer[]>>
 ): void => {
-  const processedMatches = new Set<string>();
-
   setPlayers((prevPlayers: TournamentPlayer[]) => {
-    const updatedPlayers = [...prevPlayers];
+    const players = [...prevPlayers];
+
+    // reset the players points before recalculation, resolves matches being counted multiple times
+    const updatedPlayers: TournamentPlayer[] = players.map((player) => ({
+      ...player,
+      points: 0,
+      ippons: 0,
+      wins: 0,
+      losses: 0,
+      ties: 0
+    }));
 
     for (const match of tournament.matchSchedule) {
-      if (processedMatches.has(match.id)) {
-        continue;
-      }
-
-      // Exclude playoff matches in preliminaryplayoff view scoreboard
-      if (match.type === "playoff") {
+      // Exclude unfinished and playoff matches in preliminaryplayoff view scoreboard
+      if (match.type === "playoff" || match.endTimestamp === undefined) {
         continue;
       }
 
@@ -200,7 +210,6 @@ export const updatePlayerStats = (
       // Add ippons
       updatedPlayers[player1Index].ippons += match.player1Score;
       updatedPlayers[player2Index].ippons += match.player2Score;
-      processedMatches.add(match.id);
     }
     return updatedPlayers;
   });
@@ -247,14 +256,17 @@ export const sortMatches = (
     (match) => match.elapsedTime > 0 && match.endTimestamp === undefined
   );
   const upcomingMatches = matches.filter(
-    (match) => match.elapsedTime <= 0 && match.endTimestamp === undefined
+    (match) =>
+      match.elapsedTime <= 0 &&
+      match.endTimestamp === undefined &&
+      match.winner === undefined
   );
   const pastMatches = matches.filter(
     (match) =>
       (match.elapsedTime > 0 && match.endTimestamp !== undefined) ||
-      (match.endTimestamp !== undefined && match.winner !== "undefined")
+      (match.endTimestamp !== undefined && match.winner !== undefined) ||
+      (match.elapsedTime === 0 && match.winner !== undefined)
   );
-
   return { ongoingMatches, upcomingMatches, pastMatches };
 };
 
@@ -266,12 +278,36 @@ export const createMatchButton = (
   haveSameNames: boolean,
   props: ButtonProps
 ): React.ReactNode => {
-  const player1 = players.find((player) => player.id === match.players[0].id);
-  const player2 = players.find((player) => player.id === match.players[1].id);
+  // Find the players in the players array using their IDs
+  const player1 = players.find(
+    (player) => player.id === match.players[0].id
+  ) as TournamentPlayer;
+  const player2 = players.find(
+    (player) => player.id === match.players[1]?.id
+  ) as TournamentPlayer;
+
+  // Get the names of the players
+  const player1Name = (
+    <PlayerName
+      firstName={player1.firstName}
+      lastName={player1.lastName}
+      sameNames={haveSameNames}
+    />
+  );
+  const player2Name =
+    player2 !== undefined ? (
+      <PlayerName
+        firstName={player2.firstName}
+        lastName={player2.lastName}
+        sameNames={haveSameNames}
+      />
+    ) : (
+      <PlayerName firstName="BYE" lastName="" sameNames={false} />
+    );
 
   let officialsInfo = "";
 
-  if (match.elapsedTime <= 0) {
+  if (match.elapsedTime <= 0 && match.winner === undefined) {
     // Match is upcoming
     const timerPerson = match.timeKeeper ?? undefined;
     const pointMaker = match.pointMaker ?? undefined;
@@ -291,27 +327,28 @@ export const createMatchButton = (
 
   return (
     <div style={{ marginBottom: "10px" }} key={match.id}>
-      {player1 !== undefined && player2 !== undefined && (
+      <Box display="flex" alignItems="center">
         <Button
           onClick={() => {
-            navigate(`match/${match.id}`);
+            if (match.players.length === 2) {
+              navigate(`match/${match.id}`);
+            } else {
+              // No match details to display for a bye
+            }
           }}
           {...props}
         >
-          <PlayerName
-            firstName={player1.firstName}
-            lastName={player1.lastName}
-            sameNames={haveSameNames}
-          />
+          {player1Name}
           {" - "}
-          <PlayerName
-            firstName={player2.firstName}
-            lastName={player2.lastName}
-            sameNames={haveSameNames}
-          />
+          {player2Name}
         </Button>
-      )}
-      {officialsInfo !== undefined && (
+        <Typography variant="body1" marginLeft="10px">
+          {t("tournament_view_labels.court_number")}
+          {": "}
+          {match.courtNumber}
+        </Typography>
+      </Box>
+      {officialsInfo !== undefined && match.winner === undefined && (
         <Typography variant="body2">{officialsInfo}</Typography>
       )}
     </div>
@@ -319,10 +356,12 @@ export const createMatchButton = (
 };
 
 const RoundRobinTournamentView: React.FC = () => {
+  const initialTournamentData = useTournament();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const tournament = useTournament();
 
+  const [hasJoined, setHasJoined] = useState(false);
   const initialRender = useRef(true);
   const [players, setPlayers] = useState<TournamentPlayer[]>([]);
   const [ongoingMatches, setOngoingMatches] = useState<Match[]>([]);
@@ -335,11 +374,50 @@ const RoundRobinTournamentView: React.FC = () => {
   const currentTab = searchParams.get("tab") ?? defaultTab;
   const { userId } = useAuth();
   const isUserTheCreator = tournament.creator.id === userId;
+  const showToast = useToast();
 
   useEffect(() => {
     const result = checkSameNames(tournament);
     setHaveSameNames(result);
   }, []);
+
+  const { tournamentData: socketData } = useSocket();
+
+  const [tournamentData, setTournamentData] = useState<Tournament>(
+    initialTournamentData
+  );
+
+  // Listening to tournaments websocket
+  useEffect(() => {
+    if (initialTournamentData.id !== undefined && !hasJoined) {
+      joinTournament(initialTournamentData.id);
+      setHasJoined(true);
+
+      return () => {
+        leaveTournament(initialTournamentData.id);
+        setHasJoined(false);
+      };
+    }
+  }, [initialTournamentData.id]);
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      try {
+        if (socketData !== undefined) {
+          setTournamentData(socketData);
+        } else {
+          const data: Tournament = await api.tournaments.getTournament(
+            initialTournamentData.id
+          );
+          setTournamentData(data);
+        }
+      } catch (error) {
+        showToast(error, "error");
+      }
+    };
+
+    void fetchData();
+  }, [socketData]);
 
   useEffect(() => {
     if (currentTab === null || !tabTypes.some((tab) => tab === currentTab)) {
@@ -358,19 +436,54 @@ const RoundRobinTournamentView: React.FC = () => {
   };
 
   useEffect(() => {
-    getPlayerNames(tournament, setPlayers);
-    const sortedMatches = sortMatches(tournament.matchSchedule);
+    getPlayerNames(tournamentData, setPlayers);
+    const sortedMatches = sortMatches(tournamentData.matchSchedule);
     setOngoingMatches(sortedMatches.ongoingMatches);
     setUpcomingMatches(sortedMatches.upcomingMatches);
     setPastMatches(sortedMatches.pastMatches);
-  }, [tournament]);
+  }, [tournamentData]);
+
+  const prevMatchScheduleRef = useRef(tournamentData.matchSchedule);
+
+  useEffect(() => {
+    // Function to check if there are any recently finished matches
+    const hasFinishedMatches = (
+      currentMatches: Match[],
+      previousMatches: Match[]
+    ): boolean => {
+      return currentMatches.some((match) => {
+        if (match.endTimestamp === undefined) return false; // Skip if match hasn't ended
+        // Search for a match with the same ID in previousMatches to compare its state to the current one
+        const prevMatch = previousMatches.find((m) => m.id === match.id);
+        // Returns true if either the match was not present in previousMatches (meaning
+        // it's a new match that has ended since the last check) or if the endTimestamp has changed
+        // (indicating the match has recently concluded)
+        return (
+          prevMatch === undefined ||
+          prevMatch.endTimestamp !== match.endTimestamp
+        );
+      });
+    };
+
+    if (
+      hasFinishedMatches(
+        tournamentData.matchSchedule,
+        prevMatchScheduleRef.current
+      )
+    ) {
+      updatePlayerStats(tournamentData, setPlayers);
+    }
+
+    // Update the ref with the current matchSchedule after running checks
+    prevMatchScheduleRef.current = tournamentData.matchSchedule;
+  }, [tournamentData.matchSchedule]);
 
   useEffect(() => {
     if (initialRender.current && players.length > 0) {
       initialRender.current = false;
-      updatePlayerStats(tournament, setPlayers);
+      updatePlayerStats(tournamentData, setPlayers);
     }
-  }, [players, tournament]);
+  }, [players, tournamentData]);
 
   const ongoingElements = ongoingMatches.map((match) =>
     createMatchButton(match, players, navigate, t, haveSameNames, {
@@ -394,7 +507,16 @@ const RoundRobinTournamentView: React.FC = () => {
     <>
       <Grid container alignItems="center" spacing={4}>
         <Grid item>
-          <Typography variant="h4">{tournament.name}</Typography>
+          <Typography variant="h4">{tournamentData.name}</Typography>
+          {allMatchesPlayed(tournamentData) && (
+            <Typography variant="subtitle1">
+              <span>
+                {t("frontpage_labels.winner")}
+                {": "}
+                {findTournamentWinner(tournamentData)}
+              </span>
+            </Typography>
+          )}
         </Grid>
         <Grid item>
           <CopyToClipboardButton />

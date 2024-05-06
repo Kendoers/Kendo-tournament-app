@@ -22,12 +22,16 @@ import {
   getPlayerNames,
   sortMatches,
   createMatchButton
-} from "./RoundRobinTournamentView";
-import PlayoffTournamentView from "./PlayoffTournamentView";
-import CopyToClipboardButton from "./CopyToClipboardButton";
-import { checkSameNames } from "../PlayerNames";
+} from "../RoundRobin/RoundRobinTournamentView";
+import PlayoffTournamentView from "../Playoff/PlayoffTournamentView";
+import CopyToClipboardButton from "../CopyToClipboardButton";
+import { checkSameNames } from "../../PlayerNames";
+import { useSocket } from "context/SocketContext";
+import { joinTournament, leaveTournament } from "sockets/emit";
+import api from "api/axios";
+import useToast from "hooks/useToast";
+import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
 import { useAuth } from "context/AuthContext";
-import ModifyGroupsButton from "./ModifyGroupsButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
@@ -62,8 +66,10 @@ const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
   return matchesByGroup;
 };
 
+type TiebreakerToasts = Record<number, Record<number, boolean>>;
+
 const PreliminaryPlayoffView: React.FC = () => {
-  const tournament = useTournament();
+  const initialTournamentData = useTournament();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const initialRender = useRef(true);
@@ -86,16 +92,60 @@ const PreliminaryPlayoffView: React.FC = () => {
   const [tournamentStage, setTournamentStage] = useState("preliminary");
   const [showMatches, setShowMatches] = useState(false);
   const defaultTab = "preliminary";
-  const [previousTab, setPreviousTab] = useState(defaultTab); // Keep track of the previous tab
+  const [previousTab, setPreviousTab] = useState(defaultTab);
   const [searchParams, setSearchParams] = useSearchParams();
   const [haveSameNames, setHaveSameNames] = useState<boolean>(false);
   const tabTypes = ["preliminary", "playoff"] as const;
   const currentTab = searchParams.get("tab") ?? defaultTab;
   const { userId } = useAuth();
-  const isUserTheCreator = tournament.creator.id === userId;
+  const isUserTheCreator = initialTournamentData.creator.id === userId;
+  const [tiebreakerToasts, setTiebreakerToasts] = useState<TiebreakerToasts>(
+    {}
+  );
+
+  const showToast = useToast();
+  const [hasJoined, setHasJoined] = useState(false);
+
+  const { tournamentData: socketData } = useSocket();
+
+  const [tournamentData, setTournamentData] = useState<Tournament>(
+    initialTournamentData
+  );
+
+  // Listening to tournaments websocket
+  useEffect(() => {
+    if (initialTournamentData.id !== undefined && !hasJoined) {
+      joinTournament(initialTournamentData.id);
+      setHasJoined(true);
+
+      return () => {
+        leaveTournament(initialTournamentData.id);
+        setHasJoined(false);
+      };
+    }
+  }, [initialTournamentData.id]);
 
   useEffect(() => {
-    const result = checkSameNames(tournament);
+    const fetchData = async (): Promise<void> => {
+      try {
+        if (socketData !== undefined) {
+          setTournamentData(socketData);
+        } else {
+          const data: Tournament = await api.tournaments.getTournament(
+            initialTournamentData.id
+          );
+          setTournamentData(data);
+        }
+      } catch (error) {
+        showToast(error, "error");
+      }
+    };
+
+    void fetchData();
+  }, [socketData]);
+
+  useEffect(() => {
+    const result = checkSameNames(tournamentData);
     setHaveSameNames(result);
   }, []);
 
@@ -146,8 +196,8 @@ const PreliminaryPlayoffView: React.FC = () => {
   }, [currentTab, previousTab]);
 
   useEffect(() => {
-    getPlayerNames(tournament, setPlayers);
-    const matchesByGroup = sortMatchesByGroup(tournament);
+    getPlayerNames(tournamentData, setPlayers);
+    const matchesByGroup = sortMatchesByGroup(tournamentData);
     // Loop through each group and sort match schedule for each group
     for (const [group, matches] of matchesByGroup.entries()) {
       const sortedMatches = sortMatches(matches);
@@ -169,11 +219,11 @@ const PreliminaryPlayoffView: React.FC = () => {
         return newPastMatches;
       });
     }
-  }, [tournament]);
+  }, [tournamentData]);
 
   useEffect(() => {
     // Determine the tournament stage based on match types whenever matchSchedule changes
-    const playoffMatchExists = tournament.matchSchedule.some(
+    const playoffMatchExists = tournamentData.matchSchedule.some(
       (match) => match.type === "playoff"
     );
 
@@ -182,14 +232,81 @@ const PreliminaryPlayoffView: React.FC = () => {
     } else {
       setTournamentStage("preliminary");
     }
-  }, [tournament.matchSchedule]);
+  }, [tournamentData.matchSchedule]);
+
+  const prevMatchScheduleRef = useRef(tournamentData.matchSchedule);
+
+  useEffect(() => {
+    // Function to check if there are any recently finished matches
+    const hasFinishedMatches = (
+      currentMatches: Match[],
+      previousMatches: Match[]
+    ): boolean => {
+      return currentMatches.some((match) => {
+        if (match.endTimestamp === undefined) return false; // Skip if match hasn't ended
+        // Search for a match with the same ID in previousMatches to compare its state to the current one
+        const prevMatch = previousMatches.find((m) => m.id === match.id);
+        // Returns true if either the match was not present in previousMatches (meaning
+        // it's a new match that has ended since the last check) or if the endTimestamp has changed
+        // (indicating the match has recently concluded)
+        return (
+          prevMatch === undefined ||
+          prevMatch.endTimestamp !== match.endTimestamp
+        );
+      });
+    };
+
+    if (
+      hasFinishedMatches(
+        tournamentData.matchSchedule,
+        prevMatchScheduleRef.current
+      )
+    ) {
+      updatePlayerStats(tournamentData, setPlayers);
+    }
+
+    // Update the ref with the current matchSchedule after running checks
+    prevMatchScheduleRef.current = tournamentData.matchSchedule;
+  }, [tournamentData.matchSchedule]);
 
   useEffect(() => {
     if (initialRender.current && players.length > 0) {
       initialRender.current = false;
-      updatePlayerStats(tournament, setPlayers);
+      updatePlayerStats(tournamentData, setPlayers);
     }
-  }, [players, tournament]);
+  }, [players, tournamentData]);
+
+  useEffect(() => {
+    showTiebreakerToasts();
+  }, [upcomingMatches]);
+
+  const showTiebreakerToasts = (): void => {
+    if (tournamentStage === "preliminary" && upcomingMatches.size > 0) {
+      upcomingMatches.forEach((matches, index) => {
+        matches.forEach((match, matchIndex) => {
+          // If the match is not from initial round and a toast for it hasn't been shown before
+          if (
+            match.tournamentRound > 1 &&
+            !tiebreakerToasts[index]?.[matchIndex]
+          ) {
+            showToast(
+              t("tournament_view_labels.tiebreaker", { groupNr: index + 1 }),
+              "success"
+            );
+
+            // Keep track of which matches have been notified of
+            setTiebreakerToasts((prevState) => ({
+              ...prevState,
+              [index]: {
+                ...prevState[index],
+                [matchIndex]: true
+              }
+            }));
+          }
+        });
+      });
+    }
+  };
 
   // When a scoreboard is clicked, find out matches for that group to show
   useEffect(() => {
@@ -244,7 +361,16 @@ const PreliminaryPlayoffView: React.FC = () => {
     <>
       <Grid container alignItems="center" spacing={4}>
         <Grid item>
-          <Typography variant="h4">{tournament.name}</Typography>
+          <Typography variant="h4">{tournamentData.name}</Typography>
+          {allMatchesPlayed(tournamentData) && (
+            <Typography variant="subtitle1">
+              <span>
+                {t("frontpage_labels.winner")}
+                {": "}
+                {findTournamentWinner(tournamentData)}
+              </span>
+            </Typography>
+          )}
         </Grid>
         <Grid item>
           <CopyToClipboardButton />
@@ -264,7 +390,7 @@ const PreliminaryPlayoffView: React.FC = () => {
       {currentTab === "preliminary" && (
         <>
           {!showMatches &&
-            tournament.groups?.map((groupIds, index) => (
+            tournamentData.groups?.map((groupIds, index) => (
               <Card key={index}>
                 <CardActionArea
                   onClick={() => {

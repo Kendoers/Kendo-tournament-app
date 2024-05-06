@@ -6,7 +6,7 @@ import React, {
   type ReactElement
 } from "react";
 import { initSockets, socket } from "sockets";
-import { type Match } from "types/models";
+import { type Tournament, type Match } from "types/models";
 
 interface Props {
   children?: ReactNode;
@@ -14,10 +14,12 @@ interface Props {
 
 export interface ISocketContext {
   matchInfo: Match | undefined;
+  tournamentData: Tournament | undefined;
 }
 
 const initialContextValue: ISocketContext = {
-  matchInfo: undefined
+  matchInfo: undefined,
+  tournamentData: undefined
 };
 
 const SocketContext = createContext<ISocketContext>(initialContextValue);

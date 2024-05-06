@@ -27,11 +27,15 @@
     "missing_timekeeper": "Match is missing a time keeper!",
     "minimum_groupsize_error": "Minimum group size is  ",
     "minimum_player_to_playoff": "At least one player has to proceed",
+    "cancel_success": "Successfully cancelled sign up for tournament {{name}} ",
     "number_of_courts_error": "Tournament must have at least 1 court",
     "copy_success": "Tournament link copied to clipboard!",
     "copy_failure": "Failed to copy tournament link",
     "groups_updated": "Tournaments groups updated! Please refresh the tournament page to see the changes.",
-    "pairs_updated": "Tournaments pairs updated! Please refresh the tournament page to see the changes."
+    "pairs_updated": "Tournaments pairs updated! Please refresh the tournament page to see the changes.",
+    "swiss_rounds_error": "Numbers of swiss rounds must be at least 1",
+    "role_reset": "Official roles reset successfully!",
+    "match_reset": "Match reset successfully!"
   },
   "game_interface": {
     "player": "Player",
@@ -48,7 +52,9 @@
     "select_role": "Select role as an official",
     "time_keeper": "Time keeper",
     "point_maker": "Point maker",
-    "tie": "It's a tie!"
+    "tie": "It's a tie!",
+    "reset": "Reset match",
+    "reset_roles": "Reset official roles"
   },
   "buttons": {
     "add_point_player_1": "Add point for player 1",
@@ -74,7 +80,12 @@
 	  "withdraw_user": "Withdraw player from tournament",
     "copy_to_clipboard": "Share tournament",
     "modify_pairs": "Edit match pairs",
-    "modify_groups": "Edit groups"
+    "modify_groups": "Edit groups",
+    "cancel_sign_up": "Cancel sign up",
+    "save_changes_button": "Save changes",
+    "edit_button": "Edit",
+    "filter": "Filter",
+    "reset": "Reset"
   },
   "titles": {
     "login": "Sign in",
@@ -88,11 +99,13 @@
     "select_new_type": "Select new type for the recent point:",
     "confirm_tournament_deletion": "Confirm tournament deletion",
     "withdraw_user_from_tournament": "Withdraw player from tournament",
-    "confirm_user_withdrawal": "Confirm player withdrawal from tournament"
+    "confirm_user_withdrawal": "Confirm player withdrawal from tournament",
+    "confirm_tournament_editing": "Confirm tournament editing"
   },
   "login_form": {
     "forgot_password": "Forgot password?",
-    "sign_up": "Don't have an account? Sign Up"
+    "sign_up": "Don't have an account? Sign Up",
+    "required_text": "This field is required"
   },
   "password_recovery_form": {
     "email_helper_text": "Enter your email and we’ll send you a link to reset your password"
@@ -124,7 +137,9 @@
   "register_labels": {
     "sign_in": "Sign In",
     "field_required_notice": "Fill in the fields below. Fields marked with * are required.",
-    "already_have_account": "Already have an account?"
+    "already_have_account": "Already have an account?",
+    "required_text": "This field is required",
+    "password_match": "Passwords should match"
   },
   "tournament_view_labels": {
     "final": "Final",
@@ -145,7 +160,11 @@
     "missing_point_maker": "Missing: Point maker",
     "missing_and": "and point maker",
     "group": "Group",
-    "playoff_stage_not_started": "Playoff stage has not started yet."
+    "playoff_stage_not_started": "Playoff stage has not started yet.",
+    "court_number": "Court",
+    "tournament_winner": "Winner of tournament: ",
+    "no_winner": "No winner",
+    "tiebreaker": "There is a new tiebreaker in group {{groupNr}}"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",
@@ -153,7 +172,8 @@
     "click_here": "Click here",
     "user_info": "The information you are signing up with:",
     "user_info_table": "User Information",
-    "player_table": "Player Table"
+    "player_table": "Player Table",
+    "cancel": "Cancel sign up for"
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Ongoing Tournaments",
@@ -166,7 +186,8 @@
     "no_past": "No past tournaments.",
     "start_date": "Start Date",
     "end_date": "End Date",
-    "welcome": "Welcome to KendoApp! Here you can participate, host or follow tournaments!"
+    "welcome": "Welcome to KendoApp! Here you can participate, host or follow tournaments!",
+    "winner": "WINNER"
   },
   "created_tournament": {
     "signed_up": "Signed up",
@@ -210,7 +231,16 @@
     "league": "League",
     "site_link": "Link to organizer's site",
     "paid": "This tournament requires payment",
-    "payment_link": "Link to payment site"
+    "payment_link": "Link to payment site",
+    "required_text": "This field is required",
+    "swiss": "Swiss",
+    "swiss_rounds": "Number of swiss rounds"
+  },
+  "edit_tournament_form": {
+    "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"
+  },
+  "edit_tournament_labels": {
+    "edit_tournament": "Edit tournament"
   },
   "upcoming_tournament_view": {
     "date_header": "When",
@@ -225,7 +255,8 @@
     "category_header": "Tournament category",
     "link_to_payment_header": "There is a fee for this tournament, please visit",
     "link_to_site_header": "Organizer's website",
-    "attendee_list": "Log in to see the list of attendees"
+    "attendee_list": "Log in to see the list of attendees",
+    "max_players": "The number of players signed up"
   },
   "navigation": {
     "back": "Back",
@@ -244,7 +275,8 @@
     "round_robin": "Round Robin",
     "playoff": "Playoff",
     "preliminary_playoff": "Preliminary and playoff",
-    "preliminary": "Preliminary"
+    "preliminary": "Preliminary",
+    "swiss": "Swiss"
   },
   "sorting": {
     "orderBy": "Order By: ",
@@ -355,10 +387,46 @@
   "profile": {
     "match": "Match",
     "profile_info": "Profile Info",
-    "my_games": "My Fames",
+    "my_games": "My Games",
     "my_points": "My Points",
     "point_type": "Point Type",
     "points": "Points",
-    "created_tournaments": "Created tournaments"
+    "created_tournaments": "Created tournaments" 
+  },
+  "filtering": {
+    "options": "Filtering options",
+    "participation": "Participation",
+    "user_participates": "Tournaments I am participant in",
+    "by_time": "Time",
+    "by_location": "Location",
+    "no_location": "None",
+    "by_tournament_type": "Tournament type",
+    "by_tournament_category": "Tournament category",
+    "by_point_type": "Point type"
+  },
+  "help": {
+    "title": "Instructions",
+    "about": "The app consists of three main components: Users, Tournaments and Matches.",
+    "users": "Users",
+    "users1": "To create or participate in tournaments, you need to create an account. The account creation requires some user data, i.e. name, email, phone number and dan rank. This data is used in the app (like names and rank) or by the tournament organizer to contact you regarding tournament participation (email and phone number). It is possible to change your data or delete your account fully in the profile section. The profile section also shows your matches in the \"My games\" tab to follow them easily and ippons in the \"My points\" tab to follow your progress.",
+    "users2": "You can follow the tournaments and matches without an account.",
+    "users3": "The available languages at the moment are Finnish and English. The language can be changed from the dropdown (\"FI\" or \"EN\") in the navigation bar. For developers: New languages can be added by creating new JSON files for them.",
+    "tournaments": "Tournaments",
+    "tournaments1": "To create a tournament, tournament name, place, time and description are required to input in the tournament creation form. There are also some dropdowns to choose other required data, like tournament type, match length, tournament category (hobby, championship or league) and the maximum number of participants. The input data depends a bit on the tournament type.",
+    "tournaments2": "After a tournament is created, it can be seen in the \"upcoming tournaments\" tab. The tournament creator can see the tournaments they have created in their profile, under the \"created tournaments\" tab. The tab will show only when the user has some created tournaments. This tab will have a more detailed list of the participants, with their emails and phone numbers, in case they need to be contacted. Every logged in user can sign up to the tournament with their profile data until the tournament starts. You can also see the details and other participants of the tournament by clicking the tournament card. As a tournament creator, it is possible to edit the tournament information or delete the tournament before it starts.",
+    "tournaments3": "When the tournament starts, the matches are created automatically. By clicking the tournament card, you can see all the matches and the bracket or score table, depending on the tournament type. At this point, it's not possible to edit the tournament anymore. The tournament creator can withdraw a player from a tournament, for example if the player gets injured. This marks all their matches to losses and gives free wins to the opponents.",
+    "tournaments4": "The tournament listings can be sorted and filtered. There are sorters by names from A-Ö and Ö-A, time and location. The filters are by time, location, tournament type and tournament category.",
+    "tournaments5": "There are four types of tournaments: Round robin, Playoff, Preliminary groups with playoff and Swiss.",
+    "tournaments6": "Round robin is where everyone plays against everyone. There are two tabs in the round robin view. In the score tab, you can see a table of all the participants' wins, losses, ties, points and ippons. On the matches tab, you can see all the matches sorted in upcoming, ongoing and past.",
+    "tournaments7": "In playoff tournament, the participants are sorted in pairs randomly. The players in a pair play against each other and the winner advances to the next round, where new pairs are made from all the winners of the previous round. This is continued until there is only one match with one winner. There is only one view where you can see the bracket with the matches and the scores. If there is an odd number of players (not power of two) in a round, a random player gets a free win, so called \"BYE\".",
+    "tournaments8": "In a preliminary playoff, the first rounds of matches are a group stage. The amount of groups and the amount of players advancing from each group are specified when creating the tournament. Each participant plays against all the other participants in the same group. After all the group matches are finished, the specified amount of participants with the best scores advance to the playoff stage. The playoff stage is played similarly as the playoff tournament.",
+    "tournaments9": "A swiss tournament consists of a certain number of rounds. The number of rounds is specified when creating the tournament. Each round every participant plays against someone with the same or as close as possible win-loss score. After all the rounds have been played, the winner is the one with the most points. There are two tabs: a table of all the participants' wins, losses, ties, points and ippons and a bracket showing the matches of each round.",
+    "tournaments10": "In round robin, preliminary group stage and swiss, the points are accumulated so that each win gives 3 points and each tie 1 point.",
+    "matches": "Matches",
+    "matches1": "The matches for each tournament are generated automatically. You can navigate to the match view by clicking the match-up buttons (round robin and preliminary groups) or the match-up cards (playoff, preliminary playoff stage and swiss). Each match needs a point maker and a timekeeper before it's possible to start the match. To sign up for these roles, click the \"Select role as an official\" button. The timekeeper handles the timer and they are the only person who can see the \"Start\" button to start the timer. The point maker is the only one who can add points by clicking the \"Add point for player x\" button. They can also modify or delete the recent point they have assigned, were any mistakes to happen. If a match was started accidentally, the tournament creator can reset the match so that the timer and points are both reset to zero. They can also reset the official roles before a match is started",
+    "matches2": "The match ends after any of the players gets two points. If the timer meets the set length of the match (three, four or five minutes), the player with more points wins. If the points are even at this point, the match ends in a tie (round robin, preliminary groups, swiss) or an overtime starts (playoff, preliminary playoff stage). Overtime is played as long as one player makes a point and wins.",
+    "bugs": "Bugs",
+    "bugs1": "If you would like to report any bugs or have thoughts on any other things we should add to our site, please tell us in our ",
+    "bugs_link": "GitHub Issues tab"
   }
 }

@@ -6,6 +6,7 @@ import { Outlet, useLocation, useOutletContext } from "react-router-dom";
 import Loader from "components/common/Loader";
 import { type LocationState } from "types/global";
 import { useTranslation } from "react-i18next";
+import { allMatchesPlayed } from "utils/TournamentUtils";
 
 interface ITournamentsContext {
   isLoading: boolean;
@@ -45,8 +46,10 @@ const getSortedTournaments = async (): Promise<SortedTournaments> => {
 
   const ongoing = sortedTournaments.filter(
     (tournament) =>
-      new Date(tournament.startDate) <= currentDate &&
-      new Date(tournament.endDate) > currentDate
+      (new Date(tournament.startDate) <= currentDate &&
+        new Date(tournament.endDate) > currentDate) ||
+      (new Date(tournament.startDate) <= currentDate &&
+        !allMatchesPlayed(tournament))
   );
 
   const upcoming = sortedTournaments.filter(
@@ -54,8 +57,11 @@ const getSortedTournaments = async (): Promise<SortedTournaments> => {
   );
 
   const past = sortedTournaments.filter(
-    (tournament) => new Date(tournament.endDate) <= currentDate
+    (tournament) =>
+      new Date(tournament.endDate) <= currentDate &&
+      allMatchesPlayed(tournament)
   );
+
   return { past, ongoing, upcoming } as const;
 };
 

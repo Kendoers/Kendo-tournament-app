@@ -7,10 +7,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import SpeedDial from "@mui/material/SpeedDial";
-import SpeedDialAction from "@mui/material/SpeedDialAction";
-import SpeedDialIcon from "@mui/material/SpeedDialIcon";
-import EventIcon from "@mui/icons-material/Event";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Select from "@mui/material/Select";
 import type { Tournament } from "types/models";
@@ -25,6 +22,7 @@ import {
   sortTournamentsByLocation
 } from "utils/sorters";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import FilterTournaments from "../FilterTournaments";
 
 const TournamentList: React.FC = () => {
   const navigate = useNavigate();
@@ -40,6 +38,19 @@ const TournamentList: React.FC = () => {
   const currentTab = searchParams.get("tab") ?? defaultTab;
 
   const mobile = useMediaQuery("(max-width:600px)");
+  // State to keep track if filters have been applied
+  const [filtersApplied, setFiltersApplied] = useState(false);
+  // State for storing possible filtered tournaments
+  const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>(
+    []
+  );
+
+  // If nothing filtered, get right tournaments again
+  useEffect(() => {
+    if (filteredTournaments.length === 0) {
+      tournamentsToRender();
+    }
+  }, [filtersApplied]);
 
   // State variables for sorting
   const [sortBy, setSortBy] = useState<
@@ -53,6 +64,15 @@ const TournamentList: React.FC = () => {
     >
   ): void => {
     setSortBy(event.target.value as typeof sortBy);
+  };
+
+  // Function to receive filtered tournaments from FilterTournaments
+  const handleFilteredTournaments = (
+    tournaments: Tournament[],
+    areFiltersApplied: boolean
+  ): void => {
+    setFiltersApplied(areFiltersApplied);
+    setFilteredTournaments(tournaments);
   };
 
   useEffect(() => {
@@ -72,34 +92,60 @@ const TournamentList: React.FC = () => {
         tournaments = [...past]; // a copy not to mutate original data
         break;
       case "ongoing":
-        tournaments = ongoing;
+        tournaments = [...ongoing];
         break;
       case "upcoming":
-        tournaments = upcoming;
+        tournaments = [...upcoming];
         break;
       default:
-        tournaments = ongoing;
+        tournaments = [...ongoing];
     }
 
-    // Sort tournaments based on chosen sorting criteria
-    switch (sortBy) {
-      case "mostRecent":
-        sortTournamentsByMostRecent(tournaments);
-        break;
-      case "oldest":
-        sortTournamentsByOldest(tournaments);
-        break;
-      case "name":
-        sortTournamentsByName(tournaments);
-        break;
-      case "nameDesc":
-        sortTournamentsByDescName(tournaments);
-        break;
-      case "location":
-        sortTournamentsByLocation(tournaments);
-        break;
+    if (filtersApplied) {
+      // Sort tournaments based on chosen sorting criteria
+      switch (sortBy) {
+        case "mostRecent":
+          sortTournamentsByMostRecent(filteredTournaments);
+          break;
+        case "oldest":
+          sortTournamentsByOldest(filteredTournaments);
+          break;
+        case "name":
+          sortTournamentsByName(filteredTournaments);
+          break;
+        case "nameDesc":
+          sortTournamentsByDescName(filteredTournaments);
+          break;
+        case "location":
+          sortTournamentsByLocation(filteredTournaments);
+          break;
+      }
+    } else {
+      // Sort tournaments based on chosen sorting criteria
+      switch (sortBy) {
+        case "mostRecent":
+          sortTournamentsByMostRecent(tournaments);
+          break;
+        case "oldest":
+          sortTournamentsByOldest(tournaments);
+          break;
+        case "name":
+          sortTournamentsByName(tournaments);
+          break;
+        case "nameDesc":
+          sortTournamentsByDescName(tournaments);
+          break;
+        case "location":
+          sortTournamentsByLocation(tournaments);
+          break;
+      }
     }
-    return tournaments;
+    // Show filtered tournaments if filters are applied
+    if (filtersApplied) {
+      return filteredTournaments;
+    } else {
+      return tournaments;
+    }
   };
 
   const handleTabChange = (tab: string): void => {
@@ -107,9 +153,20 @@ const TournamentList: React.FC = () => {
       params.set("tab", tab);
       return params;
     });
+
+    // Reset filter state when switching tabs
+    setFiltersApplied(false);
+    setFilteredTournaments([]);
+
+    // On tab change clear selections
+    sessionStorage.clear();
   };
 
   const getNoTournamentsMessage = (): string => {
+    if (filtersApplied) {
+      return t("frontpage_labels.no_tournaments_found");
+    }
+
     switch (currentTab) {
       case "ongoing":
         return t("frontpage_labels.no_ongoing");
@@ -122,11 +179,6 @@ const TournamentList: React.FC = () => {
     }
   };
 
-  // SpeedDial actions
-  const actions = [
-    { icon: <EventIcon />, name: t("frontpage_labels.create_tournament") }
-  ];
-
   return (
     <Container sx={{ position: "relative", paddingBottom: "30px" }}>
       {/* Welcome Message */}
@@ -137,23 +189,48 @@ const TournamentList: React.FC = () => {
       </Box>
 
       {/* Floating Create Tournament Button */}
-      <SpeedDial
-        ariaLabel={t("frontpage_labels.create_tournament")}
-        icon={<SpeedDialIcon />}
-        direction="up"
-        sx={{ position: "fixed", bottom: "100px", right: "20px" }}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            onClick={() => {
-              navigate("new-tournament");
-            }}
-          />
-        ))}
-      </SpeedDial>
+      <Button
+        type="button"
+        variant="outlined"
+        color="primary"
+        onClick={() => {
+          navigate("new-tournament");
+        }}
+        sx={{
+          fontSize: "34px",
+          position: "fixed",
+          zIndex: "999",
+          bottom: "70px",
+          right: "20px",
+          color: "white",
+          backgroundColor: "#db4744",
+          borderRadius: "50%",
+          width: "56px",
+          height: "62px",
+          textTransform: "none",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+          transition: "transform 0.3s",
+
+          "&::after": {
+            content: "'+'",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          },
+
+          "&:hover": {
+            width: "130px",
+            height: "60px",
+            borderRadius: "10px",
+            color: "white",
+            backgroundColor: "#db4744",
+            "&::after": {
+              content: `'${t("frontpage_labels.create_tournament")}'`,
+              fontSize: "16px"
+            }
+          }
+        }}
+      ></Button>
 
       {/* Tournament Listings */}
       {/* If the device is mobile */}
@@ -216,19 +293,27 @@ const TournamentList: React.FC = () => {
           </Tabs>
         </Box>
       )}
-      {/* Dropdown menu to choose sorting criteria all tournament tabs */}
-      <label>{t("sorting.orderBy")}</label>
-      <Select
-        value={sortBy}
-        onChange={handleSortChange}
-        style={{ marginBottom: "10px" }}
-      >
-        <MenuItem value="mostRecent">{t("sorting.mostRecent")}</MenuItem>
-        <MenuItem value="oldest">{t("sorting.oldest")}</MenuItem>
-        <MenuItem value="name">{t("sorting.name")}</MenuItem>
-        <MenuItem value="nameDesc">{t("sorting.nameDesc")}</MenuItem>
-        <MenuItem value="location">{t("sorting.location")}</MenuItem>
-      </Select>
+      <Box display="flex" alignItems="center" marginBottom="10px">
+        {/* Dropdown menu to choose sorting criteria */}
+        <label style={{ marginRight: "10px" }}>{t("sorting.orderBy")} </label>
+        <Select
+          value={sortBy}
+          onChange={handleSortChange}
+          style={{ marginBottom: "10px" }}
+        >
+          <MenuItem value="mostRecent">{t("sorting.mostRecent")}</MenuItem>
+          <MenuItem value="oldest">{t("sorting.oldest")}</MenuItem>
+          <MenuItem value="name">{t("sorting.name")}</MenuItem>
+          <MenuItem value="nameDesc">{t("sorting.nameDesc")}</MenuItem>
+          <MenuItem value="location">{t("sorting.location")}</MenuItem>
+        </Select>
+        {/* Filtering options button */}
+        <FilterTournaments
+          parentComponent="TournamentsList"
+          handleFilteredTournaments={handleFilteredTournaments}
+          tab={currentTab}
+        />
+      </Box>
 
       <Grid
         container
