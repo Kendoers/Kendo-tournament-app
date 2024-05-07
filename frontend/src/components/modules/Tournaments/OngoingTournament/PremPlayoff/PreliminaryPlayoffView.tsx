@@ -31,6 +31,8 @@ import { joinTournament, leaveTournament } from "sockets/emit";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
+import { useAuth } from "context/AuthContext";
+import ModifyGroupsButton from "../ModifyGroupsButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
@@ -96,6 +98,8 @@ const PreliminaryPlayoffView: React.FC = () => {
   const [haveSameNames, setHaveSameNames] = useState<boolean>(false);
   const tabTypes = ["preliminary", "playoff"] as const;
   const currentTab = searchParams.get("tab") ?? defaultTab;
+  const { userId } = useAuth();
+  const isUserTheCreator = initialTournamentData.creator.id === userId;
   const [tiebreakerToasts, setTiebreakerToasts] = useState<TiebreakerToasts>(
     {}
   );
@@ -372,6 +376,7 @@ const PreliminaryPlayoffView: React.FC = () => {
         <Grid item>
           <CopyToClipboardButton />
         </Grid>
+        <Grid item>{isUserTheCreator && <ModifyGroupsButton />}</Grid>
       </Grid>
 
       <Tabs

@@ -45,6 +45,11 @@ export interface Match {
   courtNumber: number;
 }
 
+export interface PlayerPair {
+  firstPlayerId: string;
+  secondPlayerId?: string;
+}
+
 const pointSchema = new Schema<MatchPoint>(
   {
     type: { type: String, required: true },

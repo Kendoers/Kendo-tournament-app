@@ -31,6 +31,8 @@
     "number_of_courts_error": "Turnauksella tulee olla ainakin 1 kenttä",
     "copy_success": "Linkki kopioitu leikepöydälle!",
     "copy_failure": "Linkin kopioinnissa tapahtui virhe",
+    "groups_updated": "Lohkot päivitetty! Päivitä turnaussivu nähdäksesi muutokset.",
+    "pairs_updated": "Turnausparit päivitetty! Päivitä turnaussivu nähdäksesi muutokset.",
     "swiss_rounds_error": "Kierrosten määrä oltava vähintään 1",
     "role_reset": "Toimitsijaroolien nollaus onnistui!",
     "match_reset": "Ottelun nollaus onnistui!"
@@ -75,6 +77,8 @@
     "save_button": "Tallenna",
     "modify_or_delete": "Muokkaa tai poista viimeisin piste",
     "delete": "Poista",
+    "modify_pairs": "Muokkaa ottelupareja",
+    "modify_groups": "Muokkaa lohkoja",
     "cancel_sign_up": "Peruuta ilmoittautuminen",
     "withdraw_user": "Keskeytä pelaajan turnaus",
     "copy_to_clipboard": "Jaa turnaus",

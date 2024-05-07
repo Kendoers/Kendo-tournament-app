@@ -28,6 +28,8 @@ import PrivacyPolicy from "components/modules/Legal/PrivacyPolicy";
 import CancelSignup from "components/modules/Tournaments/Signup/CancelSignup";
 import EditTournametInfo from "components/modules/Tournaments/EditTournament/EditInfo";
 import OwnTournament from "components/modules/Tournaments/OwnTournament";
+import UpdateMatchPairsView from "components/modules/Tournaments/UpdatePairings/UpdateMatchPairsView";
+import UpdateGroupsView from "components/modules/Tournaments/UpdatePairings/UpdateGroupsView";
 import Help from "components/modules/Help/Help";
 
 const routes = createRoutesFromElements(
@@ -65,6 +67,12 @@ const routes = createRoutesFromElements(
           <Route index element={<TournamentDetails />} />
           <Route element={<AuthenticationGuard />}>
             <Route path="sign-up" element={<Signup />} />
+            <Route
+              path="match/:matchId"
+              element={<SocketProvider>{<GameInterface />}</SocketProvider>}
+            ></Route>
+            <Route path="modify-pairs" element={<UpdateMatchPairsView />} />
+            <Route path="modify-groups" element={<UpdateGroupsView />} />
             <Route path="cancel-sign-up" element={<CancelSignup />} />
           </Route>
           <Route

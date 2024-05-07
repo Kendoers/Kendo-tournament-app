@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "context/AuthContext";
+import ModifyPairsButton from "../ModifyPairsButton";
 import DeleteUserFromTournament from "../DeleteUserFromTournament";
 import CopyToClipboardButton from "../CopyToClipboardButton";
 import { useSocket } from "context/SocketContext";
@@ -154,6 +155,7 @@ const PlayoffTournamentView: React.FC = () => {
             <Grid item>
               <CopyToClipboardButton />
             </Grid>
+            <Grid item>{isUserTheCreator && <ModifyPairsButton />}</Grid>
           </Grid>
         )}
 

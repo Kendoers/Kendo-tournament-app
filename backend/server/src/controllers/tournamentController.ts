@@ -18,7 +18,9 @@ import {
   CreateTournamentRequest,
   EditTournamentRequest,
   ObjectIdString,
-  SignupForTournamentRequest
+  SignupForTournamentRequest,
+  UpdateGroupsRequest,
+  UpdateMatchPairsRequest
 } from "../models/requestModel.js";
 import type { JwtPayload } from "jsonwebtoken";
 import type * as express from "express";
@@ -147,6 +149,42 @@ export class TournamentController extends Controller {
       tournamentId,
       requestBody,
       updaterId
+    );
+  }
+
+  /*
+   * Update preliminary playoff groups
+   */
+  @Put("{tournamentId}/update-groups")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async updateGroups(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UpdateGroupsRequest
+  ): Promise<void> {
+    await this.service.updateGroups(
+      tournamentId,
+      requestBody.groups,
+      requestBody.creatorId
+    );
+  }
+
+  /*
+   * Update playoff match pairs
+   */
+  @Put("{tournamentId}/update-pairs")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async updateMatchPairs(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UpdateMatchPairsRequest
+  ): Promise<void> {
+    await this.service.updateMatchPairs(
+      tournamentId,
+      requestBody.pairs,
+      requestBody.creatorId
     );
   }
 
