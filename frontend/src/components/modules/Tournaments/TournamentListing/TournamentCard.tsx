@@ -43,6 +43,9 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
 
   const finished = allMatchesPlayed(tournament);
 
+  // Check if the tournament has fewer than 2 players after it started
+  const cancelled = !tournamentHasNotStarted && tournament.players.length < 2;
+
   const handleOpenDialog = (): void => {
     setOpenDialog(true);
   };
@@ -113,13 +116,19 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               {t("upcoming_tournament_view.tournament_full")}
             </Typography>
           )}
-          {finished && (
-            <Typography color="text.secondary">
-              <strong>
-                {t("frontpage_labels.winner")}:{" "}
-                {findTournamentWinner(tournament)}
-              </strong>
+          {cancelled ? (
+            <Typography color="red">
+              <strong>{t("frontpage_labels.cancelled")}</strong>
             </Typography>
+          ) : (
+            finished && (
+              <Typography color="text.secondary">
+                <strong>
+                  {t("frontpage_labels.winner")}:{" "}
+                  {findTournamentWinner(tournament)}
+                </strong>
+              </Typography>
+            )
           )}
           {(type === "ongoing" || type === "upcoming") && (
             <Typography color="text.secondary">

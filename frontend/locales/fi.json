@@ -14,6 +14,7 @@
     "sign_up_success": "Ilmoittautuduttiin onnistuneesti turnaukseen: ",
     "minimum_players_error": "Pelaajien vähimmäismäärä on ",
     "creations_success": "Turnaus {{name}} luotiin onnistuneesti",
+    "start_date_in_past_error": "Turnauksen on alettava tulevaisuudessa (vähintään 5 min)",
     "invalid_tournament_error": "Tämä turnaus vaikuttaa virheelliseltä. Ota yhteyttä {{organizerEmail}} saadaksesi lisätietoja tästä turnauksesta.",
     "session_expired_message": "Istunto vanhentunut: Kirjautumissessiosi on vanhentunut turvallisuussyistä. Kirjaudu sisään uudelleen.",
     "tournament_info_not_found": "Tälle turnaukselle ei löytynyt tietoja. Sulje tämä ja palaa edelliseen näkymään.",
@@ -97,7 +98,6 @@
     "withdraw_user_from_tournament": "Keskeytä pelaajan turnaus",
     "confirm_user_withdrawal": "Vahvista pelaajan turnauksen keskeyttäminen",
     "confirm_tournament_editing": "Vahvista turnauksen muokkaus"
-
   },
   "login_form": {
     "forgot_password": "Unohtuiko salasana?",
@@ -184,7 +184,8 @@
     "start_date": "Aloituspäivä",
     "end_date": "Päättymispäivä",
     "welcome": "Tervetuloa KendoAppiin! Voit osallistua, luoda tai seurata turnauksia sivustollamme!",
-    "winner": "VOITTAJA"
+    "winner": "VOITTAJA",
+    "cancelled": "PERUTTU, EI TARPEEKSI PELAAJIA"
   },
   "created_tournament": {
     "signed_up": "Ilmottautuneet",
@@ -382,7 +383,7 @@
     "confirmation_msg": "Oletko varma, että haluat keskeyttää pelaajan {{name}} turnauksen? Tätä valintaa ei voi perua."
   },
   "profile": {
-    "match":"Ottelu",
+    "match": "Ottelu",
     "profile_info": "Omat tiedot",
     "my_games": "Omat ottelut",
     "my_points": "Omat pisteet",
