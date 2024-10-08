@@ -89,10 +89,11 @@ export const TournamentsProvider = (): ReactElement => {
 
   const isInitialRender = useRef(true);
 
+  const doRefresh = (): void => {
+    setShouldRefresh(true); // Use state setter to trigger re-fetching
+  };
+
   useEffect(() => {
-    const doRefresh = (): void => {
-      setShouldRefresh(true);
-    };
     const getAllTournaments = async (): Promise<void> => {
       try {
         const { past, ongoing, upcoming } = await getSortedTournaments();
@@ -102,9 +103,9 @@ export const TournamentsProvider = (): ReactElement => {
           past,
           ongoing,
           upcoming,
-          doRefresh
+          doRefresh // This function can be passed to children to trigger refresh
         }));
-        setShouldRefresh(false);
+        setShouldRefresh(false); // Reset shouldRefresh after fetching
       } catch (error) {
         showToast(t("messages.could_not_fetch_tournaments"), "error");
         setValue((prevValue) => ({
@@ -123,12 +124,11 @@ export const TournamentsProvider = (): ReactElement => {
       isInitialRender.current = false;
     }
 
-    // Fetch the tournaments after creating tournaments or navigatating to location with refresh tag true
+    // Clean up location state without mutating it directly
     if (location.state?.refresh) {
-      void getAllTournaments();
-      location.state.refresh = false;
+      setShouldRefresh(true);
     }
-  }, [location.state]);
+  }, [shouldRefresh, location.state]);
 
   if (value.isLoading) {
     return <Loader />;
