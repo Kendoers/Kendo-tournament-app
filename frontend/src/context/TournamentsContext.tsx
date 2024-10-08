@@ -66,12 +66,13 @@ const getSortedTournaments = async (): Promise<SortedTournaments> => {
   const past = sortedTournaments.filter((tournament) => {
     const tournamentHasEnded = new Date(tournament.endDate) <= currentDate;
     const hasFewerThanTwoPlayers = tournament.players.length < 2;
+    const tournamentHasStarted = new Date(tournament.startDate) <= currentDate;
 
-    // Consider past if all matches are played or the tournament has less than 2 players
+    // Consider past if all matches are played or the tournament has started with less than 2 players
     return (
       tournamentHasEnded ||
       allMatchesPlayed(tournament) ||
-      (!tournamentHasEnded && hasFewerThanTwoPlayers)
+      (tournamentHasStarted && hasFewerThanTwoPlayers)
     );
   });
 
