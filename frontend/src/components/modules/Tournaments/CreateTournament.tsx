@@ -41,6 +41,7 @@ import routePaths from "routes/route-paths";
 const MIN_PLAYER_AMOUNT = 3;
 const MIN_GROUP_SIZE = 3;
 const now = dayjs();
+const minStartDate = now.add(5, "minutes");
 
 export interface CreateTournamentFormData {
   name: string;
@@ -67,7 +68,7 @@ export interface CreateTournamentFormData {
 const defaultValues: CreateTournamentFormData = {
   name: "",
   location: "",
-  startDate: now,
+  startDate: now.add(5, "minutes"),
   endDate: now.add(1, "week"),
   description: "",
   type: "Round Robin",
@@ -102,6 +103,11 @@ const CreateTournamentForm: React.FC = () => {
 
   const onSubmit = async (data: CreateTournamentFormData): Promise<void> => {
     try {
+      // Check if the start date is in the past
+      if (data.startDate.isBefore(minStartDate)) {
+        showToast(t("messages.start_date_in_past_error"), "error");
+        return;
+      }
       // Round dates to the nearest minute down
       const roundedStartDate = data.startDate.startOf("minute");
       const roundedEndDate = data.endDate.startOf("minute");
@@ -115,7 +121,7 @@ const CreateTournamentForm: React.FC = () => {
         t("messages.creations_success", { name: data.name }),
         "success"
       );
-      navigate(routePaths.homeRoute, {
+      navigate(`${routePaths.homeRoute}?tab=upcoming`, {
         replace: true,
         state: { refresh: true }
       });
@@ -227,7 +233,7 @@ const CreateTournamentForm: React.FC = () => {
             required
             name="startDate"
             label={t("create_tournament_form.start_date_time")}
-            minDateTime={now}
+            minDateTime={minStartDate}
             format="DD/MM/YYYY HH:mm"
             ampm={false}
             {...(!mobile && {

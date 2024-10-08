@@ -18,6 +18,7 @@ interface AddPointDialogProps {
   handlePointShowing: () => Promise<void>;
   handleOpen: (player: number) => void;
   handleClose: () => void;
+  gameStarted: boolean;
 }
 
 const OfficialButtons: React.FC<AddPointDialogProps> = ({
@@ -26,7 +27,8 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
   handleRadioButtonClick,
   handlePointShowing,
   handleOpen,
-  handleClose
+  handleClose,
+  gameStarted
 }) => {
   const { t } = useTranslation();
 
@@ -38,6 +40,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
             handleOpen(1);
           }}
           variant="contained"
+          disabled={!gameStarted}
         >
           {t("buttons.add_point_player_1")}
         </Button>
@@ -46,6 +49,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
             handleOpen(2);
           }}
           variant="contained"
+          disabled={!gameStarted}
         >
           {t("buttons.add_point_player_2")}
         </Button>

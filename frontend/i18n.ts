@@ -1,10 +1,10 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import enTranslation from "./locales/en.json"; 
+import enTranslation from "./locales/en.json";
 import fiTranslation from "./locales/fi.json";
 
-(async () => {
+const initI18n = async (): Promise<void> => {
   try {
     await i18n
       .use(initReactI18next) // passes i18n down to react-i18next
@@ -22,6 +22,9 @@ import fiTranslation from "./locales/fi.json";
   } catch (error) {
     console.error("Error initializing i18n:", error);
   }
-})();
+};
+
+// Explicitly call the async function
+void initI18n();
 
 export default i18n;
