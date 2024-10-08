@@ -343,6 +343,13 @@ export class TournamentService {
     userId: string,
     creatorId: string
   ): Promise<void> {
+    // Check if the userId is provided
+    if (!userId || userId.trim() === "") {
+      throw new BadRequestError({
+        message: "Player must be selected before proceeding with withdrawal."
+      });
+    }
+
     const tournament = await TournamentModel.findById(tournamentId).exec();
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
@@ -361,7 +368,6 @@ export class TournamentService {
     const matches = await MatchModel.find({ tournamentId }).exec();
 
     const currentTime = new Date();
-
     for (const match of matches) {
       // Only modify if there is no winner or end timestamp, so only the unfinished matches
       if (match.winner === undefined && match.endTimestamp === undefined) {
@@ -683,7 +689,6 @@ export class TournamentService {
       this.calculateRoundRobinMatches(tournamentDetails.maxPlayers);
     }
 
-    // Validate startDate and endDate
     if (
       tournamentDetails.startDate !== undefined &&
       tournamentDetails.endDate !== undefined
@@ -695,6 +700,16 @@ export class TournamentService {
         throw new BadRequestError({
           message:
             "Invalid tournament dates. The start date must be before the end date."
+        });
+      }
+
+      const now = new Date();
+
+      // Check if start date and time is before the current date and time
+      if (startDate < now) {
+        throw new BadRequestError({
+          message:
+            "Invalid tournament date. The start date and time cannot be in the past."
         });
       }
     }

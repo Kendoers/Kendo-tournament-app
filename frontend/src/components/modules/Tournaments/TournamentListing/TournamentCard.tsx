@@ -133,20 +133,44 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           {(type === "ongoing" || type === "upcoming") && (
             <Typography color="text.secondary">
               {t("frontpage_labels.start_date")}:{" "}
-              {new Date(tournament.startDate).toLocaleDateString("fi")}
+              {new Date(tournament.startDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}
             </Typography>
           )}
           {(type === "ongoing" || type === "upcoming") && (
             <Typography color="text.secondary">
               {t("frontpage_labels.end_date")}:{" "}
-              {new Date(tournament.endDate).toLocaleDateString("fi")}
+              {new Date(tournament.endDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}
             </Typography>
           )}
           {type === "past" && (
             <Typography color="text.secondary">
               {`${tournament.location}, 
-              ${new Date(tournament.startDate).toLocaleDateString("fi")} -
-              ${new Date(tournament.endDate).toLocaleDateString("fi")}`}
+              ${new Date(tournament.startDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })} -
+              ${new Date(tournament.endDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}`}
             </Typography>
           )}
         </CardContent>
