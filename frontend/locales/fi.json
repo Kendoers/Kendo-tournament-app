@@ -56,8 +56,8 @@
     "reset_roles": "Nollaa toimitsijaroolit"
   },
   "buttons": {
-    "add_point_player_1": "Lisää piste pelaajalle 1",
-    "add_point_player_2": "Lisää piste pelaajalle 2",
+    "add_point_player_1": "Lisää piste",
+    "add_point_player_2": "Lisää piste",
     "ok_button": "OK",
     "close_button": "Sulje",
     "start_timer": "Aloita",

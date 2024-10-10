@@ -19,6 +19,8 @@ interface AddPointDialogProps {
   handleOpen: (player: number) => void;
   handleClose: () => void;
   gameStarted: boolean;
+  player1name: string;
+  player2name: string;
 }
 
 const OfficialButtons: React.FC<AddPointDialogProps> = ({
@@ -28,7 +30,9 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
   handlePointShowing,
   handleOpen,
   handleClose,
-  gameStarted
+  gameStarted,
+  player1name,
+  player2name
 }) => {
   const { t } = useTranslation();
 
@@ -42,7 +46,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
           variant="contained"
           disabled={!gameStarted}
         >
-          {t("buttons.add_point_player_1")}
+          {`${t("buttons.add_point_player_1")} ${player1name}`}
         </Button>
         <Button
           onClick={() => {
@@ -51,7 +55,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
           variant="contained"
           disabled={!gameStarted}
         >
-          {t("buttons.add_point_player_2")}
+          {`${t("buttons.add_point_player_2")} ${player2name}`}
         </Button>
       </Box>
       <Dialog open={open} onClose={handleClose}>

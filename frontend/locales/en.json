@@ -56,8 +56,8 @@
     "reset_roles": "Reset official roles"
   },
   "buttons": {
-    "add_point_player_1": "Add point for player 1",
-    "add_point_player_2": "Add point for player 2",
+    "add_point_player_1": "Add point for",
+    "add_point_player_2": "Add point for",
     "ok_button": "OK",
     "close_button": "Close",
     "start_timer": "Start",

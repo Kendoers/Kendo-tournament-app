@@ -849,6 +849,8 @@ const GameInterface: React.FC = () => {
                   handleOpen={handleOpen}
                   handleClose={handleClose}
                   gameStarted={matchInfo.startTimestamp !== undefined}
+                  player1name={matchInfo.firstNames[0]}
+                  player2name={matchInfo.firstNames[1]}
                 />
               )}
             <br></br>
