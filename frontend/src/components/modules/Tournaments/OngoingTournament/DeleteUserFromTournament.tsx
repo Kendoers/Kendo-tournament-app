@@ -55,14 +55,20 @@ const DeleteUserFromTournament: React.FC = () => {
         ?.lastName;
 
     setSelectedUserId(selectedUserId);
-    setSelectedUserName(selectedUserName ?? ""); // in case of null of undefined, set to ""
+    setSelectedUserName(selectedUserName ?? ""); // in case of null or undefined, set to ""
   };
 
-  // takes care of actual deletion of player
+  // Takes care of the actual deletion of player
   const apiDeleteUserRequest = async (): Promise<void> => {
     handleCloseConfirmDialog();
     try {
       await api.tournaments.markUserMatchesLost(tournament.id, selectedUserId);
+
+      // Show success toast after the user is successfully withdrawn
+      showToast(
+        t("messages.withdrawal_success", { name: selectedUserName }),
+        "success"
+      );
     } catch (error) {
       showToast(error, "error");
     }
@@ -79,7 +85,7 @@ const DeleteUserFromTournament: React.FC = () => {
         {t("buttons.withdraw_user")}
       </Button>
 
-      {/* Dialog that tells more info and shows player list to choose from */}
+      {/* Dialog that shows player list to choose from */}
       <Dialog open={deleteUserDialog} onClose={handleCloseDeleteUserDialog}>
         <DialogTitle>{t("titles.withdraw_user_from_tournament")}</DialogTitle>
         <DialogContent>
