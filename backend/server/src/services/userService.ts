@@ -5,9 +5,16 @@ import type {
   EditUserRequest,
   RegisterRequest
 } from "../models/requestModel.js";
+import { TournamentModel } from "../models/tournamentModel";
+import { TournamentService } from "../services/tournamentService.js";
+
 import UserModel, { type User } from "../models/userModel.js";
 
 export class UserService {
+  private get tournamentService(): TournamentService {
+    return new TournamentService();
+  }
+
   public async getUserById(id: string): Promise<User> {
     return await (await this.getUserDocumentById(id)).toObject();
   }
@@ -73,13 +80,15 @@ export class UserService {
    * we must preserve the user document in the database to avoid breaking existing functionalities.
    * */
   public async deleteUserById(id: string): Promise<void> {
-    const userDoc = await this.getUserDocumentById(id);
+    const userDoc = await UserModel.findById(id).exec();
 
-    /* Will be displayed as deleted_user_randomId in tournaments, matches, etc.
-     * Most important thing is that we remove all of the user's personal data.
-     */
+    if (!userDoc) {
+      throw new Error("User not found");
+    }
+
+    // Anonymize user data
     const deletedUserTag = `deleted_user_${new Types.ObjectId().toHexString()}`;
-    const deletedUser: User = {
+    const anonymizedUser = {
       id: userDoc.id,
       email: deletedUserTag,
       password: " ",
@@ -91,10 +100,18 @@ export class UserService {
       underage: false
     };
 
-    /* Overwrite all values in the document */
-    const newDoc = userDoc.overwrite(deletedUser);
+    //Find all tournaments where the user is a participant
+    const tournaments = await TournamentModel.find({ players: id }).exec();
 
-    await newDoc.save();
+    for (const tournament of tournaments) {
+      await this.tournamentService.removePlayerFromTournament(
+        tournament.id,
+        id
+      );
+    }
+
+    userDoc.overwrite(anonymizedUser);
+    await userDoc.save();
   }
 
   private async getUserDocumentById(
