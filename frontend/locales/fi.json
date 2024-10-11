@@ -34,7 +34,8 @@
     "copy_failure": "Linkin kopioinnissa tapahtui virhe",
     "swiss_rounds_error": "Kierrosten määrä oltava vähintään 1",
     "role_reset": "Toimitsijaroolien nollaus onnistui!",
-    "match_reset": "Ottelun nollaus onnistui!"
+    "match_reset": "Ottelun nollaus onnistui!",
+    "withdrawal_success": "Pelaaja on poistettu onnistuneesti!"
   },
   "game_interface": {
     "player": "Pelaaja",

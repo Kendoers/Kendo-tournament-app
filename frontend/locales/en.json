@@ -34,7 +34,8 @@
     "copy_failure": "Failed to copy tournament link",
     "swiss_rounds_error": "Numbers of swiss rounds must be at least 1",
     "role_reset": "Official roles reset successfully!",
-    "match_reset": "Match reset successfully!"
+    "match_reset": "Match reset successfully!",
+    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!"
   },
   "game_interface": {
     "player": "Player",
