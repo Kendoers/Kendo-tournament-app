@@ -34,6 +34,9 @@ jspm_packages/
 backend/server/build
 frontend/server/build
 
+# Jetbrains IDE project files
+.idea
+
 # todo files
 **TODO*
 
