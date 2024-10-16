@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-
+import CountrySelect from "./CountrySelect/CountrySelect";
 import api from "api/axios";
 import { type RegisterRequest } from "types/requests";
 import useToast from "hooks/useToast";
@@ -207,12 +207,7 @@ const RegisterForm: React.FC = () => {
             }}
           />
 
-          <TextFieldElement
-            name="nationality"
-            label={t("user_info_labels.nationality")}
-            fullWidth
-            margin="normal"
-          />
+          <CountrySelect />
 
           <CheckboxElement
             name="inNationalTeam"
