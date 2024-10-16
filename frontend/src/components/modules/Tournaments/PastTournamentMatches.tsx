@@ -40,6 +40,7 @@ const PastTournamentMatches: React.FC = () => {
   // Tournament types with their translations
   const tournamentTypes: Record<TournamentType, string> = {
     "Round Robin": "types.round_robin",
+    "Team Round Robin": "types.team_round_robin",
     Playoff: "types.playoff",
     "Preliminary Playoff": "types.preliminary_playoff",
     Swiss: "types.swiss"

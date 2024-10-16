@@ -13,63 +13,16 @@ import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
-import type { Category, Tournament, TournamentType } from "types/models";
 import { useTranslation } from "react-i18next";
 import { Grid, Link } from "@mui/material";
-import CopyToClipboardButton from "./OngoingTournament/CopyToClipboardButton";
-import TeamRoundRobinUpcomingView from "./OngoingTournament/TeamRoundRobin/TeamRoundRobinUpcomingView";
+import CopyToClipboardButton from "../../OngoingTournament/CopyToClipboardButton";
 
-const generateTable = (tournament: Tournament): React.ReactNode => {
-  const { t } = useTranslation();
-
-  const tableHeaders = [
-    t("user_info_labels.name"),
-    t("user_info_labels.dan_rank"),
-    t("user_info_labels.club")
-  ] as const;
-
-  return (
-    <TableContainer
-      component={Paper}
-      aria-label={t("signup_labels.player_table")}
-    >
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            {tableHeaders.map((header) => (
-              <TableCell key={header} aria-label={`header-${header}`}>
-                {header}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {tournament.players.map((player, index) => (
-            <TableRow key={player.id} aria-label={`player-${index}`}>
-              <TableCell aria-label={`cell-name-${index}`}>
-                <Typography>
-                  {`${player.firstName} ${player.lastName}`}
-                </Typography>
-              </TableCell>
-              <TableCell aria-label={`cell-rank-${index}`}>
-                <Typography>{player.danRank ?? "-"}</Typography>
-              </TableCell>
-              <TableCell aria-label={`cell-club-${index}`}>
-                <Typography>{player.clubName ?? "-"}</Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
-
-const UpcomingTournamentView: React.FC = () => {
+const TeamRoundRobinUpcomingView: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
   const tournament = useTournament();
+
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
@@ -77,39 +30,40 @@ const UpcomingTournamentView: React.FC = () => {
   const signedPlayers = tournament.players.length;
   const tournamentFull = maxPlayers <= signedPlayers;
 
-  const getTypeTranslationKey = (type: TournamentType): string => {
-    switch (type) {
-      case "Round Robin":
-        return "types.round_robin";
-      case "Team Round Robin":
-        return "types.team_round_robin";
-      case "Playoff":
-        return "types.playoff";
-      case "Preliminary Playoff":
-        return "types.preliminary_playoff";
-      case "Swiss":
-        return "types.swiss";
-      default:
-        return "";
-    }
-  };
+  const generateTeamTable = (): React.ReactNode => {
+    const tableHeaders = [
+      t("team_info_labels.team_name"),
+      t("team_info_labels.players")
+    ];
 
-  const getCategoryTranslationKey = (type: Category): string => {
-    switch (type) {
-      case "championship":
-        return "create_tournament_form.championship";
-      case "hobby":
-        return "create_tournament_form.hobby";
-      case "league":
-        return "create_tournament_form.league";
-      default:
-        return "";
-    }
+    return (
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              {tableHeaders.map((header) => (
+                <TableCell key={header}>{header}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tournament.teams?.map((team, index) => (
+              <TableRow key={index}>
+                <TableCell>{team.name}</TableCell>
+                <TableCell>
+                  {team.players.map((player) => (
+                    <div key={player.id}>
+                      {player.firstName} {player.lastName}
+                    </div>
+                  ))}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
   };
-
-  if (tournament.type === "Team Round Robin") {
-    return <TeamRoundRobinUpcomingView />;
-  }
 
   return (
     <Container
@@ -149,9 +103,8 @@ const UpcomingTournamentView: React.FC = () => {
 
       <Box>
         <Typography variant="subtitle1">
-          <strong>{t("upcoming_tournament_view.date_header")}:</strong>{" "}
+          <strong>{t("upcoming_tournament_view.date_header")}:</strong>
           {new Date(tournament.startDate).toLocaleString("fi", {
-            // dont show seconds
             dateStyle: "short",
             timeStyle: "short"
           })}{" "}
@@ -166,7 +119,7 @@ const UpcomingTournamentView: React.FC = () => {
       <Box>
         <Typography variant="subtitle1">
           <strong>{t("upcoming_tournament_view.type_header")}:</strong>{" "}
-          {t(getTypeTranslationKey(tournament.type))}
+          {t("types.team_round_robin")}
         </Typography>
       </Box>
 
@@ -179,17 +132,8 @@ const UpcomingTournamentView: React.FC = () => {
 
       <Box>
         <Typography variant="subtitle1">
-          <strong>{t("upcoming_tournament_view.category_header")}:</strong>{" "}
-          {t(getCategoryTranslationKey(tournament.category))}
-        </Typography>
-      </Box>
-
-      <Box>
-        <Typography variant="subtitle1">
           <strong>{t("upcoming_tournament_view.max_players")}:</strong>{" "}
-          {tournament.players.length}
-          {"/"}
-          {tournament.maxPlayers}
+          {tournament.players.length}/{tournament.maxPlayers}
         </Typography>
       </Box>
 
@@ -217,7 +161,7 @@ const UpcomingTournamentView: React.FC = () => {
           </Box>
         )}
 
-      <br />
+      {generateTeamTable()}
 
       {!userAlreadySigned && !tournamentFull && (
         <Box>
@@ -234,7 +178,6 @@ const UpcomingTournamentView: React.FC = () => {
           >
             {t("buttons.sign_up_button")}
           </Button>
-          <br />
         </Box>
       )}
 
@@ -249,35 +192,10 @@ const UpcomingTournamentView: React.FC = () => {
           >
             {t("buttons.cancel_sign_up")}
           </Button>
-          <br />
         </Box>
-      )}
-
-      {/* There are players in the tournament, generate table if user is logged in */}
-      {tournament.players.length > 0 && userId !== undefined && (
-        <React.Fragment>
-          <Typography variant="body1" className="header" fontWeight="bold">
-            {t("upcoming_tournament_view.others_signed_up_header")}:
-          </Typography>
-          {generateTable(tournament)}
-        </React.Fragment>
-      )}
-
-      {/* There are players in the tournament, but user is not logged in */}
-      {tournament.players.length > 0 && userId === undefined && (
-        <Typography variant="body1" className="header" fontWeight="bold">
-          {t("upcoming_tournament_view.attendee_list")}
-        </Typography>
-      )}
-
-      {/* No players in the tournament */}
-      {tournament.players.length === 0 && (
-        <Typography variant="body1" className="header" fontWeight="bold">
-          {t("upcoming_tournament_view.no_players_signed_up")}
-        </Typography>
       )}
     </Container>
   );
 };
 
-export default UpcomingTournamentView;
+export default TeamRoundRobinUpcomingView;

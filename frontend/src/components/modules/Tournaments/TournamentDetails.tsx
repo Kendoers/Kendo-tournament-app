@@ -1,6 +1,7 @@
 import React from "react";
 import PlayoffTournamentView from "./OngoingTournament/Playoff/PlayoffTournamentView";
 import RoundRobinTournamentView from "./OngoingTournament/RoundRobin/RoundRobinTournamentView";
+import TeamRoundRobinTournamentView from "./OngoingTournament/TeamRoundRobin/TeamRoundRobinTournamentView";
 import PreliminaryPlayoffView from "./OngoingTournament/PremPlayoff/PreliminaryPlayoffView";
 import UpcomingTournamentView from "./UpcomingTournamentView";
 import ErrorModal from "components/common/ErrorModal";
@@ -17,6 +18,8 @@ const getTournamentComponent = (
   switch (tournament.type) {
     case "Round Robin":
       return <RoundRobinTournamentView />;
+    case "Team Round Robin":
+      return <TeamRoundRobinTournamentView />;
     case "Playoff":
       return <PlayoffTournamentView />;
     case "Preliminary Playoff":

@@ -33,6 +33,8 @@
     "copy_success": "Tournament link copied to clipboard!",
     "copy_failure": "Failed to copy tournament link",
     "swiss_rounds_error": "Numbers of swiss rounds must be at least 1",
+    "minimum_teams_error": "Number of teams must be at least 2",
+    "minimum_players_per_team_error": "Number of players in a team must be at least 3",
     "role_reset": "Official roles reset successfully!",
     "match_reset": "Match reset successfully!",
     "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!"
@@ -210,9 +212,12 @@
     "description": "Description",
     "select_tournament_type": "Select tournament type",
     "round_robin": "Round Robin",
+    "team_round_robin": "Team Round Robin",
     "playoff": "Playoff",
     "preliminary_playoff": "Preliminary groups and playoffs",
     "max_players": "Maximum number of players",
+    "number_of_teams": "Number of teams",
+    "players_per_team": "Number of players per team",
     "different_organizer_info": "Organizer has different information than me",
     "organizer_email": "Organizer's email",
     "organizer_phone_number": "Organizer's phone number",
@@ -240,6 +245,10 @@
   },
   "edit_tournament_labels": {
     "edit_tournament": "Edit tournament"
+  },
+  "team_info_labels": {
+    "team_name": "Team names",
+    "players": "Players"
   },
   "upcoming_tournament_view": {
     "date_header": "When",
@@ -272,6 +281,7 @@
   },
   "types": {
     "round_robin": "Round Robin",
+    "team_round_robin": "Team Round Robin",
     "playoff": "Playoff",
     "preliminary_playoff": "Preliminary and playoff",
     "preliminary": "Preliminary",
