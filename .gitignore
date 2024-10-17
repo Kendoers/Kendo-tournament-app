@@ -39,3 +39,6 @@ frontend/server/build
 
 # log directories (files)
 **logs*
+
+# Folder created by JetBrains IDEs
+.idea/
