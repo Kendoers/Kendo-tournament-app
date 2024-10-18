@@ -125,6 +125,8 @@ export type CreateTournamentRequest = Pick<
   | "linkToSite"
   | "numberOfCourts"
   | "swissRounds"
+  | "numberOfTeams"
+  | "playersPerTeam"
 > & {
   differentOrganizer: boolean;
   paid: boolean;

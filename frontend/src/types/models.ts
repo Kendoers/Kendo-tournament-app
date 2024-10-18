@@ -78,10 +78,18 @@ export interface Tournament {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+
+  numberOfTeams?: number;
+  playersPerTeam?: number;
+  teams?: Array<{
+    name: string;
+    players: User[];
+  }>;
 }
 
 export type TournamentType =
   | "Round Robin"
+  | "Team Round Robin"
   | "Playoff"
   | "Preliminary Playoff"
   | "Swiss";

@@ -28,6 +28,8 @@
     "missing_timekeeper": "Matsilta puuttuu kellokalle!",
     "minimum_groupsize_error": "Lohkon minimikoko on  ",
     "minimum_player_to_playoff": "Vähintään yhden pelaajan täytyy edetä",
+    "minimum_teams_error": "Joukkueiden määrän on oltava vähintään 2",
+    "minimum_players_per_team_error": "Joukkueen pelaajamäärän on oltava vähintään 3",
     "cancel_success": "Ilmoittautuminen turnaukseen {{name}} peruttiin onnistuneesti",
     "number_of_courts_error": "Turnauksella tulee olla ainakin 1 kenttä",
     "copy_success": "Linkki kopioitu leikepöydälle!",
@@ -210,9 +212,12 @@
     "description": "Kuvaus",
     "select_tournament_type": "Valitse turnaustyypi",
     "round_robin": "Kaikki vastaan kaikki",
+    "team_round_robin": "Joukkue Round Robin",
     "playoff": "Pudotuspelit",
     "preliminary_playoff": "Pudotuspeli alkulohkoilla",
     "max_players": "Pelaajien enimmäismäärä",
+    "number_of_teams": "Joukkueiden lukumäärä",
+    "players_per_team": "Pelaajien määrä joukkuetta kohti",
     "different_organizer_info": "Järjestäjällä on eri tiedot kuin minulla",
     "organizer_email": "Järjestäjän sähköposti",
     "organizer_phone_number": "Järjestäjän puhelinnumero",
@@ -240,6 +245,10 @@
   },
   "edit_tournament_labels": {
     "edit_tournament": "Muokkaa turnausta"
+  },
+  "team_info_labels": {
+    "team_name": "Joukkueen nimet",
+    "players": "Pelaajat"
   },
   "upcoming_tournament_view": {
     "date_header": "Milloin",
@@ -272,6 +281,7 @@
   },
   "types": {
     "round_robin": "Kaikki vastaan kaikki",
+    "team_round_robin": "Joukkue Round Robin",
     "playoff": "Pudotuspelit",
     "preliminary_playoff": "Alkulohkot ja pudotuspelit",
     "preliminary": "Alkulohkot",

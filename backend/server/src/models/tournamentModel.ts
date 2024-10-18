@@ -4,6 +4,7 @@ import { type User } from "./userModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
+  TeamRoundRobin = "Team Round Robin",
   Playoff = "Playoff",
   PreliminaryPlayoff = "Preliminary Playoff",
   Swiss = "Swiss"
@@ -45,6 +46,13 @@ export interface Tournament {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+
+  numberOfTeams?: number;
+  teams?: Array<{
+    name: string;
+    players: Array<Types.ObjectId | User>;
+  }>;
+  playersPerTeam?: number;
 }
 
 const tournamentSchema = new Schema<Tournament & Document>(
@@ -80,7 +88,16 @@ const tournamentSchema = new Schema<Tournament & Document>(
     category: { type: String, required: true },
     linkToPay: { type: String },
     linkToSite: { type: String },
-    swissRounds: { type: Number }
+    swissRounds: { type: Number },
+
+    teams: [
+      {
+        name: { type: String, required: true },
+        players: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }]
+      }
+    ],
+    playersPerTeam: { type: Number, required: false },
+    numberOfTeams: { type: Number, required: false }
   },
   {
     timestamps: true,

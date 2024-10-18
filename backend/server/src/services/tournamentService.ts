@@ -681,7 +681,6 @@ export class TournamentService {
     existingTournamentDoc?: HydratedDocument<Tournament>
   ): Promise<void> {
     const MINIMUM_GROUP_SIZE = 3;
-
     if (
       tournamentDetails.type === TournamentType.RoundRobin &&
       tournamentDetails.maxPlayers !== undefined
@@ -695,7 +694,6 @@ export class TournamentService {
     ) {
       const startDate = new Date(tournamentDetails.startDate);
       const endDate = new Date(tournamentDetails.endDate);
-
       if (startDate >= endDate) {
         throw new BadRequestError({
           message:
@@ -710,6 +708,30 @@ export class TournamentService {
         throw new BadRequestError({
           message:
             "Invalid tournament date. The start date and time cannot be in the past."
+        });
+      }
+    }
+
+    if (tournamentDetails.type === TournamentType.TeamRoundRobin) {
+      if (
+        tournamentDetails.numberOfTeams === undefined ||
+        tournamentDetails.playersPerTeam === undefined
+      ) {
+        throw new BadRequestError({
+          message:
+            "Number of teams and players per team are required for Team Round Robin tournaments."
+        });
+      }
+
+      const totalPlayers =
+        tournamentDetails.numberOfTeams * tournamentDetails.playersPerTeam;
+
+      if (
+        tournamentDetails.maxPlayers !== undefined &&
+        totalPlayers > tournamentDetails.maxPlayers
+      ) {
+        throw new BadRequestError({
+          message: `The total number of players (${totalPlayers}) exceeds the maximum allowed (${tournamentDetails.maxPlayers}) for this tournament.`
         });
       }
     }

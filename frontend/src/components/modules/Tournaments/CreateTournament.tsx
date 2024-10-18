@@ -38,7 +38,7 @@ import {
 
 import routePaths from "routes/route-paths";
 
-const MIN_PLAYER_AMOUNT = 3;
+const MIN_PLAYER_AMOUNT = 3; // Minimum total players for individual tournament
 const MIN_GROUP_SIZE = 3;
 const now = dayjs();
 const MIN_START_DATE = now.add(5, "minutes");
@@ -64,6 +64,10 @@ export interface CreateTournamentFormData {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+
+  // Fields specific to Team Round Robin
+  numberOfTeams?: number;
+  playersPerTeam?: number;
 }
 
 const defaultValues: CreateTournamentFormData = {
@@ -80,7 +84,10 @@ const defaultValues: CreateTournamentFormData = {
   paid: false,
   linkToPay: "",
   linkToSite: "",
-  numberOfCourts: 1
+  numberOfCourts: 1,
+
+  numberOfTeams: 2,
+  playersPerTeam: 3
 };
 
 // Make monday the first day of the week
@@ -113,11 +120,13 @@ const CreateTournamentForm: React.FC = () => {
       const roundedStartDate = data.startDate.startOf("minute");
       const roundedEndDate = data.endDate.startOf("minute");
 
+      // Create the tournament
       await api.tournaments.createNew({
         ...data,
         startDate: roundedStartDate.toString(),
         endDate: roundedEndDate.toString()
       });
+
       showToast(
         t("messages.creations_success", { name: data.name }),
         "success"
@@ -206,6 +215,42 @@ const CreateTournamentForm: React.FC = () => {
         </React.Fragment>
       );
     }
+
+    if (type === "Team Round Robin") {
+      return (
+        <React.Fragment>
+          <TextFieldElement
+            required
+            name="numberOfTeams"
+            type="number"
+            label={t("create_tournament_form.number_of_teams")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return value > 1 || `${t("messages.minimum_teams_error")}`;
+              }
+            }}
+          />
+          <TextFieldElement
+            required
+            name="playersPerTeam"
+            type="number"
+            label={t("create_tournament_form.players_per_team")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return (
+                  value > 1 || `${t("messages.minimum_players_per_team_error")}`
+                );
+              }
+            }}
+          />
+        </React.Fragment>
+      );
+    }
+
     return null;
   };
 
@@ -353,7 +398,14 @@ const CreateTournamentForm: React.FC = () => {
               id: "Round Robin",
               label: t("create_tournament_form.round_robin")
             },
-            { id: "Playoff", label: t("create_tournament_form.playoff") },
+            {
+              id: "Team Round Robin",
+              label: t("create_tournament_form.team_round_robin")
+            },
+            {
+              id: "Playoff",
+              label: t("create_tournament_form.playoff")
+            },
             {
               id: "Preliminary Playoff",
               label: t("create_tournament_form.preliminary_playoff")
