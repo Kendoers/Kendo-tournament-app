@@ -66,6 +66,15 @@ describe('UserController', () => {
             expect(res).to.have.status(400);
         });
 
+        it('should return 400 if email is invalid', async () => {
+            const res = await chai.request(app).post('/api/user/register').send({
+                email: 'not_an_email',
+                password: 'abc123',
+                age: 20
+            });
+            expect(res).to.have.status(400);
+        });
+
         //lisää testejä...
 
     });
@@ -88,12 +97,19 @@ describe('UserController', () => {
             expect(res).to.have.status(401);
         });
 
-        /*
-        it('should return 404 when trying to fetch non-existing data', async () => {
+        /*it('should return 404 when trying to fetch non-existing data', async () => {
             // UNAUTHORIZED ERROR???? Commented out until figured out how to fix the tests
             const res = await chai.request(app).get('/api/user/123');
             expect(res).to.have.status(404);
         });*/
+
+        it('should return 404 for non-existing user', async () => {
+            console.log('JWT Token:', authToken);
+            const res = await chai.request(app)
+                .get('/api/user/60c72b2f9b1d8b30d8c0b7b0') // Invalid but ObjectId-like
+                .set('Authorization', `Bearer ${authToken}`);
+            expect(res).to.have.status(404);
+        });
 
         /*it('should return correct existing user', async () => {
             // UNAUTHORIZED ERROR???? Commented out until figured out how to fix the tests
@@ -102,10 +118,21 @@ describe('UserController', () => {
             expect(res.body).to.equal(user);
         });*/
 
+        it('should return correct existing user', async () => {
+            console.log('JWT Token:', authToken);
+            const res = await chai.request(app)
+                .get(endpoint)
+                .set('Authorization', `Bearer ${authToken}`);
+            expect(res).to.have.status(200);
+            expect(res.body).to.deep.equal(user);  // Make sure deep comparison is used for object equality
+        });
+
         //lisää testejä...
     });
 
-    /*describe('EditUser', () => {
+
+
+    describe('EditUser', () => {
         // endpoint /api/user/:id
         // put
         it('should return the correct user if in database', () => {
@@ -119,7 +146,9 @@ describe('UserController', () => {
         //lisää testejä...
     });
 
-    describe('DeleteUser', () => {
+
+
+/*    describe('DeleteUser', () => {
         // endpoint /api/user/:id
         // delete
         it('should return the correct user if in database', () => {
