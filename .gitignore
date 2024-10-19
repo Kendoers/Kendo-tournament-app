@@ -42,3 +42,6 @@ frontend/server/build
 
 # Folder created by JetBrains IDEs
 .idea/
+
+# Folder created by Visual Studio Code to save custom settings
+.vscode/
