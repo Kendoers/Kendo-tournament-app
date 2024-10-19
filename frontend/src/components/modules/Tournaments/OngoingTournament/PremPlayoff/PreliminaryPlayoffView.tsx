@@ -20,8 +20,7 @@ import {
   Matches,
   updatePlayerStats,
   getPlayerNames,
-  sortMatches,
-  createMatchButton
+  sortMatches
 } from "../RoundRobin/RoundRobinTournamentView";
 import PlayoffTournamentView from "../Playoff/PlayoffTournamentView";
 import CopyToClipboardButton from "../CopyToClipboardButton";
@@ -31,6 +30,8 @@ import { joinTournament, leaveTournament } from "sockets/emit";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
+import { useAuth } from "context/AuthContext";
+import MatchButton from "../../MatchButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
@@ -99,6 +100,8 @@ const PreliminaryPlayoffView: React.FC = () => {
   const [tiebreakerToasts, setTiebreakerToasts] = useState<TiebreakerToasts>(
     {}
   );
+  const { userId } = useAuth();
+  const isUserTheCreator = initialTournamentData.creator.id === userId;
 
   const showToast = useToast();
   const [hasJoined, setHasJoined] = useState(false);
@@ -317,31 +320,53 @@ const PreliminaryPlayoffView: React.FC = () => {
           ongoingMatches.get(selectedGroup) ?? []
         )
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              navigate={navigate}
+              t={t}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         const upcomingElements = Array.from(
           upcomingMatches.get(selectedGroup) ?? []
         )
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained",
-              color: "info"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              navigate={navigate}
+              t={t}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         const pastElements = Array.from(pastMatches.get(selectedGroup) ?? [])
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained",
-              color: "secondary"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              navigate={navigate}
+              t={t}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         return { ongoingElements, upcomingElements, pastElements };
       };

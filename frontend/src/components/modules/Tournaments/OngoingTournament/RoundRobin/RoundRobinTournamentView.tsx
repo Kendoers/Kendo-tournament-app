@@ -10,10 +10,7 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button,
-  type ButtonProps,
-  Grid,
-  Box
+  Grid
 } from "@mui/material";
 import { type User, type Match, type Tournament } from "types/models";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -28,6 +25,7 @@ import PlayerName, { checkSameNames } from "../../PlayerNames";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
+import MatchButton from "../../MatchButton";
 
 export interface TournamentPlayer {
   id: string;
@@ -270,91 +268,6 @@ export const sortMatches = (
   return { ongoingMatches, upcomingMatches, pastMatches };
 };
 
-export const createMatchButton = (
-  match: Match,
-  players: TournamentPlayer[],
-  navigate: (path: string) => void,
-  t: (key: string) => string,
-  haveSameNames: boolean,
-  props: ButtonProps
-): React.ReactNode => {
-  // Find the players in the players array using their IDs
-  const player1 = players.find(
-    (player) => player.id === match.players[0].id
-  ) as TournamentPlayer;
-  const player2 = players.find(
-    (player) => player.id === match.players[1]?.id
-  ) as TournamentPlayer;
-
-  // Get the names of the players
-  const player1Name = (
-    <PlayerName
-      firstName={player1.firstName}
-      lastName={player1.lastName}
-      sameNames={haveSameNames}
-    />
-  );
-  const player2Name =
-    player2 !== undefined ? (
-      <PlayerName
-        firstName={player2.firstName}
-        lastName={player2.lastName}
-        sameNames={haveSameNames}
-      />
-    ) : (
-      <PlayerName firstName="BYE" lastName="" sameNames={false} />
-    );
-
-  let officialsInfo = "";
-
-  if (match.elapsedTime <= 0 && match.winner === undefined) {
-    // Match is upcoming
-    const timerPerson = match.timeKeeper ?? undefined;
-    const pointMaker = match.pointMaker ?? undefined;
-
-    // depending on which roles are missing for the match, print them under button
-    if (timerPerson === undefined && pointMaker === undefined) {
-      officialsInfo = t("tournament_view_labels.missing_both");
-    } else {
-      if (timerPerson === undefined) {
-        officialsInfo += t("tournament_view_labels.missing_timer");
-      }
-      if (pointMaker === undefined) {
-        officialsInfo += t("tournament_view_labels.missing_point_maker");
-      }
-    }
-  }
-
-  return (
-    <div style={{ marginBottom: "10px" }} key={match.id}>
-      <Box display="flex" alignItems="center">
-        <Button
-          onClick={() => {
-            if (match.players.length === 2) {
-              navigate(`match/${match.id}`);
-            } else {
-              // No match details to display for a bye
-            }
-          }}
-          {...props}
-        >
-          {player1Name}
-          {" - "}
-          {player2Name}
-        </Button>
-        <Typography variant="body1" marginLeft="10px">
-          {t("tournament_view_labels.court_number")}
-          {": "}
-          {match.courtNumber}
-        </Typography>
-      </Box>
-      {officialsInfo !== undefined && match.winner === undefined && (
-        <Typography variant="body2">{officialsInfo}</Typography>
-      )}
-    </div>
-  );
-};
-
 const RoundRobinTournamentView: React.FC = () => {
   const initialTournamentData = useTournament();
   const navigate = useNavigate();
@@ -485,23 +398,55 @@ const RoundRobinTournamentView: React.FC = () => {
     }
   }, [players, tournamentData]);
 
-  const ongoingElements = ongoingMatches.map((match) =>
-    createMatchButton(match, players, navigate, t, haveSameNames, {
-      variant: "contained"
-    })
-  );
-  const upcomingElements = upcomingMatches.map((match) =>
-    createMatchButton(match, players, navigate, t, haveSameNames, {
-      variant: "contained",
-      color: "info"
-    })
-  );
-  const pastElements = pastMatches.map((match) =>
-    createMatchButton(match, players, navigate, t, haveSameNames, {
-      variant: "contained",
-      color: "secondary"
-    })
-  );
+  const ongoingElements = ongoingMatches.map((match) => (
+    <MatchButton
+      key={match.id}
+      match={match}
+      players={players}
+      navigate={navigate}
+      t={t}
+      haveSameNames={haveSameNames}
+      props={{
+        variant: "contained"
+      }}
+      isUserTheCreator={isUserTheCreator}
+      tournamentData={tournamentData}
+    />
+  ));
+
+  const upcomingElements = upcomingMatches.map((match) => (
+    <MatchButton
+      key={match.id}
+      match={match}
+      players={players}
+      navigate={navigate}
+      t={t}
+      haveSameNames={haveSameNames}
+      props={{
+        variant: "contained",
+        color: "info"
+      }}
+      isUserTheCreator={isUserTheCreator}
+      tournamentData={tournamentData}
+    />
+  ));
+
+  const pastElements = pastMatches.map((match) => (
+    <MatchButton
+      key={match.id}
+      match={match}
+      players={players}
+      navigate={navigate}
+      t={t}
+      haveSameNames={haveSameNames}
+      props={{
+        variant: "contained",
+        color: "secondary"
+      }}
+      isUserTheCreator={isUserTheCreator}
+      tournamentData={tournamentData}
+    />
+  ));
 
   return (
     <>
