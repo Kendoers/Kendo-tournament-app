@@ -29,7 +29,25 @@ let request_template: CreateTournamentRequest = {
   location: "Tampere",
   startDate: tomorrow.toISOString(),
   endDate: theDayAfter.toISOString(),
-  type: TournamentType.Playoff,
+  type: TournamentType.Swiss,
+  maxPlayers: 2,
+  organizerEmail: "test@example.com",
+  organizerPhone: "12345678",
+  description: "test tournament",
+  matchTime: 180000,
+  category: "championship",
+  numberOfCourts: 2,
+  differentOrganizer: true,
+  paid: false
+};
+
+let request_template2: CreateTournamentRequest = {
+  name: "test",
+  location: "Tampere",
+  startDate: tomorrow.toISOString(),
+  endDate: theDayAfter.toISOString(),
+  type: TournamentType.Swiss,
+  groupsSizePreference: 3,
   maxPlayers: 2,
   organizerEmail: "test@example.com",
   organizerPhone: "12345678",
@@ -43,8 +61,23 @@ let request_template: CreateTournamentRequest = {
 
 describe("TournamentService", () => {
 
-  let userService: UserService;
   let tournamentService: TournamentService;
+
+  let testPlayerId: string;
+  let testPlayer2Id: string;
+  let testPlayer3Id: string;
+
+  before(async () => {
+    // these should already be in the test db
+    //  -> see initializeTestDb() in testHelpers.ts
+    let testPlayer = await UserModel.findOne({userName: 'testUser'}).exec();
+    let testPlayer2 = await UserModel.findOne({userName: 'testUser2'}).exec();
+    testPlayerId = testPlayer.id;
+    testPlayer2Id = testPlayer2.id;
+
+    testPlayer3Id = (await UserModel.create(Helper.testUser3)).id;
+
+  });
 
   beforeEach(async () => {
     // prevent emitting updates
@@ -53,7 +86,6 @@ describe("TournamentService", () => {
     // add test users to db
     // await UserModel.create([Helper.testUser, Helper.testUser2, Helper.testUser3]);
 
-    userService = new UserService();
     tournamentService = new TournamentService();
   });
 
@@ -64,6 +96,7 @@ describe("TournamentService", () => {
     await TournamentModel.deleteMany({});
   });
 
+  // TODO: validation tests for different tournament types
   describe("createTournament", () => {
 
     // TODO: tournament with diff organizer false
@@ -115,22 +148,7 @@ describe("TournamentService", () => {
   });
 
   describe("addPlayerToTournament", () => {
-    let testPlayerId: string;
-    let testPlayer2Id: string;
-    let testPlayer3Id: string;
     let testTournamentId: string;
-
-    before(async () => {
-      // these should already be in the test db
-      //  -> see initializeTestDb() in testHelpers.ts
-      let testPlayer = await UserModel.findOne({userName: 'testUser'}).exec();
-      let testPlayer2 = await UserModel.findOne({userName: 'testUser2'}).exec();
-      testPlayerId = testPlayer.id;
-      testPlayer2Id = testPlayer2.id;
-
-      testPlayer3Id = (await UserModel.create(Helper.testUser3)).id;
-
-    });
 
     beforeEach(async () => {
       let creatorId = new Types.ObjectId().toString();
@@ -197,5 +215,101 @@ describe("TournamentService", () => {
     // TODO: markUserMatchesLost()
     // TODO: getTournamentAndCreateSchedule()
   });
+
+  // TODO: paremeterize
+  describe("removePlayerFromTournament", () => {
+
+    let testTournamentId: string;
+
+    beforeEach(async () => {
+      let creatorId = new Types.ObjectId().toString();
+      let tournament = await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      });
+      testTournamentId = tournament.id;
+    });
+
+    it("should remove the player from the tournament", async () => {
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      tournament.players.push(new Types.ObjectId(testPlayerId));
+      tournament.players.push(new Types.ObjectId(testPlayer2Id));
+      await tournament.save();
+
+      await tournamentService.removePlayerFromTournament(testTournamentId, testPlayerId);
+
+      tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.players).not.to.contain(new Types.ObjectId(testPlayerId));
+      expect(tournament.players).to.contain(new Types.ObjectId(testPlayer2Id));
+
+      await tournamentService.removePlayerFromTournament(testTournamentId, testPlayer2Id);
+
+      tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.players).not.to.contain(new Types.ObjectId(testPlayer2Id));
+      expect(tournament.players.length).to.equal(0);
+    });
+
+    it("should not remove a player who is not in the tournament", async () => {
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      tournament.players.push(new Types.ObjectId(testPlayerId));
+      tournament.players.push(new Types.ObjectId(testPlayer2Id));
+      await tournament.save();
+
+      tournament = await TournamentModel.findById(testTournamentId).exec();
+
+      // TODO:
+      // at the moment this does not remove any players but does trigger an
+      // unnecessary recalculation of the tournament schedule
+      await expect(tournamentService.removePlayerFromTournament(testTournamentId, testPlayer3Id))
+        .to.not.be.rejected; // TODO: message not defined
+
+      let tournament_new = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament_new).to.deep.equal(tournament);
+      // expect(tournament.players.length).to.equal(2);
+    });
+
+    it("should behave correctly when trying to remove from an empty tournament", async () => {
+
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+
+      await expect(tournamentService.removePlayerFromTournament(testTournamentId, testPlayerId))
+        .to.be.rejected; // TODO: message not defined
+
+      let tournament_new = await TournamentModel.findById(testTournamentId).exec();
+
+      expect(tournament_new).to.deep.equal(tournament);
+    });
+  });
+
+  describe("deleteTournamentById", () => {
+
+    let testTournamentId: string;
+
+    beforeEach(async () => {
+      let creatorId = new Types.ObjectId().toString();
+      let tournament = await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      });
+      testTournamentId = tournament.id;
+    });
+
+    it("should delete the tournament", async () => {
+      await tournamentService.deleteTournamentById(testTournamentId);
+      let res = await TournamentModel.findById(testTournamentId).exec();
+      expect(res).to.equal(null);
+    });
+
+    it("should reject when tournament does not exist", async () => {
+      let id = new Types.ObjectId().toString();
+      await expect(tournamentService.deleteTournamentById(id))
+        .to.be.rejectedWith("Tournament not found or already deleted");
+
+      let res = await TournamentModel.findById(testTournamentId).exec();
+      expect(res).to.not.equal(null);
+    });
+  });
+
+
 });
 
