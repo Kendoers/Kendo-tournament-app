@@ -2,11 +2,14 @@ import { afterEach, before, beforeEach, describe } from "mocha";
 import * as chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
-import { CreateTournamentRequest } from "../../src/models/requestModel";
+import {
+  CreateTournamentRequest,
+  EditTournamentRequest
+} from "../../src/models/requestModel";
 import {
   Tournament,
   TournamentModel,
-  TournamentType
+  TournamentType, UnsavedMatch
 } from "../../src/models/tournamentModel";
 import { TournamentService } from "../../src/services/tournamentService";
 import { Types } from "mongoose";
@@ -14,6 +17,7 @@ import { UserService } from "../../src/services/userService";
 import * as Helper from "../testHelpers";
 import mongoose from "mongoose";
 import UserModel, { User } from "../../src/models/userModel";
+import MatchModel from "../../src/models/matchModel";
 
 
 chai.use(chaiAsPromised);
@@ -42,7 +46,7 @@ let request_template: CreateTournamentRequest = {
 };
 
 let request_template2: CreateTournamentRequest = {
-  name: "test",
+  name: "test2",
   location: "Tampere",
   startDate: tomorrow.toISOString(),
   endDate: theDayAfter.toISOString(),
@@ -94,6 +98,7 @@ describe("TournamentService", () => {
 
     // clear db of tournaments
     await TournamentModel.deleteMany({});
+    await MatchModel.deleteMany({});
   });
 
   // TODO: validation tests for different tournament types
@@ -310,6 +315,104 @@ describe("TournamentService", () => {
     });
   });
 
+  // TODO: how is this even supposed to be used?
+  // There is a mention of manual tournament schedule,
+  // how is that done?
+  // is it possible to delete the matches of the automatically created schedule?
+  // new tournament type? (does not currently exist)
+  describe("addMatchToTournament", () => {
+    let testTournamentId: string;
+    let match: UnsavedMatch;
 
+    beforeEach(async () => {
+
+      let creatorId = new Types.ObjectId().toString();
+      let tournament = await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      });
+      testTournamentId = tournament.id;
+
+      match = {
+        players: [new  Types.ObjectId(testPlayerId), new  Types.ObjectId(testPlayer2Id)],
+        type: "group",
+        elapsedTime: 0,
+        matchTime: 300000,
+        tournamentId: new Types.ObjectId(testTournamentId),
+        tournamentRound: 1,
+        timerStartedTimestamp: new Date()
+      }
+    });
+
+    it("should add the match", async () => {
+      // TODO:
+      // Fails with error: Path 'color' is required.
+      // Investigate why it fails with this but not when autogenerating
+      // schedule during addPlayerToTournament().
+      //
+      // TODO: create MatchPlayers instead of users
+
+      await tournamentService.addPlayerToTournament(testTournamentId, testPlayerId);
+      await tournamentService.addPlayerToTournament(testTournamentId, testPlayer2Id);
+      await tournamentService.addMatchToTournament(testTournamentId, match);
+
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.matchSchedule.length).to.equal(1);
+    });
+  });
+
+  describe("getAllTournaments", () => {
+    it("should return all the tournaments", async () => {
+      let creatorId = new Types.ObjectId().toString();
+      let tournament: Tournament = (await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      })).toObject();
+      let tournament2: Tournament = (await TournamentModel.create({
+        ...request_template2,
+        creator: creatorId
+      })).toObject();
+
+      let res = await tournamentService.getAllTournaments();
+
+      let has_t1 = res.some(t => t.id.toString() === tournament.id.toString());
+      expect(has_t1).to.be.true;
+
+      let has_t2 = res.some(t => t.id.toString() === tournament2.id.toString());
+      expect(has_t2).to.be.true;
+
+      expect(res.length).to.equal(2);
+    });
+
+    it("should behave correctly when there are no tournaments", async () => {
+      expect(tournamentService.getAllTournaments())
+        .to.be.rejectedWith("No tournaments found");
+    });
+  });
+
+  describe("getTournamentById", () => {
+    it("should return the tournament", async () => {
+      let creatorId = new Types.ObjectId().toString();
+      let tournament: Tournament = (await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      })).toObject();
+
+      let res = await tournamentService.getTournamentById(tournament.id.toString());
+
+      expect(res.id.toString()).to.equal(tournament.id.toString());
+    });
+
+    it("should reject when tournament does not exist", async () => {
+      expect(tournamentService.getTournamentById(new Types.ObjectId().toString()))
+        .to.rejectedWith("Tournament not found");
+    });
+  });
+
+  describe("updateTournamentById", () => {
+    let request: EditTournamentRequest = {
+      name: "updated"
+    };
+  });
 });
 
