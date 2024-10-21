@@ -17,12 +17,12 @@ export const baseNavItems: NavigationData = [
 
 export const signupData: NavigationData = [
   {
-    text: "navigation.login",
-    link: routePaths.login
-  },
-  {
     text: "navigation.register",
     link: routePaths.register
+  },
+  {
+    text: "navigation.login",
+    link: routePaths.login
   }
 ];
 

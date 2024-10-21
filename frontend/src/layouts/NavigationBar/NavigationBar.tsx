@@ -82,7 +82,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                   <MenuIcon />
                 </IconButton>
               </Box>
-              <LanguageSwitcher />
+              <LogoButton logoName={APP_NAME} />
               {/* Navigation bar links */}
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {navigationItems.map((item) => (
@@ -97,7 +97,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                   </Button>
                 ))}
               </Box>
-              <LogoButton logoName={APP_NAME} />
+              <LanguageSwitcher />
               {/* Help Page Button */}
               <IconButton
                 color="inherit"
