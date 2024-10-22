@@ -15,6 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import LanguageSwitcher from "./LanguageSwitcher";
 
+import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import HelpIcon from "@mui/icons-material/Help";
 
@@ -27,6 +28,7 @@ import LogoButton from "./LogoButton";
 import type { NavigationData, NavigationItem } from "./navigation-bar";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
+import { MenuItem } from "@mui/material";
 
 interface Props {
   window?: () => Window;
@@ -40,6 +42,8 @@ const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -57,6 +61,7 @@ const NavigationBar: React.FC<Props> = (props) => {
     }
 
     navigate(navigationItem.link);
+    console.log(navigationItem.text);
   };
 
   const handleHelpButton = (): void => {
@@ -87,8 +92,9 @@ const NavigationBar: React.FC<Props> = (props) => {
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {navigationItems.map((item) => (
                   <Button
+                    id={item.text}
                     key={item.text}
-                    sx={{ color: "#fff" }}
+                    sx={{ color: "#fff", marginRight: 10 }}
                     onClick={async () => {
                       await handleButtonClick(item);
                     }}
@@ -96,6 +102,40 @@ const NavigationBar: React.FC<Props> = (props) => {
                     {item.text}
                   </Button>
                 ))}
+
+                <Menu
+                  id="profile-dropdown"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={() => {
+                    setAnchorEl(null);
+                  }}
+                  MenuListProps={{
+                    "aria-labelledby": "Profile"
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                    }}
+                  >
+                    test1
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                    }}
+                  >
+                    test2
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                    }}
+                  >
+                    test3
+                  </MenuItem>
+                </Menu>
               </Box>
               <LanguageSwitcher />
               {/* Help Page Button */}
