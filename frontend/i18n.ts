@@ -4,7 +4,6 @@ import { initReactI18next } from "react-i18next";
 import enTranslation from "./locales/en.json";
 import fiTranslation from "./locales/fi.json";
 
-
 const initI18n = async (): Promise<void> => {
   try {
     await i18n
