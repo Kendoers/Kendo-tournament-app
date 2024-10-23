@@ -16,12 +16,12 @@ import type { Match, Tournament } from "types/models";
 import PlayerName from "./PlayerNames";
 import api from "api/axios";
 import type { ChangeCourtTimeRequest } from "types/requests";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 interface MatchButtonProps {
   match: Match;
   players: TournamentPlayer[];
-  navigate: (path: string) => void;
-  t: (key: string) => string;
   haveSameNames: boolean;
   props: ButtonProps;
   isUserTheCreator: boolean;
@@ -31,8 +31,6 @@ interface MatchButtonProps {
 const MatchButton: React.FC<MatchButtonProps> = ({
   match,
   players,
-  navigate,
-  t,
   haveSameNames,
   props,
   isUserTheCreator,
@@ -46,6 +44,8 @@ const MatchButton: React.FC<MatchButtonProps> = ({
   const [newTime, setNewTime] = useState(
     match.scheduledTime === "XX:XX" ? "00:00" : match.scheduledTime
   );
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // Function to handle modal open/close
   const handleOpen = (): void => {

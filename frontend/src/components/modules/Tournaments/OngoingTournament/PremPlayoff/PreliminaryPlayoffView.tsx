@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { type Match, type Tournament } from "types/models";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 import { useTranslation } from "react-i18next";
 import {
@@ -70,7 +70,6 @@ type TiebreakerToasts = Record<number, Record<number, boolean>>;
 
 const PreliminaryPlayoffView: React.FC = () => {
   const initialTournamentData = useTournament();
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const initialRender = useRef(true);
   const [players, setPlayers] = useState<TournamentPlayer[]>([]);
@@ -325,8 +324,6 @@ const PreliminaryPlayoffView: React.FC = () => {
               key={match.id}
               match={match}
               players={players}
-              navigate={navigate}
-              t={t}
               haveSameNames={haveSameNames}
               props={{ variant: "contained" }}
               isUserTheCreator={isUserTheCreator}
@@ -343,8 +340,6 @@ const PreliminaryPlayoffView: React.FC = () => {
               key={match.id}
               match={match}
               players={players}
-              navigate={navigate}
-              t={t}
               haveSameNames={haveSameNames}
               props={{ variant: "contained" }}
               isUserTheCreator={isUserTheCreator}
@@ -359,8 +354,6 @@ const PreliminaryPlayoffView: React.FC = () => {
               key={match.id}
               match={match}
               players={players}
-              navigate={navigate}
-              t={t}
               haveSameNames={haveSameNames}
               props={{ variant: "contained" }}
               isUserTheCreator={isUserTheCreator}

@@ -13,7 +13,7 @@ import {
   Grid
 } from "@mui/material";
 import { type User, type Match, type Tournament } from "types/models";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "context/AuthContext";
@@ -270,7 +270,6 @@ export const sortMatches = (
 
 const RoundRobinTournamentView: React.FC = () => {
   const initialTournamentData = useTournament();
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const tournament = useTournament();
 
@@ -403,8 +402,6 @@ const RoundRobinTournamentView: React.FC = () => {
       key={match.id}
       match={match}
       players={players}
-      navigate={navigate}
-      t={t}
       haveSameNames={haveSameNames}
       props={{
         variant: "contained"
@@ -419,8 +416,6 @@ const RoundRobinTournamentView: React.FC = () => {
       key={match.id}
       match={match}
       players={players}
-      navigate={navigate}
-      t={t}
       haveSameNames={haveSameNames}
       props={{
         variant: "contained",
@@ -436,8 +431,6 @@ const RoundRobinTournamentView: React.FC = () => {
       key={match.id}
       match={match}
       players={players}
-      navigate={navigate}
-      t={t}
       haveSameNames={haveSameNames}
       props={{
         variant: "contained",
