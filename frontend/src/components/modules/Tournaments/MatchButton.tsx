@@ -94,13 +94,17 @@ const MatchButton: React.FC<MatchButtonProps> = ({
   ) as TournamentPlayer;
 
   // Get the names of the players
-  const player1Name = (
-    <PlayerName
-      firstName={player1.firstName}
-      lastName={player1.lastName}
-      sameNames={haveSameNames}
-    />
-  );
+  const player1Name =
+    player1 !== undefined ? (
+      <PlayerName
+        firstName={player1.firstName}
+        lastName={player1.lastName}
+        sameNames={haveSameNames}
+      />
+    ) : (
+      <PlayerName firstName="NotFound" lastName="" sameNames={false} />
+    );
+
   const player2Name =
     player2 !== undefined ? (
       <PlayerName
@@ -109,7 +113,7 @@ const MatchButton: React.FC<MatchButtonProps> = ({
         sameNames={haveSameNames}
       />
     ) : (
-      <PlayerName firstName="BYE" lastName="" sameNames={false} />
+      <PlayerName firstName="NotFound2" lastName="" sameNames={false} />
     );
 
   let officialsInfo = "";
