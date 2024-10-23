@@ -164,7 +164,11 @@
     "court_number": "Kenttä",
     "tournament_winner": "Turnauksen voittaja: ",
     "no_winner": "Ei voittajaa",
-    "tiebreaker": "Lohkossa {{groupNr}} on uusi ratkaisuottelu"
+    "tiebreaker": "Lohkossa {{groupNr}} on uusi ratkaisuottelu",
+    "match_start_clock": "Ottelu alkaa",
+    "edit_court_time": "Vaihda kenttä tai aloitusaika",
+    "scheduled_time": "Aloitusaika",
+    "no_scheduled_time": "Aloitusaikaa ei ole määritetty"
   },
   "signup_labels": {
     "sign_up_for": "Ilmoittaudu: ",

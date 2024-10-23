@@ -164,7 +164,11 @@
     "court_number": "Court",
     "tournament_winner": "Winner of tournament: ",
     "no_winner": "No winner",
-    "tiebreaker": "There is a new tiebreaker in group {{groupNr}}"
+    "tiebreaker": "There is a new tiebreaker in group {{groupNr}}",
+    "match_start_clock": "Match starts",
+    "edit_court_time": "Edit Court and Time",
+    "scheduled_time": "Scheduled Time",
+    "no_scheduled_time": "Scheduled Time not set"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",

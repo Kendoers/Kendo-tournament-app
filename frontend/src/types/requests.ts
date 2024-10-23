@@ -43,3 +43,8 @@ export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
 };
 
 export type EditTournamentRequest = Partial<CreateTournamentRequest>;
+
+export interface ChangeCourtTimeRequest {
+  courtNumber?: number;
+  scheduledTime?: string;
+}

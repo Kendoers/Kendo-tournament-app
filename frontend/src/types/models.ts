@@ -39,6 +39,7 @@ export interface Match {
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
+  scheduledTime: string;
   type: MatchType;
   players: MatchPlayer[];
   winner?: string;
