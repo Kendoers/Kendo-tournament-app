@@ -460,25 +460,27 @@ const CreateTournamentForm: React.FC = () => {
           }}
         />
 
-        <TextFieldElement
-          required
-          name="maxPlayers"
-          type="number"
-          label={t("create_tournament_form.max_players")}
-          fullWidth
-          margin="normal"
-          onChange={(e) => {
-            handlePlayersChange(Number(e.target.value));
-          }}
-          validation={{
-            validate: (value: number) => {
-              return (
-                value >= MIN_PLAYER_AMOUNT ||
-                `${t("messages.minimum_players_error")}${MIN_PLAYER_AMOUNT}`
-              );
-            }
-          }}
-        />
+        {type !== "Team Round Robin" && (
+          <TextFieldElement
+            required
+            name="maxPlayers"
+            type="number"
+            label={t("create_tournament_form.max_players")}
+            fullWidth
+            margin="normal"
+            onChange={(e) => {
+              handlePlayersChange(Number(e.target.value));
+            }}
+            validation={{
+              validate: (value: number) => {
+                return (
+                  value >= MIN_PLAYER_AMOUNT ||
+                  `${t("messages.minimum_players_error")}${MIN_PLAYER_AMOUNT}`
+                );
+              }
+            }}
+          />
+        )}
 
         <CheckboxElement
           name="differentOrganizer"
