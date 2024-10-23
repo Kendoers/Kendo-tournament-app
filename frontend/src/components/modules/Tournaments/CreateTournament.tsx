@@ -38,9 +38,11 @@ import {
 
 import routePaths from "routes/route-paths";
 
-const MIN_PLAYER_AMOUNT = 3;
+const MIN_PLAYER_AMOUNT = 3; // Minimum total players for individual tournament
 const MIN_GROUP_SIZE = 3;
 const now = dayjs();
+const MIN_START_DATE = now.add(5, "minutes");
+const MIN_NUMBER_OF_COURTS = 1;
 
 export interface CreateTournamentFormData {
   name: string;
@@ -62,12 +64,16 @@ export interface CreateTournamentFormData {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+
+  // Fields specific to Team Round Robin
+  numberOfTeams?: number;
+  playersPerTeam?: number;
 }
 
 const defaultValues: CreateTournamentFormData = {
   name: "",
   location: "",
-  startDate: now,
+  startDate: now.add(5, "minutes"),
   endDate: now.add(1, "week"),
   description: "",
   type: "Round Robin",
@@ -78,7 +84,10 @@ const defaultValues: CreateTournamentFormData = {
   paid: false,
   linkToPay: "",
   linkToSite: "",
-  numberOfCourts: 1
+  numberOfCourts: 1,
+
+  numberOfTeams: 2,
+  playersPerTeam: 3
 };
 
 // Make monday the first day of the week
@@ -102,20 +111,27 @@ const CreateTournamentForm: React.FC = () => {
 
   const onSubmit = async (data: CreateTournamentFormData): Promise<void> => {
     try {
+      // Check if the start date is in the past
+      if (data.startDate.isBefore(MIN_START_DATE)) {
+        showToast(t("messages.start_date_in_past_error"), "error");
+        return;
+      }
       // Round dates to the nearest minute down
       const roundedStartDate = data.startDate.startOf("minute");
       const roundedEndDate = data.endDate.startOf("minute");
 
+      // Create the tournament
       await api.tournaments.createNew({
         ...data,
         startDate: roundedStartDate.toString(),
         endDate: roundedEndDate.toString()
       });
+
       showToast(
         t("messages.creations_success", { name: data.name }),
         "success"
       );
-      navigate(routePaths.homeRoute, {
+      navigate(`${routePaths.homeRoute}?tab=upcoming`, {
         replace: true,
         state: { refresh: true }
       });
@@ -127,6 +143,19 @@ const CreateTournamentForm: React.FC = () => {
   const handleConfirm = async (): Promise<void> => {
     setConfirmationDialogOpen(false);
     await formContext.handleSubmit(onSubmit)();
+  };
+
+  // Handle number of players and courts, resetting them if below minimum values
+  const handlePlayersChange = (value: number): void => {
+    if (value < MIN_PLAYER_AMOUNT) {
+      formContext.setValue("maxPlayers", MIN_PLAYER_AMOUNT);
+    }
+  };
+
+  const handleCourtsChange = (value: number): void => {
+    if (value < MIN_NUMBER_OF_COURTS) {
+      formContext.setValue("numberOfCourts", MIN_NUMBER_OF_COURTS);
+    }
   };
 
   const renderTournamentTypeSpecificFields = (): JSX.Element | null => {
@@ -186,6 +215,42 @@ const CreateTournamentForm: React.FC = () => {
         </React.Fragment>
       );
     }
+
+    if (type === "Team Round Robin") {
+      return (
+        <React.Fragment>
+          <TextFieldElement
+            required
+            name="numberOfTeams"
+            type="number"
+            label={t("create_tournament_form.number_of_teams")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return value > 1 || `${t("messages.minimum_teams_error")}`;
+              }
+            }}
+          />
+          <TextFieldElement
+            required
+            name="playersPerTeam"
+            type="number"
+            label={t("create_tournament_form.players_per_team")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return (
+                  value > 1 || `${t("messages.minimum_players_per_team_error")}`
+                );
+              }
+            }}
+          />
+        </React.Fragment>
+      );
+    }
+
     return null;
   };
 
@@ -227,7 +292,7 @@ const CreateTournamentForm: React.FC = () => {
             required
             name="startDate"
             label={t("create_tournament_form.start_date_time")}
-            minDateTime={now}
+            minDateTime={MIN_START_DATE}
             format="DD/MM/YYYY HH:mm"
             ampm={false}
             {...(!mobile && {
@@ -333,7 +398,14 @@ const CreateTournamentForm: React.FC = () => {
               id: "Round Robin",
               label: t("create_tournament_form.round_robin")
             },
-            { id: "Playoff", label: t("create_tournament_form.playoff") },
+            {
+              id: "Team Round Robin",
+              label: t("create_tournament_form.team_round_robin")
+            },
+            {
+              id: "Playoff",
+              label: t("create_tournament_form.playoff")
+            },
             {
               id: "Preliminary Playoff",
               label: t("create_tournament_form.preliminary_playoff")
@@ -378,6 +450,9 @@ const CreateTournamentForm: React.FC = () => {
           label={t("create_tournament_form.number_of_courts")}
           fullWidth
           margin="normal"
+          onChange={(e) => {
+            handleCourtsChange(Number(e.target.value));
+          }}
           validation={{
             validate: (value: number) => {
               return value >= 1 || `${t("messages.number_of_courts_error")}`;
@@ -392,6 +467,9 @@ const CreateTournamentForm: React.FC = () => {
           label={t("create_tournament_form.max_players")}
           fullWidth
           margin="normal"
+          onChange={(e) => {
+            handlePlayersChange(Number(e.target.value));
+          }}
           validation={{
             validate: (value: number) => {
               return (

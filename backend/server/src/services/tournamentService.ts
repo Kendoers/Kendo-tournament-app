@@ -343,6 +343,13 @@ export class TournamentService {
     userId: string,
     creatorId: string
   ): Promise<void> {
+    // Check if the userId is provided
+    if (!userId || userId.trim() === "") {
+      throw new BadRequestError({
+        message: "Player must be selected before proceeding with withdrawal."
+      });
+    }
+
     const tournament = await TournamentModel.findById(tournamentId).exec();
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
@@ -361,7 +368,6 @@ export class TournamentService {
     const matches = await MatchModel.find({ tournamentId }).exec();
 
     const currentTime = new Date();
-
     for (const match of matches) {
       // Only modify if there is no winner or end timestamp, so only the unfinished matches
       if (match.winner === undefined && match.endTimestamp === undefined) {
@@ -675,7 +681,6 @@ export class TournamentService {
     existingTournamentDoc?: HydratedDocument<Tournament>
   ): Promise<void> {
     const MINIMUM_GROUP_SIZE = 3;
-
     if (
       tournamentDetails.type === TournamentType.RoundRobin &&
       tournamentDetails.maxPlayers !== undefined
@@ -683,18 +688,50 @@ export class TournamentService {
       this.calculateRoundRobinMatches(tournamentDetails.maxPlayers);
     }
 
-    // Validate startDate and endDate
     if (
       tournamentDetails.startDate !== undefined &&
       tournamentDetails.endDate !== undefined
     ) {
       const startDate = new Date(tournamentDetails.startDate);
       const endDate = new Date(tournamentDetails.endDate);
-
       if (startDate >= endDate) {
         throw new BadRequestError({
           message:
             "Invalid tournament dates. The start date must be before the end date."
+        });
+      }
+
+      const now = new Date();
+
+      // Check if start date and time is before the current date and time
+      if (startDate < now) {
+        throw new BadRequestError({
+          message:
+            "Invalid tournament date. The start date and time cannot be in the past."
+        });
+      }
+    }
+
+    if (tournamentDetails.type === TournamentType.TeamRoundRobin) {
+      if (
+        tournamentDetails.numberOfTeams === undefined ||
+        tournamentDetails.playersPerTeam === undefined
+      ) {
+        throw new BadRequestError({
+          message:
+            "Number of teams and players per team are required for Team Round Robin tournaments."
+        });
+      }
+
+      const totalPlayers =
+        tournamentDetails.numberOfTeams * tournamentDetails.playersPerTeam;
+
+      if (
+        tournamentDetails.maxPlayers !== undefined &&
+        totalPlayers > tournamentDetails.maxPlayers
+      ) {
+        throw new BadRequestError({
+          message: `The total number of players (${totalPlayers}) exceeds the maximum allowed (${tournamentDetails.maxPlayers}) for this tournament.`
         });
       }
     }

@@ -113,7 +113,8 @@ const FilterTournaments: React.FC<FilterTournamentsProps> = ({
     "Round Robin": false,
     Playoff: false,
     "Preliminary Playoff": false,
-    Swiss: false
+    Swiss: false,
+    "Team Round Robin": false
   });
 
   const [categorySelections, setCategorySelections] = useState<{

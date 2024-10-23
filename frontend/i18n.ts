@@ -4,7 +4,8 @@ import { initReactI18next } from "react-i18next";
 import enTranslation from "./locales/en.json";
 import fiTranslation from "./locales/fi.json";
 
-void (async () => {
+
+const initI18n = async (): Promise<void> => {
   try {
     await i18n
       .use(initReactI18next) // passes i18n down to react-i18next
@@ -22,6 +23,9 @@ void (async () => {
   } catch (error) {
     console.error("Error initializing i18n:", error);
   }
-})();
+};
+
+// Explicitly call the async function
+void initI18n();
 
 export default i18n;

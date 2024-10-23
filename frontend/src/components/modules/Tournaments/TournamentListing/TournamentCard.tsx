@@ -43,6 +43,9 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
 
   const finished = allMatchesPlayed(tournament);
 
+  // Check if the tournament has fewer than 2 players after it started
+  const cancelled = !tournamentHasNotStarted && tournament.players.length < 2;
+
   const handleOpenDialog = (): void => {
     setOpenDialog(true);
   };
@@ -113,31 +116,61 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               {t("upcoming_tournament_view.tournament_full")}
             </Typography>
           )}
-          {finished && (
-            <Typography color="text.secondary">
-              <strong>
-                {t("frontpage_labels.winner")}:{" "}
-                {findTournamentWinner(tournament)}
-              </strong>
+          {cancelled ? (
+            <Typography color="red">
+              <strong>{t("frontpage_labels.cancelled")}</strong>
             </Typography>
+          ) : (
+            finished && (
+              <Typography color="text.secondary">
+                <strong>
+                  {t("frontpage_labels.winner")}:{" "}
+                  {findTournamentWinner(tournament)}
+                </strong>
+              </Typography>
+            )
           )}
           {(type === "ongoing" || type === "upcoming") && (
             <Typography color="text.secondary">
               {t("frontpage_labels.start_date")}:{" "}
-              {new Date(tournament.startDate).toLocaleDateString("fi")}
+              {new Date(tournament.startDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}
             </Typography>
           )}
           {(type === "ongoing" || type === "upcoming") && (
             <Typography color="text.secondary">
               {t("frontpage_labels.end_date")}:{" "}
-              {new Date(tournament.endDate).toLocaleDateString("fi")}
+              {new Date(tournament.endDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}
             </Typography>
           )}
           {type === "past" && (
             <Typography color="text.secondary">
               {`${tournament.location}, 
-              ${new Date(tournament.startDate).toLocaleDateString("fi")} -
-              ${new Date(tournament.endDate).toLocaleDateString("fi")}`}
+              ${new Date(tournament.startDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })} -
+              ${new Date(tournament.endDate).toLocaleString("fi", {
+                hour: "2-digit",
+                minute: "2-digit",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })}`}
             </Typography>
           )}
         </CardContent>

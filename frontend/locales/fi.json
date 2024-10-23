@@ -14,6 +14,7 @@
     "sign_up_success": "Ilmoittautuduttiin onnistuneesti turnaukseen: ",
     "minimum_players_error": "Pelaajien vähimmäismäärä on ",
     "creations_success": "Turnaus {{name}} luotiin onnistuneesti",
+    "start_date_in_past_error": "Turnauksen on alettava tulevaisuudessa (vähintään 5 min)",
     "invalid_tournament_error": "Tämä turnaus vaikuttaa virheelliseltä. Ota yhteyttä {{organizerEmail}} saadaksesi lisätietoja tästä turnauksesta.",
     "session_expired_message": "Istunto vanhentunut: Kirjautumissessiosi on vanhentunut turvallisuussyistä. Kirjaudu sisään uudelleen.",
     "tournament_info_not_found": "Tälle turnaukselle ei löytynyt tietoja. Sulje tämä ja palaa edelliseen näkymään.",
@@ -27,13 +28,16 @@
     "missing_timekeeper": "Matsilta puuttuu kellokalle!",
     "minimum_groupsize_error": "Lohkon minimikoko on  ",
     "minimum_player_to_playoff": "Vähintään yhden pelaajan täytyy edetä",
+    "minimum_teams_error": "Joukkueiden määrän on oltava vähintään 2",
+    "minimum_players_per_team_error": "Joukkueen pelaajamäärän on oltava vähintään 3",
     "cancel_success": "Ilmoittautuminen turnaukseen {{name}} peruttiin onnistuneesti",
     "number_of_courts_error": "Turnauksella tulee olla ainakin 1 kenttä",
     "copy_success": "Linkki kopioitu leikepöydälle!",
     "copy_failure": "Linkin kopioinnissa tapahtui virhe",
     "swiss_rounds_error": "Kierrosten määrä oltava vähintään 1",
     "role_reset": "Toimitsijaroolien nollaus onnistui!",
-    "match_reset": "Ottelun nollaus onnistui!"
+    "match_reset": "Ottelun nollaus onnistui!",
+    "withdrawal_success": "Pelaaja on poistettu onnistuneesti!"
   },
   "game_interface": {
     "player": "Pelaaja",
@@ -55,8 +59,8 @@
     "reset_roles": "Nollaa toimitsijaroolit"
   },
   "buttons": {
-    "add_point_player_1": "Lisää piste pelaajalle 1",
-    "add_point_player_2": "Lisää piste pelaajalle 2",
+    "add_point_player_1": "Lisää piste",
+    "add_point_player_2": "Lisää piste",
     "ok_button": "OK",
     "close_button": "Sulje",
     "start_timer": "Aloita",
@@ -97,7 +101,6 @@
     "withdraw_user_from_tournament": "Keskeytä pelaajan turnaus",
     "confirm_user_withdrawal": "Vahvista pelaajan turnauksen keskeyttäminen",
     "confirm_tournament_editing": "Vahvista turnauksen muokkaus"
-
   },
   "login_form": {
     "forgot_password": "Unohtuiko salasana?",
@@ -184,7 +187,8 @@
     "start_date": "Aloituspäivä",
     "end_date": "Päättymispäivä",
     "welcome": "Tervetuloa KendoAppiin! Voit osallistua, luoda tai seurata turnauksia sivustollamme!",
-    "winner": "VOITTAJA"
+    "winner": "VOITTAJA",
+    "cancelled": "PERUTTU, EI TARPEEKSI PELAAJIA"
   },
   "created_tournament": {
     "signed_up": "Ilmottautuneet",
@@ -208,9 +212,12 @@
     "description": "Kuvaus",
     "select_tournament_type": "Valitse turnaustyypi",
     "round_robin": "Kaikki vastaan kaikki",
+    "team_round_robin": "Joukkue Round Robin",
     "playoff": "Pudotuspelit",
     "preliminary_playoff": "Pudotuspeli alkulohkoilla",
     "max_players": "Pelaajien enimmäismäärä",
+    "number_of_teams": "Joukkueiden lukumäärä",
+    "players_per_team": "Pelaajien määrä joukkuetta kohti",
     "different_organizer_info": "Järjestäjällä on eri tiedot kuin minulla",
     "organizer_email": "Järjestäjän sähköposti",
     "organizer_phone_number": "Järjestäjän puhelinnumero",
@@ -238,6 +245,10 @@
   },
   "edit_tournament_labels": {
     "edit_tournament": "Muokkaa turnausta"
+  },
+  "team_info_labels": {
+    "team_name": "Joukkueen nimet",
+    "players": "Pelaajat"
   },
   "upcoming_tournament_view": {
     "date_header": "Milloin",
@@ -270,6 +281,7 @@
   },
   "types": {
     "round_robin": "Kaikki vastaan kaikki",
+    "team_round_robin": "Joukkue Round Robin",
     "playoff": "Pudotuspelit",
     "preliminary_playoff": "Alkulohkot ja pudotuspelit",
     "preliminary": "Alkulohkot",
@@ -382,7 +394,7 @@
     "confirmation_msg": "Oletko varma, että haluat keskeyttää pelaajan {{name}} turnauksen? Tätä valintaa ei voi perua."
   },
   "profile": {
-    "match":"Ottelu",
+    "match": "Ottelu",
     "profile_info": "Omat tiedot",
     "my_games": "Omat ottelut",
     "my_points": "Omat pisteet",

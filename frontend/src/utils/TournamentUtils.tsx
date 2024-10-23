@@ -119,19 +119,23 @@ export const findTournamentWinner = (
     }
   } else {
     const playerScores = calculateScores(tournament);
-    // sort players according to victory points and ippons
-    playerScores.sort((a, b) => {
-      if (b[1] !== a[1]) {
-        return b[1] - a[1];
-      }
-      return b[2] - a[2];
-    });
+    // Check if playerScores are found and not empty
+    if (playerScores.length > 0) {
+      // Sort players according to victory points and ippons
+      playerScores.sort((a, b) => {
+        if (b[1] !== a[1]) {
+          return b[1] - a[1];
+        }
+        return b[2] - a[2];
+      });
 
-    const winner = findUserInTournamentById(playerScores[0][0], tournament);
-    if (winner !== undefined) {
-      return winner.firstName;
+      const winner = findUserInTournamentById(playerScores[0][0], tournament);
+      if (winner !== undefined) {
+        return winner.firstName;
+      }
     }
   }
 
+  // Return undefined if no winner found or scores are empty
   return undefined;
 };
