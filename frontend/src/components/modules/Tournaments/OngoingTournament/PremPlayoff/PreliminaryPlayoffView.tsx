@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { type Match, type Tournament } from "types/models";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,8 +20,7 @@ import {
   Matches,
   updatePlayerStats,
   getPlayerNames,
-  sortMatches,
-  createMatchButton
+  sortMatches
 } from "../RoundRobin/RoundRobinTournamentView";
 import PlayoffTournamentView from "../Playoff/PlayoffTournamentView";
 import CopyToClipboardButton from "../CopyToClipboardButton";
@@ -31,6 +30,8 @@ import { joinTournament, leaveTournament } from "sockets/emit";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
+import { useAuth } from "context/AuthContext";
+import MatchButton from "../../MatchButton";
 
 // Sorts the matches of the tournament by groups
 const sortMatchesByGroup = (tournament: Tournament): Map<number, Match[]> => {
@@ -69,7 +70,6 @@ type TiebreakerToasts = Record<number, Record<number, boolean>>;
 
 const PreliminaryPlayoffView: React.FC = () => {
   const initialTournamentData = useTournament();
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const initialRender = useRef(true);
   const [players, setPlayers] = useState<TournamentPlayer[]>([]);
@@ -99,6 +99,8 @@ const PreliminaryPlayoffView: React.FC = () => {
   const [tiebreakerToasts, setTiebreakerToasts] = useState<TiebreakerToasts>(
     {}
   );
+  const { userId } = useAuth();
+  const isUserTheCreator = initialTournamentData.creator.id === userId;
 
   const showToast = useToast();
   const [hasJoined, setHasJoined] = useState(false);
@@ -317,31 +319,47 @@ const PreliminaryPlayoffView: React.FC = () => {
           ongoingMatches.get(selectedGroup) ?? []
         )
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         const upcomingElements = Array.from(
           upcomingMatches.get(selectedGroup) ?? []
         )
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained",
-              color: "info"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         const pastElements = Array.from(pastMatches.get(selectedGroup) ?? [])
           .filter((match) => match.type !== "playoff") // Filter playoff matches from this view
-          .map((match) =>
-            createMatchButton(match, players, navigate, t, haveSameNames, {
-              variant: "contained",
-              color: "secondary"
-            })
-          );
+          .map((match) => (
+            <MatchButton
+              key={match.id}
+              match={match}
+              players={players}
+              haveSameNames={haveSameNames}
+              props={{ variant: "contained" }}
+              isUserTheCreator={isUserTheCreator}
+              tournamentData={tournamentData}
+            />
+          ));
 
         return { ongoingElements, upcomingElements, pastElements };
       };

@@ -8,7 +8,8 @@ import type {
   AddPointRequest,
   EditUserRequest,
   ResetPasswordRequest,
-  EditTournamentRequest
+  EditTournamentRequest,
+  ChangeCourtTimeRequest
 } from "types/requests";
 
 export const API_BASE_URL =
@@ -176,6 +177,9 @@ const match = {
   },
   addPoint: async (matchId: string, body: AddPointRequest) => {
     await request.patch(`${MATCH_API}/${matchId}/points`, body);
+  },
+  changeCourtAndTime: async (matchId: string, body: ChangeCourtTimeRequest) => {
+    await request.patch(`${MATCH_API}/${matchId}/court-time`, body);
   },
   startTimer: async (matchId: string) => {
     await request.patch(`${MATCH_API}/${matchId}/start-timer`);
