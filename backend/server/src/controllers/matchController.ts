@@ -73,7 +73,9 @@ export class MatchController extends Controller {
       changeCourtTimeRequest
     );
 
-    io.to(matchId).emit("add-point", match);
+    // Move the emit to its own statement
+    const room = io.to(matchId);
+    room.emit("add-point", match);
   }
 
   /*

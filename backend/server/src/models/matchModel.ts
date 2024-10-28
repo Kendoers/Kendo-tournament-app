@@ -25,7 +25,7 @@ export interface MatchPlayer {
 export interface Match {
   id: Types.ObjectId;
   startTimestamp?: Date;
-  scheduledTime?: String;
+  scheduledTime?: string;
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
