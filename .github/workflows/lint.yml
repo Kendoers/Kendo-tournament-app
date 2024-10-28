@@ -2,10 +2,9 @@ name: Lint
 
 on:
   pull_request:
-      branches:
-      - development
+    branches:
+    - development
 
-# Down scope as necessary via https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
 permissions:
   checks: write
   contents: write
@@ -20,10 +19,10 @@ jobs:
     steps:
 
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: xmk0987/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: xmk0987/setup-node@v3 
         with:
           node-version: ${{ env.NODE_VERSION }}
 
