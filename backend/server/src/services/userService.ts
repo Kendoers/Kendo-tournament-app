@@ -83,7 +83,9 @@ export class UserService {
     const userDoc = await UserModel.findById(id).exec();
 
     if (userDoc === null) {
-      throw new Error("User not found");
+      throw new NotFoundError({
+        message: "User not found"
+      });
     }
 
     // Anonymize user data

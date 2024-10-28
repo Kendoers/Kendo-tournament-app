@@ -68,14 +68,7 @@ export class MatchController extends Controller {
   ): Promise<void> {
     this.setStatus(204);
 
-    const match = await this.service.changeCourtTime(
-      matchId,
-      changeCourtTimeRequest
-    );
-
-    // Move the emit to its own statement
-    const room = io.to(matchId);
-    room.emit("add-point", match);
+    await this.service.changeCourtTime(matchId, changeCourtTimeRequest);
   }
 
   /*
