@@ -18,6 +18,7 @@ import api from "api/axios";
 import type { ChangeCourtTimeRequest } from "types/requests";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { mapNumberToLetter } from "utils/helperFunctions";
 
 interface MatchButtonProps {
   match: Match;
@@ -174,7 +175,7 @@ const MatchButton: React.FC<MatchButtonProps> = ({
       <Typography variant="body1" marginBottom={"10px"}>
         {t("tournament_view_labels.court_number")}
         {": "}
-        {match.courtNumber}
+        {mapNumberToLetter(match.courtNumber)}
       </Typography>
       {isUserTheCreator && (
         <Button onClick={handleOpen}>
@@ -231,7 +232,7 @@ const MatchButton: React.FC<MatchButtonProps> = ({
             >
               {courtOptions.map((court) => (
                 <MenuItem key={court} value={court}>
-                  {court}
+                  {mapNumberToLetter(court)}
                 </MenuItem>
               ))}
             </Select>

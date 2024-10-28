@@ -15,6 +15,7 @@ import { joinTournament, leaveTournament } from "sockets/emit";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
+import { mapNumberToLetter } from "utils/helperFunctions";
 
 interface Rounds extends Record<number, Match[]> {}
 
@@ -212,7 +213,7 @@ const PlayoffTournamentView: React.FC = () => {
                           >
                             {t("tournament_view_labels.court_number")}
                             {": "}
-                            {match.courtNumber}
+                            {mapNumberToLetter(match.courtNumber)}
                           </Typography>
                           <Bracket
                             key={match.id}

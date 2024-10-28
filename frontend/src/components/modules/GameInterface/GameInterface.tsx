@@ -38,6 +38,7 @@ import ErrorModal from "components/common/ErrorModal";
 import { useTranslation } from "react-i18next";
 import ModifyDeletePoints from "./ModifyDeletePoints";
 import PlayerName, { checkSameNames } from "../Tournaments/PlayerNames";
+import { mapNumberToLetter } from "utils/helperFunctions";
 
 export interface MatchData {
   timerTime: number;
@@ -767,7 +768,7 @@ const GameInterface: React.FC = () => {
               <Typography variant="h5">
                 {t("tournament_view_labels.court_number")}
                 {": "}
-                {matchInfo.courtNumber}
+                {mapNumberToLetter(matchInfo.courtNumber)}
               </Typography>
             </Box>
             {/* Player name boxes */}
