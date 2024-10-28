@@ -165,7 +165,7 @@ const MatchButton: React.FC<MatchButtonProps> = ({
         <Typography variant="body1" marginBottom={"10px"}>
           {t("tournament_view_labels.match_start_clock")}
           {": "}
-          {newTime}
+          {match.scheduledTime}
         </Typography>
       ) : (
         <Typography variant="body1" marginBottom={"10px"}>
