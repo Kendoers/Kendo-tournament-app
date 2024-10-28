@@ -344,7 +344,7 @@ export class TournamentService {
     creatorId: string
   ): Promise<void> {
     // Check if the userId is provided
-    if (!userId || userId.trim() === "") {
+    if (userId == null || userId.trim() === "") {
       throw new BadRequestError({
         message: "Player must be selected before proceeding with withdrawal."
       });
