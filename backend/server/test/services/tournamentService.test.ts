@@ -9,14 +9,13 @@ import {
 import {
   Tournament,
   TournamentModel,
-  TournamentType, UnsavedMatch
+  TournamentType,
+  UnsavedMatch
 } from "../../src/models/tournamentModel";
 import { TournamentService } from "../../src/services/tournamentService";
 import { Types } from "mongoose";
-import { UserService } from "../../src/services/userService";
 import * as Helper from "../testHelpers";
-import mongoose from "mongoose";
-import UserModel, { User } from "../../src/models/userModel";
+import UserModel from "../../src/models/userModel";
 import MatchModel from "../../src/models/matchModel";
 
 
@@ -50,9 +49,9 @@ let request_template2: CreateTournamentRequest = {
   location: "Tampere",
   startDate: tomorrow.toISOString(),
   endDate: theDayAfter.toISOString(),
-  type: TournamentType.Swiss,
+  type: TournamentType.RoundRobin,
   groupsSizePreference: 3,
-  maxPlayers: 2,
+  maxPlayers: 3,
   organizerEmail: "test@example.com",
   organizerPhone: "12345678",
   description: "test tournament",
@@ -213,15 +212,11 @@ describe("TournamentService", () => {
       expect(tournament.players.length).to.equal(2);
     });
 
-    // TODO: removePlayerFromTournament()
-    // TODO: addMatchToTournament()
-    // TODO: updateTournamentById()
-    // TODO: deleteTournamentById()
     // TODO: markUserMatchesLost()
     // TODO: getTournamentAndCreateSchedule()
   });
 
-  // TODO: paremeterize
+  // TODO: paremeterize with different requests
   describe("removePlayerFromTournament", () => {
 
     let testTournamentId: string;
@@ -409,10 +404,111 @@ describe("TournamentService", () => {
     });
   });
 
+  // TODO: the issues here stem from the fact that the validator only looks
+  // at the values in the update request, not the whole tournament
   describe("updateTournamentById", () => {
     let request: EditTournamentRequest = {
       name: "updated"
     };
+
+    let dateRequest: EditTournamentRequest = {
+      endDate: now.toISOString()
+    };
+
+    let creatorId: string;
+    let testTournamentId: string;
+
+    beforeEach(async () => {
+      creatorId = new Types.ObjectId().toString();
+      let tournament = await TournamentModel.create({
+        ...request_template,
+        creator: creatorId
+      });
+      testTournamentId = tournament.id;
+    });
+
+    it("should update the tournament", async () => {
+      await tournamentService.updateTournamentById(testTournamentId,
+        request, creatorId);
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.name).to.equal("updated");
+
+      await tournamentService.updateTournamentById(testTournamentId,
+        { type: TournamentType.RoundRobin,
+          groupsSizePreference: 3 }, creatorId);
+
+      // it's debatable whether this should be expected to work
+      await tournamentService.updateTournamentById(testTournamentId,
+        { type: TournamentType.PreliminaryPlayoff,
+          playersToPlayoffsPerGroup: 2 }, creatorId);
+
+      tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.type).to.equal(TournamentType.PreliminaryPlayoff);
+    });
+
+
+    it("should not allow illegal updates", async () => {
+      await expect(tournamentService.updateTournamentById(testTournamentId,
+        dateRequest, creatorId)).to.be.rejectedWith(
+          "Invalid tournament dates. The start date must be before the end date.");
+
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.endDate).to.not.equal(now.toISOString());
+
+      await tournamentService.updateTournamentById(testTournamentId,
+        { type: TournamentType.PreliminaryPlayoff,
+          groupsSizePreference: 3,
+          playersToPlayoffsPerGroup: 2 }, creatorId);
+
+      await expect(tournamentService.updateTournamentById(testTournamentId,
+        { groupsSizePreference: 1 }, creatorId)).to.be.rejected;
+
+      tournament = await TournamentModel.findById(testTournamentId).exec();
+      expect(tournament.groupsSizePreference).to.not.equal(1);
+
+    });
+  });
+
+  // TODO: better tests
+  describe("markUserMatchesLost", () => {
+
+    let testTournamentId: string;
+    let creatorId: string;
+
+    beforeEach(async () => {
+
+      creatorId = new Types.ObjectId().toString();
+      let tournament = await TournamentModel.create({
+        ...request_template2,
+        creator: creatorId
+      });
+      testTournamentId = tournament.id;
+
+      await tournamentService.addPlayerToTournament(testTournamentId, testPlayerId);
+      await tournamentService.addPlayerToTournament(testTournamentId, testPlayer2Id);
+      await tournamentService.addPlayerToTournament(testTournamentId, testPlayer3Id);
+    });
+
+    it("should mark the matches lost", async () => {
+      await tournamentService.markUserMatchesLost(testTournamentId, testPlayerId, creatorId);
+
+      let tournament = await TournamentModel.findById(testTournamentId).exec();
+      tournament = await tournament.populate([
+        { path: "matchSchedule", model: "Match" },
+        { path: "players", model: "User" }
+      ]);
+      tournament = tournament.toObject();
+      let matches = tournament.matchSchedule.filter( (match) => {
+        // TODO: figure out why the IDE complains
+        return match.players.some(
+          (player) => player.id.toString() === testPlayerId
+        );
+      });
+
+      matches.forEach((match) => {
+        expect(match.winner).to.not.be.undefined;
+      });
+    });
   });
 });
 
