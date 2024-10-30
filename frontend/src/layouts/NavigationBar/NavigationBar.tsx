@@ -68,6 +68,10 @@ const NavigationBar: React.FC<Props> = (props) => {
     navigate(routePaths.help);
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -102,7 +106,16 @@ const NavigationBar: React.FC<Props> = (props) => {
                     {item.text}
                   </Button>
                 ))}
-
+                <Button
+                  id="test"
+                  sx={{ color: "#fff", marginRight: 10 }}
+                  aria-controls={open ? "profile-dropdown" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClick}
+                >
+                  Profile
+                </Button>
                 <Menu
                   id="profile-dropdown"
                   anchorEl={anchorEl}
