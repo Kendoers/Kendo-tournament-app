@@ -58,7 +58,7 @@ export class TournamentService {
         path: "matchSchedule",
         model: "Match"
       })
-      .populate<{ teams: Array<{ players: Array<User> }> }>({
+      .populate<{ teams: { players: User[] }[] }>({
         path: "teams.players",
         model: "User"
       })
@@ -94,20 +94,22 @@ export class TournamentService {
   ): Promise<Tournament> {
     const tournament = await TournamentModel.findById(tournamentId);
 
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
         message: "No tournaments found"
       });
     }
 
-    const teamExists = tournament.teams?.some((team) => team.name === teamName);
+    const teamExists = (tournament.teams ?? []).some(
+      (team) => team.name === teamName
+    );
     if (teamExists) {
       throw new BadRequestError({
         message: "A team with this name already exists in the tournament"
       });
     }
 
-    if (tournament.teams) {
+    if (tournament.teams != null) {
       tournament.teams.push({
         id: new Types.ObjectId(),
         name: teamName,
@@ -212,7 +214,7 @@ export class TournamentService {
     }
 
     team.players = team.players.filter(
-      (playerId) => playerId.toString() !== userId
+      (playerId) => playerId.toString() !== userId.toString()
     );
 
     await tournament.save();
@@ -239,8 +241,9 @@ export class TournamentService {
     }
 
     const playerIndex = team.players.findIndex(
-      (playerId) => playerId.toString() === userId
+      (playerId) => playerId.toString() === userId.toString()
     );
+
     if (playerIndex === -1) {
       throw new NotFoundError({ message: "Player not found in the team" });
     }
