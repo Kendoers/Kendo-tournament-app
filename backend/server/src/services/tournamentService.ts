@@ -41,13 +41,13 @@ export class TournamentService {
         model: "Match"
       })
       .exec();
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
         message: "Tournament not found"
       });
     }
 
-    return tournament.toObject();
+    return await tournament.toObject();
   }
 
   public async getAllTournaments(): Promise<Tournament[]> {
@@ -58,7 +58,7 @@ export class TournamentService {
         path: "matchSchedule",
         model: "Match"
       })
-      .populate<{ teams: { players: User[] }[] }>({
+      .populate<{ teams: Array<{ players: Array<User> }> }>({
         path: "teams.players",
         model: "User"
       })
@@ -100,12 +100,6 @@ export class TournamentService {
       });
     }
 
-    if (tournament.creator.toString() !== creatorId) {
-      throw new NotFoundError({
-        message: "No tournaments found"
-      });
-    }
-
     const teamExists = tournament.teams?.some((team) => team.name === teamName);
     if (teamExists) {
       throw new BadRequestError({
@@ -113,14 +107,23 @@ export class TournamentService {
       });
     }
 
-    tournament.teams?.push({
-      id: new Types.ObjectId(),
-      name: teamName,
-      players: []
-    });
+    if (tournament.teams) {
+      tournament.teams.push({
+        id: new Types.ObjectId(),
+        name: teamName,
+        players: []
+      });
+    } else {
+      tournament.teams = [
+        {
+          id: new Types.ObjectId(),
+          name: teamName,
+          players: []
+        }
+      ];
+    }
 
     await tournament.save();
-
     await this.emitTournamentUpdate(tournamentId);
 
     return tournament;
@@ -132,15 +135,15 @@ export class TournamentService {
   ): Promise<Tournament> {
     const tournament = await TournamentModel.findById(tournamentId);
 
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
         message: "Tournament not found"
       });
     }
 
-    const teamExists = tournament.teams?.some(
-      (team) => team.id.toString() === teamId
-    );
+    const teamExists =
+      tournament.teams?.some((team) => team.id.toString() === teamId) ?? false;
+
     if (!teamExists) {
       throw new NotFoundError({
         message: "Team not found in the tournament"
@@ -152,7 +155,6 @@ export class TournamentService {
     );
 
     await tournament.save();
-
     await this.emitTournamentUpdate(tournamentId);
 
     return tournament;
@@ -164,7 +166,7 @@ export class TournamentService {
     userId: string
   ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId);
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
         message: "Tournament not found"
       });
@@ -173,13 +175,13 @@ export class TournamentService {
     const team = tournament.teams?.find(
       (team) => team.id.toString() === teamId
     );
-    if (!team) {
+    if (team === null || team === undefined) {
       throw new NotFoundError({
         message: "Team not found in the tournament"
       });
     }
 
-    if (team.players.some((player) => player.toString() === userId)) {
+    if (team.players.some((player) => player.id.toString() === userId)) {
       throw new BadRequestError({
         message: "User is already a member of this team"
       });
@@ -187,7 +189,7 @@ export class TournamentService {
 
     team.players.push(new Types.ObjectId(userId));
     await tournament.save();
-    this.addPlayerToTournament(tournamentId, userId);
+    await this.addPlayerToTournament(tournamentId, userId);
   }
 
   public async leaveTeam(
@@ -196,23 +198,25 @@ export class TournamentService {
     userId: string
   ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId);
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({ message: "Tournament not found" });
     }
 
     const team = tournament.teams?.find(
       (team) => team.id.toString() === teamId
     );
-
-    if (!team) {
-      throw new NotFoundError({ message: "Team not found in the tournament" });
+    if (team === null || team === undefined) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
     }
+
     team.players = team.players.filter(
       (playerId) => playerId.toString() !== userId
     );
 
     await tournament.save();
-    this.removePlayerFromTournament(tournamentId, userId);
+    await this.removePlayerFromTournament(tournamentId, userId);
   }
 
   public async kickPlayerFromTeam(
@@ -221,15 +225,17 @@ export class TournamentService {
     userId: string
   ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId);
-    if (!tournament) {
+    if (tournament === null || tournament === undefined) {
       throw new NotFoundError({ message: "Tournament not found" });
     }
 
     const team = tournament.teams?.find(
       (team) => team.id.toString() === teamId
     );
-    if (!team) {
-      throw new NotFoundError({ message: "Team not found in the tournament" });
+    if (team === null || team === undefined) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
     }
 
     const playerIndex = team.players.findIndex(
@@ -242,7 +248,7 @@ export class TournamentService {
     team.players.splice(playerIndex, 1);
 
     await tournament.save();
-    this.removePlayerFromTournament(tournamentId, userId);
+    await this.removePlayerFromTournament(tournamentId, userId);
   }
 
   public async addPlayerToTournament(
@@ -264,7 +270,6 @@ export class TournamentService {
       });
     }
 
-    // Check if the player is already in the tournament
     if (tournament.players.includes(player.id)) {
       throw new BadRequestError({
         message: "Player already registered in the tournament"
@@ -501,7 +506,7 @@ export class TournamentService {
     creatorId: string
   ): Promise<void> {
     // Check if the userId is provided
-    if (userId == null || userId.trim() === "") {
+    if (userId == null || userId === "" || userId.trim() === "") {
       throw new BadRequestError({
         message: "Player must be selected before proceeding with withdrawal."
       });
