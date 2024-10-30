@@ -82,8 +82,10 @@ export class UserService {
   public async deleteUserById(id: string): Promise<void> {
     const userDoc = await UserModel.findById(id).exec();
 
-    if (!userDoc) {
-      throw new Error("User not found");
+    if (userDoc === null) {
+      throw new NotFoundError({
+        message: "User not found"
+      });
     }
 
     // Anonymize user data
@@ -100,7 +102,7 @@ export class UserService {
       underage: false
     };
 
-    //Find all tournaments where the user is a participant
+    // Find all tournaments where the user is a participant
     const tournaments = await TournamentModel.find({ players: id }).exec();
 
     for (const tournament of tournaments) {

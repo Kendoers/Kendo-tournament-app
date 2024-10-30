@@ -11,7 +11,7 @@ import BadRequestError from "../errors/BadRequestError.js";
 import {
   type CreateMatchRequest,
   type AddPointRequest,
-  ChangeCourtTimeRequest
+  type ChangeCourtTimeRequest
 } from "../models/requestModel.js";
 import { type Document, Types } from "mongoose";
 import {
@@ -70,7 +70,7 @@ export class MatchService {
       const tournamentService = new TournamentService();
       const tournamentId = match.tournamentId as Types.ObjectId;
 
-      if (tournamentId) {
+      if (tournamentId !== null) {
         await tournamentService.emitTournamentUpdate(tournamentId.toString());
       }
     } else {
