@@ -58,6 +58,7 @@ export class TournamentService {
         path: "matchSchedule",
         model: "Match"
       })
+      // eslint-disable-next-line @typescript-eslint/array-type
       .populate<{ teams: { players: User[] }[] }>({
         path: "teams.players",
         model: "User"
@@ -213,9 +214,14 @@ export class TournamentService {
       });
     }
 
-    team.players = team.players.filter(
-      (playerId) => playerId.toString() !== userId.toString()
-    );
+    team.players = team.players.filter((playerId) => {
+      if (playerId instanceof Types.ObjectId) {
+        return !playerId.equals(new Types.ObjectId(userId));
+      } else if (typeof playerId === "object" && "id" in playerId) {
+        return playerId.id.toString() !== userId;
+      }
+      return true;
+    });
 
     await tournament.save();
     await this.removePlayerFromTournament(tournamentId, userId);
@@ -240,9 +246,14 @@ export class TournamentService {
       });
     }
 
-    const playerIndex = team.players.findIndex(
-      (playerId) => playerId.toString() === userId.toString()
-    );
+    const playerIndex = team.players.findIndex((playerId) => {
+      if (playerId instanceof Types.ObjectId) {
+        return playerId.equals(new Types.ObjectId(userId));
+      } else if (typeof playerId === "object" && "id" in playerId) {
+        return playerId.id.toString() === userId;
+      }
+      return false;
+    });
 
     if (playerIndex === -1) {
       throw new NotFoundError({ message: "Player not found in the team" });
@@ -509,9 +520,7 @@ export class TournamentService {
     creatorId: string
   ): Promise<void> {
     // Check if the userId is provided
-
     if (userId == null || userId.trim() === "") {
-
       throw new BadRequestError({
         message: "Player must be selected before proceeding with withdrawal."
       });
