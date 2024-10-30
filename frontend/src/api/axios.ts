@@ -122,6 +122,45 @@ const tournaments = {
     return await request.get<Tournament>(`${TOURNAMENTS_API}/${tournamentId}`);
   },
 
+  addTeamToTournament: async (tournamentId: string, teamName: string) => {
+    return await request.post<Tournament>(
+      `${TOURNAMENTS_API}/${tournamentId}/add-team`,
+      { name: teamName }
+    );
+  },
+
+  removeTeamFromTournament: async (tournamentId: string, teamId: string) => {
+    return await request.delete<Tournament>(
+      `${TOURNAMENTS_API}/${tournamentId}/remove-team`,
+      { data: { teamId } }
+    );
+  },
+
+  joinTeam: async (tournamentId: string, teamId: string, userId: string) => {
+    return await request.post<Tournament>(
+      `${TOURNAMENTS_API}/${tournamentId}/teams/${teamId}/join`,
+      { userId }
+    );
+  },
+
+  leaveTeam: async (tournamentId: string, teamId: string, userId: string) => {
+    return await request.delete(
+      `${TOURNAMENTS_API}/${tournamentId}/teams/${teamId}/leave`,
+      { data: { userId } }
+    );
+  },
+
+  kickPlayerFromTeam: async (
+    tournamentId: string,
+    teamId: string,
+    userId: string
+  ) => {
+    return await request.delete(
+      `${TOURNAMENTS_API}/${tournamentId}/teams/${teamId}/kickPlayer`,
+      { data: { userId } }
+    );
+  },
+
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}`, body);
   },

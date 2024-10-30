@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document, type Types } from "mongoose";
+import mongoose, { Schema, type Document, Types } from "mongoose";
 import type { Match, MatchTime } from "./matchModel";
 import { type User } from "./userModel";
 
@@ -49,6 +49,7 @@ export interface Tournament {
 
   numberOfTeams?: number;
   teams?: Array<{
+    id: Types.ObjectId;
     name: string;
     players: Array<Types.ObjectId | User>;
   }>;

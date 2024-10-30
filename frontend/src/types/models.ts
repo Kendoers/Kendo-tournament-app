@@ -83,6 +83,7 @@ export interface Tournament {
   numberOfTeams?: number;
   playersPerTeam?: number;
   teams?: Array<{
+    id: string;
     name: string;
     players: User[];
   }>;

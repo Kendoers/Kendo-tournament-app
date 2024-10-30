@@ -64,6 +64,93 @@ export class TournamentController extends Controller {
     return await this.service.createTournament(tournamentData, creator);
   }
 
+  /*
+   * Create a team in the Team Round Robin tournament.
+   */
+  @Post("{tournamentId}/add-team")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async addTeamToTournament(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: ObjectIdString,
+    @Body() teamData: { name: string }
+  ): Promise<Tournament> {
+    this.setStatus(201);
+    const creatorId = request.user.id;
+    const teamName = teamData.name;
+
+    return await this.service.addTeamToTournament(
+      tournamentId,
+      teamName,
+      creatorId
+    );
+  }
+
+  /*
+   * Remove team from Team Round Robin tournament.
+   */
+  @Delete("{tournamentId}/remove-team")
+  @Tags("Tournaments")
+  @Security("jwt")
+  public async removeTeamFromTournament(
+    @Path() tournamentId: ObjectIdString,
+    @Body() request: { teamId: string }
+  ): Promise<Tournament> {
+    this.setStatus(204);
+    const updatedTournament = await this.service.removeTeamFromTournament(
+      tournamentId,
+      request.teamId
+    );
+    return updatedTournament;
+  }
+  /*
+   * Join a team.
+   */
+  @Post("{tournamentId}/teams/{teamId}/join")
+  @Tags("Teams")
+  @Security("jwt")
+  public async joinTeam(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Path() tournamentId: string,
+    @Path() teamId: string,
+    @Body() body: { userId: string }
+  ): Promise<void> {
+    const userId = body.userId;
+
+    await this.service.joinTeam(tournamentId, teamId, userId);
+    this.setStatus(200);
+  }
+
+  /*
+   * Leave a team.
+   */
+  @Delete("{tournamentId}/teams/{teamId}/leave")
+  @Tags("Teams")
+  @Security("jwt")
+  public async leaveTeam(
+    @Path() tournamentId: string,
+    @Path() teamId: string,
+    @Body() request: { userId: string }
+  ): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.leaveTeam(tournamentId, teamId, request.userId);
+  }
+
+  /*
+   * Kick player from the team.
+   */
+  @Delete("{tournamentId}/teams/{teamId}/kickPlayer")
+  public async kickPlayerFromTeam(
+    @Path() tournamentId: string,
+    @Path() teamId: string,
+    @Body() request: { userId: string }
+  ): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.kickPlayerFromTeam(tournamentId, teamId, request.userId);
+  }
+
   @Post("{tournamentId}/create-schedule")
   @Tags("Tournaments")
   @Security("jwt")
@@ -174,7 +261,7 @@ export class TournamentController extends Controller {
     const creatorId = request.user.id;
     const userId = requestBody.userId;
 
-    this.setStatus(204); // No content
+    this.setStatus(204);
     await this.service.markUserMatchesLost(tournamentId, userId, creatorId);
   }
 
