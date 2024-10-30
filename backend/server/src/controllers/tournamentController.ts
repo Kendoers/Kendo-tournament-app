@@ -103,6 +103,7 @@ export class TournamentController extends Controller {
     );
     return updatedTournament;
   }
+
   /*
    * Join a team.
    */
