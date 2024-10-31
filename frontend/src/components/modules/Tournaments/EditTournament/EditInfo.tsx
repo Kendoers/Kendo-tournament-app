@@ -427,22 +427,24 @@ const EditInfo: React.FC = () => {
           }}
         />
 
-        <TextFieldElement
-          required
-          name="maxPlayers"
-          type="number"
-          label={t("create_tournament_form.max_players")}
-          fullWidth
-          margin="normal"
-          validation={{
-            validate: (value: number) => {
-              return (
-                value >= MIN_PLAYER_AMOUNT ||
-                `${t("messages.minimum_players_error")}${MIN_PLAYER_AMOUNT}`
-              );
-            }
-          }}
-        />
+        {type !== "Team Round Robin" && (
+          <TextFieldElement
+            required
+            name="maxPlayers"
+            type="number"
+            label={t("create_tournament_form.max_players")}
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: number) => {
+                return (
+                  value >= MIN_PLAYER_AMOUNT ||
+                  `${t("messages.minimum_players_error")}${MIN_PLAYER_AMOUNT}`
+                );
+              }
+            }}
+          />
+        )}
 
         <Box
           display="flex"

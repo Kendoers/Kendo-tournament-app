@@ -49,6 +49,7 @@ export interface Tournament {
 
   numberOfTeams?: number;
   teams?: Array<{
+    id: Types.ObjectId;
     name: string;
     players: Array<Types.ObjectId | User>;
   }>;

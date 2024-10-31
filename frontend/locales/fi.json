@@ -37,7 +37,24 @@
     "swiss_rounds_error": "Kierrosten määrä oltava vähintään 1",
     "role_reset": "Toimitsijaroolien nollaus onnistui!",
     "match_reset": "Ottelun nollaus onnistui!",
-    "withdrawal_success": "Pelaaja on poistettu onnistuneesti!"
+    "withdrawal_success": "Pelaaja on poistettu onnistuneesti!",
+    "team_name_requirement": "Joukkueen nimi vaaditaan!",
+    "team_creation_success": "Ryhmä luotiin onnistuneesti!",
+    "team_creation_error": "Tiimiä luotaessa tapahtui virhe!",
+    "team_join_success": "Olet liittynyt menestyksekkäästi tiimiin!",
+    "team_join_error": "Joukkueeseen liittymisessä tapahtui virhe!",
+    "invalid_team_join_data": "Jokin meni pieleen liittyessäsi tiimiin!",
+    "invalid_team_leave_data": "Jokin meni pieleen, kun lähdit tiimistä!",
+    "team_leave_success": "Olet onnistuneesti jättänyt tämän tiimin!",
+    "team_leave_error": "Joukkueesta poistuttaessa tapahtui virhe!",
+    "max_teams_reached": "Joukkueiden enimmäismäärä on saavutettu!",
+    "max_players_per_team_reached": "Joukkueen pelaajien enimmäismäärä on saavutettu!",
+    "player_kicked_success": "Pelaaja on potkaistu onnistuneesti!",
+    "player_kick_error": "Virhe tapahtui potkaistaessa pelaajaa!",
+    "team_deleted_success": "Joukkue on poistettu onnistuneesti!"
+  },
+  "create_team_form": {
+    "team_name_label": "Kirjoita joukkueen nimi"
   },
   "game_interface": {
     "player": "Pelaaja",
@@ -85,7 +102,12 @@
     "save_changes_button": "Tallenna muutokset",
     "edit_button": "Muokkaa",
     "filter": "Suodata",
-    "reset": "Tyhjennä"
+    "reset": "Tyhjennä",
+    "create_team_button": "Luo tiimi",
+    "join_team_button": "Liity tiimiin",
+    "leave_team_button": "Jätä joukkue",
+    "kick_player_button": "Potkaise tätä pelaajaa",
+    "delete_team_button": "Poista tämä joukkue"
   },
   "titles": {
     "login": "Kirjaudu sisään",
@@ -100,7 +122,8 @@
     "confirm_tournament_deletion": "Vahvista turnauksen poistaminen",
     "withdraw_user_from_tournament": "Keskeytä pelaajan turnaus",
     "confirm_user_withdrawal": "Vahvista pelaajan turnauksen keskeyttäminen",
-    "confirm_tournament_editing": "Vahvista turnauksen muokkaus"
+    "confirm_tournament_editing": "Vahvista turnauksen muokkaus",
+    "create_team_title": "Luo tiimi"
   },
   "login_form": {
     "forgot_password": "Unohtuiko salasana?",
@@ -251,8 +274,9 @@
     "edit_tournament": "Muokkaa turnausta"
   },
   "team_info_labels": {
-    "team_name": "Joukkueen nimet",
-    "players": "Pelaajat"
+    "team_name_label": "Joukkueen nimet",
+    "players_label": "Pelaajat",
+    "actions_label": "Toimet"
   },
   "upcoming_tournament_view": {
     "date_header": "Milloin",
@@ -268,7 +292,9 @@
     "link_to_payment_header": "Tämä turnaus vaatii maksun, vierailethan osoitteessa",
     "link_to_site_header": "Järjestäjän sivut",
     "attendee_list": "Kirjaudu sisään nähdäksesi osallistujalistan",
-    "max_players": "Ilmoittautuneiden pelaajien määrä"
+    "max_players": "Ilmoittautuneiden pelaajien määrä",
+    "max_teams": "Joukkueiden lukumäärä",
+    "max_players_per_team": "Pelaajien määrä joukkuetta kohti"
   },
   "navigation": {
     "back": "Takaisin",

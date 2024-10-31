@@ -177,29 +177,33 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
       </CardActionArea>
       {type === "upcoming" && (
         <>
-          <br></br>
-          <Button
-            color="primary"
-            variant="contained"
-            disabled={userAlreadySigned || tournamentFull}
-            onClick={() => {
-              navigate(`${tournament.id}/sign-up`);
-            }}
-            sx={{ position: "absolute", bottom: 10, right: 10 }}
-          >
-            {t("buttons.sign_up_button")}
-          </Button>
-          {userAlreadySigned && tournamentHasNotStarted && (
-            <Button
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                navigate(`${tournament.id}/cancel-sign-up`);
-              }}
-              sx={{ position: "absolute", bottom: 10, right: 10 }}
-            >
-              {t("buttons.cancel_sign_up")}
-            </Button>
+          <br />
+          {tournament.type !== "Team Round Robin" && (
+            <>
+              <Button
+                color="primary"
+                variant="contained"
+                disabled={userAlreadySigned || tournamentFull}
+                onClick={() => {
+                  navigate(`${tournament.id}/sign-up`);
+                }}
+                sx={{ position: "absolute", bottom: 10, right: 10 }}
+              >
+                {t("buttons.sign_up_button")}
+              </Button>
+              {userAlreadySigned && tournamentHasNotStarted && (
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => {
+                    navigate(`${tournament.id}/cancel-sign-up`);
+                  }}
+                  sx={{ position: "absolute", bottom: 10, right: 10 }}
+                >
+                  {t("buttons.cancel_sign_up")}
+                </Button>
+              )}
+            </>
           )}
           {isUserTheCreator && tournamentHasNotStarted && (
             <Button
@@ -225,6 +229,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           )}
         </>
       )}
+
       {deleteConfirmationDialog()}
     </Card>
   );

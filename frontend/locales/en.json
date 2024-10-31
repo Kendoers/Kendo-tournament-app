@@ -37,7 +37,24 @@
     "minimum_players_per_team_error": "Number of players in a team must be at least 3",
     "role_reset": "Official roles reset successfully!",
     "match_reset": "Match reset successfully!",
-    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!"
+    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!",
+    "team_name_requirement": "The name of a team is required!",
+    "team_creation_success": "The team was created successfully!",
+    "team_creation_error": "An error occured while creating a team!",
+    "team_join_success": "You have successfully joined a team!",
+    "team_join_error": "An error occured while joining a team!",
+    "invalid_team_join_data": "Something went wrong while joining a team!",
+    "invalid_team_leave_data": "Something went wrong while leaving a team!",
+    "team_leave_success": "You have successfully left this team!",
+    "team_leave_error": "An error occured while leaving a team!",
+    "max_teams_reached": "The maximum amount of teams has been reached!",
+    "max_players_per_team_reached": "The maximum amount of player in this team has been reached!",
+    "player_kicked_success": "Player has been kicked successfully!",
+    "player_kick_error": "An error occured while kicking a player!",
+    "team_deleted_success": "Team has been delete successfully!"
+  },
+  "create_team_form": {
+    "team_name_label": "Enter a team name"
   },
   "game_interface": {
     "player": "Player",
@@ -85,7 +102,12 @@
     "save_changes_button": "Save changes",
     "edit_button": "Edit",
     "filter": "Filter",
-    "reset": "Reset"
+    "reset": "Reset",
+    "create_team_button": "Create a team",
+    "join_team_button": "Join team",
+    "leave_team_button": "Leave team",
+    "kick_player_button": "Kick this player",
+    "delete_team_button": "Delete this team"
   },
   "titles": {
     "login": "Sign in",
@@ -100,7 +122,8 @@
     "confirm_tournament_deletion": "Confirm tournament deletion",
     "withdraw_user_from_tournament": "Withdraw player from tournament",
     "confirm_user_withdrawal": "Confirm player withdrawal from tournament",
-    "confirm_tournament_editing": "Confirm tournament editing"
+    "confirm_tournament_editing": "Confirm tournament editing",
+    "create_team_title": "Create a team"
   },
   "login_form": {
     "forgot_password": "Forgot password?",
@@ -251,8 +274,9 @@
     "edit_tournament": "Edit tournament"
   },
   "team_info_labels": {
-    "team_name": "Team names",
-    "players": "Players"
+    "team_name_label": "Team names",
+    "players_label": "Players",
+    "actions_label": "Actions"
   },
   "upcoming_tournament_view": {
     "date_header": "When",
@@ -268,7 +292,9 @@
     "link_to_payment_header": "There is a fee for this tournament, please visit",
     "link_to_site_header": "Organizer's website",
     "attendee_list": "Log in to see the list of attendees",
-    "max_players": "The number of players signed up"
+    "max_players": "The number of players signed up",
+    "max_teams": "The number of teams",
+    "max_players_per_team": "The number of players per team"
   },
   "navigation": {
     "back": "Back",

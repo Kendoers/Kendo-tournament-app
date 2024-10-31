@@ -16,24 +16,101 @@ import Paper from "@mui/material/Paper";
 import { useTranslation } from "react-i18next";
 import { Grid, Link } from "@mui/material";
 import CopyToClipboardButton from "../../OngoingTournament/CopyToClipboardButton";
+import api from "api/axios";
+import useToast from "hooks/useToast";
 
 const TeamRoundRobinUpcomingView: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
   const tournament = useTournament();
+  const showToast = useToast();
 
-  const userAlreadySigned = tournament.players.some(
-    (player) => player.id === userId
+  const userTeam = tournament.teams?.find((team) =>
+    team.players.some((player) => player.id === userId)
   );
+
+  const maxTeamsReached =
+    (tournament.teams?.length ?? 0) >= (tournament.numberOfTeams ?? Infinity);
+
+  const isUserTheCreator = tournament.creator.id === userId;
   const maxPlayers = tournament.maxPlayers;
   const signedPlayers = tournament.players.length;
   const tournamentFull = maxPlayers <= signedPlayers;
 
+  const handleJoinTeam = async (teamId: string): Promise<void> => {
+    if (
+      tournament?.id === undefined ||
+      tournament.id === "" ||
+      teamId === undefined ||
+      teamId === "" ||
+      userId === undefined ||
+      userId === ""
+    ) {
+      showToast(t("messages.invalid_team_join_data"), "error");
+      return;
+    }
+
+    try {
+      await api.tournaments.joinTeam(tournament.id, teamId, userId);
+      showToast(t("messages.team_join_success"), "success");
+      window.location.reload();
+    } catch (error) {
+      showToast(t("messages.team_join_error"), "error");
+    }
+  };
+
+  const handleLeaveTeam = async (teamId: string): Promise<void> => {
+    if (
+      tournament?.id === undefined ||
+      tournament.id === "" ||
+      teamId === undefined ||
+      teamId === "" ||
+      userId === undefined ||
+      userId === ""
+    ) {
+      showToast(t("messages.invalid_team_leave_data"), "error");
+      return;
+    }
+
+    try {
+      await api.tournaments.leaveTeam(tournament.id, teamId, userId);
+      showToast(t("messages.team_leave_success"), "success");
+      window.location.reload();
+    } catch (error) {
+      showToast(t("messages.team_leave_error"), "error");
+    }
+  };
+
+  const handleKickPlayer = async (
+    teamId: string,
+    playerId: string
+  ): Promise<void> => {
+    try {
+      await api.tournaments.kickPlayerFromTeam(tournament.id, teamId, playerId);
+      showToast(t("messages.player_kicked_success"), "success");
+      window.location.reload();
+    } catch (error) {
+      showToast(t("messages.player_kick_error"), "error");
+    }
+  };
+
+  const handleDeleteTeam = async (teamId: string): Promise<void> => {
+    try {
+      console.log("hi");
+      await api.tournaments.removeTeamFromTournament(tournament.id, teamId);
+      showToast(t("messages.team_deleted_success"), "success");
+      window.location.reload();
+    } catch (error) {
+      showToast(error, "error");
+    }
+  };
+
   const generateTeamTable = (): React.ReactNode => {
     const tableHeaders = [
-      t("team_info_labels.team_name"),
-      t("team_info_labels.players")
+      t("team_info_labels.team_name_label"),
+      t("team_info_labels.players_label"),
+      t("team_info_labels.actions_label")
     ];
 
     return (
@@ -47,18 +124,89 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tournament.teams?.map((team, index) => (
-              <TableRow key={index}>
-                <TableCell>{team.name}</TableCell>
-                <TableCell>
-                  {team.players.map((player) => (
-                    <div key={player.id}>
-                      {player.firstName} {player.lastName}
-                    </div>
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
+            {tournament.teams?.map((team, index) => {
+              const maxPlayersReached =
+                (team.players.length ?? 0) >=
+                (tournament.playersPerTeam ?? Infinity);
+
+              return (
+                <TableRow key={index}>
+                  <TableCell>{team.name}</TableCell>
+                  <TableCell>
+                    {team.players.map((player) => (
+                      <Box key={player.id} display="flex" alignItems="center">
+                        <Typography>
+                          {player.firstName} {player.lastName}
+                        </Typography>
+                        {isUserTheCreator && (
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            size="small"
+                            onClick={async () => {
+                              await handleKickPlayer(team.id, player.id);
+                            }}
+                            sx={{ marginLeft: "8px" }}
+                          >
+                            {t("buttons.kick_player_button")}
+                          </Button>
+                        )}
+                      </Box>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    {userTeam?.id === team.id ? (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={async () => {
+                          await handleLeaveTeam(team.id);
+                        }}
+                      >
+                        {t("buttons.leave_team_button")}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={async () => {
+                          await handleJoinTeam(team.id);
+                        }}
+                        disabled={
+                          (userTeam !== null && userTeam !== undefined) ||
+                          tournamentFull ||
+                          maxPlayersReached
+                        }
+                      >
+                        {t("buttons.join_team_button")}
+                      </Button>
+                    )}
+                    {isUserTheCreator && (
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={async () => {
+                          await handleDeleteTeam(team.id);
+                        }}
+                        sx={{ marginLeft: "8px" }}
+                      >
+                        {t("buttons.delete_team_button")}
+                      </Button>
+                    )}
+                    {maxPlayersReached && (
+                      <Typography
+                        variant="body2"
+                        color="error"
+                        sx={{ marginTop: "4px" }}
+                      >
+                        {t("messages.max_players_per_team_reached")}
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -86,6 +234,26 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
         </Grid>
       </Grid>
 
+      {isUserTheCreator && (
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              navigate(`/tournaments/create-team/${tournament.id}`);
+            }}
+            disabled={maxTeamsReached}
+          >
+            {t("buttons.create_team_button")}
+          </Button>
+          {maxTeamsReached && (
+            <Typography variant="body2" color="error" sx={{ marginTop: "8px" }}>
+              {t("messages.max_teams_reached")}
+            </Typography>
+          )}
+        </>
+      )}
+
       {tournamentFull && (
         <Box>
           <Typography variant="h5" className="header" fontWeight="bold">
@@ -93,7 +261,6 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
           </Typography>
         </Box>
       )}
-
       <Box>
         <Typography variant="subtitle1">
           <strong>{t("upcoming_tournament_view.location_header")}:</strong>{" "}
@@ -137,6 +304,20 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
         </Typography>
       </Box>
 
+      <Box>
+        <Typography variant="subtitle1">
+          <strong>{t("upcoming_tournament_view.max_teams")}:</strong>{" "}
+          {tournament.numberOfTeams}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle1">
+          <strong>{t("upcoming_tournament_view.max_players_per_team")}:</strong>{" "}
+          {tournament.playersPerTeam}
+        </Typography>
+      </Box>
+
       {tournament.linkToSite !== undefined &&
         tournament.linkToSite.trim() !== "" && (
           <Box>
@@ -162,38 +343,6 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
         )}
 
       {generateTeamTable()}
-
-      {!userAlreadySigned && !tournamentFull && (
-        <Box>
-          <Typography variant="body1" className="header">
-            {t("upcoming_tournament_view.attend_prompt")}
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={userAlreadySigned || tournamentFull}
-            onClick={() => {
-              navigate("sign-up");
-            }}
-          >
-            {t("buttons.sign_up_button")}
-          </Button>
-        </Box>
-      )}
-
-      {userAlreadySigned && (
-        <Box>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              navigate("cancel-sign-up");
-            }}
-          >
-            {t("buttons.cancel_sign_up")}
-          </Button>
-        </Box>
-      )}
     </Container>
   );
 };
