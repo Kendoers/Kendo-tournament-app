@@ -19,6 +19,7 @@ import {
 } from "../models/requestModel.js";
 import { io } from "../socket.js";
 import { MatchService } from "./matchService.js";
+import bcrypt from "bcrypt";
 
 export class TournamentService {
   private readonly matchService: MatchService;
@@ -232,7 +233,10 @@ export class TournamentService {
     teamId: string,
     userId: string
   ): Promise<void> {
-    const tournament = await TournamentModel.findById(tournamentId);
+    const tournament = await TournamentModel.findById(tournamentId)
+      .select("+password")
+      .exec();
+
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({ message: "Tournament not found" });
     }
@@ -267,9 +271,12 @@ export class TournamentService {
 
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: string
+    playerId: string,
+    password?: string
   ): Promise<void> {
-    const tournament = await TournamentModel.findById(tournamentId).exec();
+    const tournament = await TournamentModel.findById(tournamentId)
+      .select("+password")
+      .exec();
 
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
@@ -302,6 +309,26 @@ export class TournamentService {
       throw new BadRequestError({
         message: "Tournament has reached its maximum number of players"
       });
+    }
+
+    // Verify the password if the tournament is password-protected
+    if (tournament.passwordEnabled) {
+      if (!password) {
+        throw new BadRequestError({
+          message: "Password is required to join this tournament"
+        });
+      }
+
+      // Compare the provided password with the hashed password in the database
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        tournament.password || ""
+      );
+      if (!isPasswordCorrect) {
+        throw new BadRequestError({
+          message: "Incorrect password"
+        });
+      }
     }
 
     tournament.players.push(player.id);
