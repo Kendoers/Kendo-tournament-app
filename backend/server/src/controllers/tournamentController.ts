@@ -183,7 +183,9 @@ export class TournamentController extends Controller {
     await this.service.addPlayerToTournament(
       tournamentId,
       requestBody.playerId,
-      requestBody.password ? String(requestBody.password) : undefined
+      requestBody.password !== null && requestBody.password !== undefined
+        ? String(requestBody.password)
+        : undefined
     );
   }
 

@@ -136,7 +136,7 @@ export type CreateTournamentRequest = Pick<
 
 export interface SignupForTournamentRequest {
   playerId: ObjectIdString;
-  password?: String;
+  password?: string;
 }
 
 /* Note that we get the data validations from the registerRequest interface also */

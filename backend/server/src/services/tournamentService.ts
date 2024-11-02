@@ -313,7 +313,7 @@ export class TournamentService {
 
     // Verify the password if the tournament is password-protected
     if (tournament.passwordEnabled) {
-      if (!password) {
+      if (password === null || password === undefined || password === "") {
         throw new BadRequestError({
           message: "Password is required to join this tournament"
         });
@@ -322,8 +322,9 @@ export class TournamentService {
       // Compare the provided password with the hashed password in the database
       const isPasswordCorrect = await bcrypt.compare(
         password,
-        tournament.password || ""
+        tournament.password ?? ""
       );
+
       if (!isPasswordCorrect) {
         throw new BadRequestError({
           message: "Incorrect password"

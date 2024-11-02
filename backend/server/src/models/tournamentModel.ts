@@ -124,13 +124,17 @@ const tournamentSchema = new Schema<Tournament & Document>(
 // Hash password before saving
 tournamentSchema.pre("save", async function (next) {
   const tournament = this as Tournament & Document;
+
+  // Explicitly check for nullish values and password modification
   if (
     tournament.isModified("password") &&
-    tournament.password &&
+    tournament.password !== null &&
+    tournament.password !== undefined &&
     tournament.passwordEnabled
   ) {
     tournament.password = await bcrypt.hash(tournament.password, SALT_ROUNDS);
   }
+
   next();
 });
 
