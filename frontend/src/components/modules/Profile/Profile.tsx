@@ -6,18 +6,19 @@ import CreatedTournaments from "./CreatedTournaments";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useTranslation } from "react-i18next";
-import { Box, Container, MenuItem, Select } from "@mui/material";
+import { Box, Container, MenuItem, Select, Button } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import type { Tournament } from "types/models";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
   const [userCreatedTournaments, setUserCreatedTournaments] = useState<
     Tournament[]
   >([]);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const mobile = useMediaQuery("(max-width:600px)");
   const { userId } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,25 +86,66 @@ const Profile: React.FC = () => {
           <br></br>
         </Fragment>
       ) : (
-        <Box
-          style={{ display: "flex", alignItems: "center" }}
-          sx={{ borderBottom: 1, borderColor: "divider", marginBottom: "10px" }}
-        >
-          {/* If the device is desktop */}
-          <Tabs
-            value={currentTab}
-            onChange={(_, value) => {
-              handleTabChange(value);
+        <>
+          <Box
+            style={{ display: "flex", alignItems: "center" }}
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              marginBottom: "10px"
             }}
           >
-            <Tab label={t("profile.profile_info")} value="info" />
-            <Tab label={t("profile.my_games")} value="games" />
-            <Tab label={t("profile.my_points")} value="points" />
-            {userCreatedTournaments.length > 0 && (
-              <Tab label={t("profile.created_tournaments")} value="created_t" />
-            )}
-          </Tabs>
-        </Box>
+            {/* If the device is desktop */}
+            <Tabs
+              value={currentTab}
+              onChange={(_, value) => {
+                handleTabChange(value);
+              }}
+            >
+              <Tab label={t("profile.profile_info")} value="info" />
+              <Tab label={t("profile.my_games")} value="games" />
+              <Tab label={t("profile.my_points")} value="points" />
+              {userCreatedTournaments.length > 0 && (
+                <Tab
+                  label={t("profile.created_tournaments")}
+                  value="created_t"
+                />
+              )}
+              <Button
+                type="button"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  navigate("new-tournament");
+                }}
+                sx={{
+                  fontSize: "14px",
+                  color: "white",
+                  backgroundColor: "#db4744",
+                  borderRadius: "20px",
+                  width: "200px",
+                  height: "40px",
+                  textTransform: "none",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                  transition: "transform 0.3s",
+                  marginLeft: "auto",
+                  "&::before": {
+                    content: '"+"',
+                    fontSize: "24px",
+                    position: "absolute",
+                    left: "12px"
+                  },
+                  "&::after": {
+                    content: `"${t("frontpage_labels.create_tournament")}"`
+                  },
+                  "&:hover": {
+                    backgroundColor: "#e57373"
+                  }
+                }}
+              ></Button>
+            </Tabs>
+          </Box>
+        </>
       )}
       {currentTab === "info" && <ProfileInfo />}
       {currentTab === "games" && <ProfileGames />}
