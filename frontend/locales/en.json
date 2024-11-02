@@ -200,7 +200,9 @@
     "user_info": "The information you are signing up with:",
     "user_info_table": "User Information",
     "player_table": "Player Table",
-    "cancel": "Cancel sign up for"
+    "cancel": "Cancel sign up for",
+    "private_tournament_password": "Tournament access key",
+    "password_required": "Access key required"
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Ongoing Tournaments",
@@ -265,7 +267,9 @@
     "payment_link": "Link to payment site",
     "required_text": "This field is required",
     "swiss": "Swiss",
-    "swiss_rounds": "Number of swiss rounds"
+    "swiss_rounds": "Number of swiss rounds",
+    "enable_password": "Set a key to join the tournament",
+    "password": "Tournament join key"
   },
   "edit_tournament_form": {
     "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"

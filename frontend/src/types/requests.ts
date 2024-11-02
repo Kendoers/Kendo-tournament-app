@@ -28,6 +28,7 @@ export type CreateTournamentRequest = Omit<
 
 export interface SignupForTournamentRequest {
   playerId: string;
+  password?: string;
 }
 
 export interface AddPointRequest {

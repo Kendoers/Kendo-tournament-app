@@ -63,6 +63,8 @@ export interface CreateTournamentFormData {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+  passwordEnabled: boolean;
+  password?: string;
 
   // Fields specific to Team Round Robin
   numberOfTeams?: number;
@@ -84,6 +86,8 @@ const defaultValues: CreateTournamentFormData = {
   linkToPay: "",
   linkToSite: "",
   numberOfCourts: 1,
+  passwordEnabled: false,
+  password: "",
 
   numberOfTeams: 2,
   playersPerTeam: 3
@@ -103,7 +107,7 @@ const CreateTournamentForm: React.FC = () => {
     defaultValues,
     mode: "onBlur"
   });
-  const { differentOrganizer, startDate, type, paid } =
+  const { differentOrganizer, startDate, type, paid, passwordEnabled } =
     useWatch<CreateTournamentFormData>(formContext);
   const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const mobile = useMediaQuery("(max-width:600px)");
@@ -351,6 +355,31 @@ const CreateTournamentForm: React.FC = () => {
               }}
             />
           </React.Fragment>
+        )}
+
+        {/* Checkbox to enable password */}
+        <CheckboxElement
+          name="passwordEnabled"
+          label={t("create_tournament_form.enable_password")}
+          onChange={(e) => {
+            formContext.resetField("password");
+            formContext.setValue("passwordEnabled", e.target.checked);
+          }}
+        />
+
+        {/* Password field, shown only if passwordEnabled is true */}
+        {passwordEnabled === true && (
+          <TextFieldElement
+            required
+            name="password"
+            type="password"
+            label={t("create_tournament_form.password")}
+            fullWidth
+            margin="normal"
+            validation={{
+              required: t("create_tournament_form.required_text")
+            }}
+          />
         )}
 
         <SelectElement

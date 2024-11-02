@@ -106,7 +106,7 @@
     "create_team_button": "Luo tiimi",
     "join_team_button": "Liity tiimiin",
     "leave_team_button": "Jätä joukkue",
-    "kick_player_button": "Potkaise tätä pelaajaa",
+    "kick_player_button": "Poista pelaaja joukkueesta",
     "delete_team_button": "Poista tämä joukkue"
   },
   "titles": {
@@ -200,7 +200,9 @@
     "user_info": "Ilmoittautumisen yhteydessä annettavat tiedot:",
     "user_info_table": "Käyttäjätiedot",
     "player_table": "Pelaajataulu",
-    "cancel": "Peruuta ilmoittautuminen: "
+    "cancel": "Peruuta ilmoittautuminen: ",
+    "private_tournament_password": "Turnauksen pääsykoodi",
+    "password_required": "Pääsykoodi vaaditaan"
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Käynnissä olevat turnaukset",
@@ -265,7 +267,9 @@
     "payment_link": "Linkki maksusivustolle",
     "required_text": "Tämä kenttä on pakollinen",
     "swiss": "Sveitsiläinen",
-    "swiss_rounds": "Sveitsiläisiä kierroksia"
+    "swiss_rounds": "Sveitsiläisiä kierroksia",
+    "enable_password": "Aseta liittymiskoodi turnaukselle",
+    "password": "Turnauksen liittymiskoodi"
   },
   "edit_tournament_form": {
     "confirmation_message": "Oletko varma, että haluat muokata turnausta annetuilla tiedoilla?"
