@@ -79,6 +79,8 @@ export interface Tournament {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+  passwordEnabled: boolean;
+  password?: string;
 
   numberOfTeams?: number;
   playersPerTeam?: number;

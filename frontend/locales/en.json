@@ -51,7 +51,9 @@
     "max_players_per_team_reached": "The maximum amount of player in this team has been reached!",
     "player_kicked_success": "Player has been kicked successfully!",
     "player_kick_error": "An error occured while kicking a player!",
-    "team_deleted_success": "Team has been delete successfully!"
+    "team_deleted_success": "Team has been delete successfully!",
+    "invite_success": "Players of clubs invited",
+    "invite_error": "Sending invites failed"
   },
   "create_team_form": {
     "team_name_label": "Enter a team name"
@@ -107,7 +109,8 @@
     "join_team_button": "Join team",
     "leave_team_button": "Leave team",
     "kick_player_button": "Kick this player",
-    "delete_team_button": "Delete this team"
+    "delete_team_button": "Delete this team",
+    "invite_players": "Invite players"
   },
   "titles": {
     "login": "Sign in",
@@ -200,7 +203,9 @@
     "user_info": "The information you are signing up with:",
     "user_info_table": "User Information",
     "player_table": "Player Table",
-    "cancel": "Cancel sign up for"
+    "cancel": "Cancel sign up for",
+    "private_tournament_password": "Tournament access key",
+    "password_required": "Access key required"
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Ongoing Tournaments",
@@ -265,7 +270,9 @@
     "payment_link": "Link to payment site",
     "required_text": "This field is required",
     "swiss": "Swiss",
-    "swiss_rounds": "Number of swiss rounds"
+    "swiss_rounds": "Number of swiss rounds",
+    "enable_password": "Set a key to join the tournament",
+    "password": "Tournament join key"
   },
   "edit_tournament_form": {
     "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"
@@ -430,7 +437,8 @@
     "my_points": "My Points",
     "point_type": "Point Type",
     "points": "Points",
-    "created_tournaments": "Created tournaments"
+    "created_tournaments": "Created tournaments",
+    "invitations": "Tournament invitations"
   },
   "filtering": {
     "options": "Filtering options",
@@ -467,5 +475,13 @@
     "bugs": "Bugs",
     "bugs1": "If you would like to report any bugs or have thoughts on any other things we should add to our site, please tell us in our ",
     "bugs_link": "GitHub Issues tab"
+  },
+  "invite": {
+    "select_club": "Select clubs to invite",
+    "select_club_placeholder": "Clubs",
+    "date": "Date",
+    "check_out": "Check out",
+    "no_invitations": "No invitations",
+    "players": "Players"
   }
 }

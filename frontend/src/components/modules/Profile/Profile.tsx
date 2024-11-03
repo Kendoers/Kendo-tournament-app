@@ -12,6 +12,7 @@ import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import type { Tournament } from "types/models";
 import { useSearchParams } from "react-router-dom";
+import Invitations from "./Invitations";
 
 const Profile: React.FC = () => {
   const [userCreatedTournaments, setUserCreatedTournaments] = useState<
@@ -21,7 +22,13 @@ const Profile: React.FC = () => {
   const mobile = useMediaQuery("(max-width:600px)");
   const { userId } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabTypes = ["info", "games", "points", "created_t"] as const;
+  const tabTypes = [
+    "info",
+    "games",
+    "points",
+    "created_t",
+    "invitations"
+  ] as const;
   const defaultTab = "info";
 
   const currentTab = searchParams.get("tab") ?? defaultTab;
@@ -42,6 +49,7 @@ const Profile: React.FC = () => {
     sessionStorage.clear();
   };
 
+  // This could be improved to only fetch the users tournaments in the backend
   useEffect(() => {
     const fetchUserCreatedTournaments = async (): Promise<void> => {
       try {
@@ -81,6 +89,7 @@ const Profile: React.FC = () => {
                 {t("profile.created_tournaments")}
               </MenuItem>
             )}
+            <MenuItem value="invitations">{t("profile.invitations")}</MenuItem>
           </Select>
           <br></br>
         </Fragment>
@@ -102,6 +111,7 @@ const Profile: React.FC = () => {
             {userCreatedTournaments.length > 0 && (
               <Tab label={t("profile.created_tournaments")} value="created_t" />
             )}
+            <Tab label={t("profile.invitations")} value="invitations" />
           </Tabs>
         </Box>
       )}
@@ -109,6 +119,7 @@ const Profile: React.FC = () => {
       {currentTab === "games" && <ProfileGames />}
       {currentTab === "points" && <ProfilePoints />}
       {currentTab === "created_t" && <CreatedTournaments />}
+      {currentTab === "invitations" && <Invitations />}
     </Container>
   );
 };

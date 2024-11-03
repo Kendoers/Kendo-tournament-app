@@ -75,6 +75,7 @@ export class TournamentController extends Controller {
     @Path() tournamentId: ObjectIdString,
     @Body() teamData: { name: string }
   ): Promise<Tournament> {
+    console.log("Team added");
     this.setStatus(201);
     const creatorId = request.user.id;
     const teamName = teamData.name;
@@ -168,6 +169,9 @@ export class TournamentController extends Controller {
     return result;
   }
 
+  /*
+   *  Join a tournament
+   */
   @Put("{tournamentId}/sign-up")
   @Tags("Tournaments")
   @Security("jwt")
@@ -178,7 +182,10 @@ export class TournamentController extends Controller {
     this.setStatus(204);
     await this.service.addPlayerToTournament(
       tournamentId,
-      requestBody.playerId
+      requestBody.playerId,
+      requestBody.password !== null && requestBody.password !== undefined
+        ? String(requestBody.password)
+        : undefined
     );
   }
 

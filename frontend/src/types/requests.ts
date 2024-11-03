@@ -28,6 +28,7 @@ export type CreateTournamentRequest = Omit<
 
 export interface SignupForTournamentRequest {
   playerId: string;
+  password?: string;
 }
 
 export interface AddPointRequest {
@@ -47,4 +48,9 @@ export type EditTournamentRequest = Partial<CreateTournamentRequest>;
 export interface ChangeCourtTimeRequest {
   courtNumber?: number;
   scheduledTime?: string;
+}
+
+export interface InvitePlayersByClubRequest {
+  clubs: string[];
+  tournamentId: string;
 }
