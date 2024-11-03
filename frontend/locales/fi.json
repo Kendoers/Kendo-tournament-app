@@ -478,6 +478,10 @@
   },
   "invite": {
     "select_club": "Valitse kutsuttavat seurat",
-    "select_club_placeholder": "Seurat"
+    "select_club_placeholder": "Seurat",
+    "date": "Päivämäärä",
+    "check_out": "Tutustu",
+    "no_invitations": "Ei kutsuja",
+    "players": "Pelaajat"
   }
 }

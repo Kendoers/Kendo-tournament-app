@@ -478,6 +478,10 @@
   },
   "invite": {
     "select_club": "Select clubs to invite",
-    "select_club_placeholder": "Clubs"
+    "select_club_placeholder": "Clubs",
+    "date": "Date",
+    "check_out": "Check out",
+    "no_invitations": "No invitations",
+    "players": "Players"
   }
 }
