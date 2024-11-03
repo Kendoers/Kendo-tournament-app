@@ -12,6 +12,7 @@ import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import type { Tournament } from "types/models";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import Invitations from "./Invitations";
 
 const Profile: React.FC = () => {
   const [userCreatedTournaments, setUserCreatedTournaments] = useState<
@@ -22,7 +23,13 @@ const Profile: React.FC = () => {
   const mobile = useMediaQuery("(max-width:600px)");
   const { userId } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabTypes = ["info", "games", "points", "created_t"] as const;
+  const tabTypes = [
+    "info",
+    "games",
+    "points",
+    "created_t",
+    "invitations"
+  ] as const;
   const defaultTab = "info";
 
   const currentTab = searchParams.get("tab") ?? defaultTab;
@@ -82,8 +89,9 @@ const Profile: React.FC = () => {
                 {t("profile.created_tournaments")}
               </MenuItem>
             )}
+            <MenuItem value="invitations">{t("profile.invitations")}</MenuItem>
           </Select>
-          <br></br>
+          <br />
         </Fragment>
       ) : (
         <>
@@ -105,47 +113,43 @@ const Profile: React.FC = () => {
               <Tab label={t("profile.profile_info")} value="info" />
               <Tab label={t("profile.my_games")} value="games" />
               <Tab label={t("profile.my_points")} value="points" />
-
               <Tab label={t("profile.created_tournaments")} value="created_t" />
-
-              {currentTab === "created_t" &&
-              userCreatedTournaments.length > 0 ? (
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => {
-                    navigate("/tournaments/new-tournament");
-                  }}
-                  sx={{
-                    fontSize: "14px",
-                    color: "white",
-                    backgroundColor: "#db4744",
-                    borderRadius: "20px",
-                    width: "200px",
-                    height: "40px",
-                    textTransform: "none",
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                    transition: "transform 0.3s",
-                    marginLeft: "60px",
-                    "&::before": {
-                      content: '"+"',
-                      fontSize: "24px",
-                      position: "absolute",
-                      left: "12px"
-                    },
-                    "&::after": {
-                      content: `"${t("frontpage_labels.create_tournament")}"`
-                    },
-                    "&:hover": {
-                      backgroundColor: "#e57373"
-                    }
-                  }}
-                ></Button>
-              ) : (
-                <></>
-              )}
+              <Tab label={t("profile.invitations")} value="invitations" />
             </Tabs>
+            {currentTab === "created_t" && userCreatedTournaments.length > 0 && (
+              <Button
+                type="button"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  navigate("/tournaments/new-tournament");
+                }}
+                sx={{
+                  fontSize: "14px",
+                  color: "white",
+                  backgroundColor: "#db4744",
+                  borderRadius: "20px",
+                  width: "200px",
+                  height: "40px",
+                  textTransform: "none",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                  transition: "transform 0.3s",
+                  marginLeft: "60px",
+                  "&::before": {
+                    content: '"+"',
+                    fontSize: "24px",
+                    position: "absolute",
+                    left: "12px"
+                  },
+                  "&::after": {
+                    content: `"${t("frontpage_labels.create_tournament")}"`
+                  },
+                  "&:hover": {
+                    backgroundColor: "#e57373"
+                  }
+                }}
+              ></Button>
+            )}
           </Box>
         </>
       )}
@@ -153,6 +157,7 @@ const Profile: React.FC = () => {
       {currentTab === "games" && <ProfileGames />}
       {currentTab === "points" && <ProfilePoints />}
       {currentTab === "created_t" && <CreatedTournaments />}
+      {currentTab === "invitations" && <Invitations />}
     </Container>
   );
 };

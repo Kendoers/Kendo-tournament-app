@@ -19,13 +19,13 @@ import {
 } from "../models/requestModel.js";
 import { io } from "../socket.js";
 import { MatchService } from "./matchService.js";
+import bcrypt from "bcrypt";
 
 export class TournamentService {
-  // This is to use matchService's functions here
-  private readonly matchService: MatchService; // Add MatchService as a member variable
+  private readonly matchService: MatchService;
 
   constructor() {
-    this.matchService = new MatchService(); // Initialize MatchService
+    this.matchService = new MatchService();
   }
 
   public async emitTournamentUpdate(tournamentId: string): Promise<void> {
@@ -37,9 +37,7 @@ export class TournamentService {
     const tournament = await TournamentModel.findById(id)
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
-      .populate<{
-        matchSchedule: Match[];
-      }>({
+      .populate<{ matchSchedule: Match[] }>({
         path: "matchSchedule",
         model: "Match"
       })
@@ -57,11 +55,14 @@ export class TournamentService {
     const tournaments = await TournamentModel.find()
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
-      .populate<{
-        matchSchedule: Match[];
-      }>({
+      .populate<{ matchSchedule: Match[] }>({
         path: "matchSchedule",
         model: "Match"
+      })
+      // eslint-disable-next-line @typescript-eslint/array-type
+      .populate<{ teams: { players: User[] }[] }>({
+        path: "teams.players",
+        model: "User"
       })
       .exec();
 
@@ -88,11 +89,194 @@ export class TournamentService {
     return await newTournament.toObject();
   }
 
+  public async addTeamToTournament(
+    tournamentId: string,
+    teamName: string,
+    creatorId: string
+  ): Promise<Tournament> {
+    const tournament = await TournamentModel.findById(tournamentId);
+
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "No tournaments found"
+      });
+    }
+
+    const teamExists = (tournament.teams ?? []).some(
+      (team) => team.name === teamName
+    );
+    if (teamExists) {
+      throw new BadRequestError({
+        message: "A team with this name already exists in the tournament"
+      });
+    }
+
+    if (tournament.teams != null) {
+      tournament.teams.push({
+        id: new Types.ObjectId(),
+        name: teamName,
+        players: []
+      });
+    } else {
+      tournament.teams = [
+        {
+          id: new Types.ObjectId(),
+          name: teamName,
+          players: []
+        }
+      ];
+    }
+
+    await tournament.save();
+    await this.emitTournamentUpdate(tournamentId);
+
+    return tournament;
+  }
+
+  public async removeTeamFromTournament(
+    tournamentId: string,
+    teamId: string
+  ): Promise<Tournament> {
+    const tournament = await TournamentModel.findById(tournamentId);
+
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
+
+    const teamExists =
+      tournament.teams?.some((team) => team.id.toString() === teamId) ?? false;
+
+    if (!teamExists) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
+    }
+
+    tournament.teams = tournament.teams?.filter(
+      (team) => team.id.toString() !== teamId
+    );
+
+    await tournament.save();
+    await this.emitTournamentUpdate(tournamentId);
+
+    return tournament;
+  }
+
+  public async joinTeam(
+    tournamentId: string,
+    teamId: string,
+    userId: string
+  ): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId);
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
+
+    const team = tournament.teams?.find(
+      (team) => team.id.toString() === teamId
+    );
+    if (team === null || team === undefined) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
+    }
+
+    if (team.players.some((player) => player.id.toString() === userId)) {
+      throw new BadRequestError({
+        message: "User is already a member of this team"
+      });
+    }
+
+    team.players.push(new Types.ObjectId(userId));
+    await tournament.save();
+    await this.addPlayerToTournament(tournamentId, userId);
+  }
+
+  public async leaveTeam(
+    tournamentId: string,
+    teamId: string,
+    userId: string
+  ): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId);
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({ message: "Tournament not found" });
+    }
+
+    const team = tournament.teams?.find(
+      (team) => team.id.toString() === teamId
+    );
+    if (team === null || team === undefined) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
+    }
+
+    team.players = team.players.filter((playerId) => {
+      if (playerId instanceof Types.ObjectId) {
+        return !playerId.equals(new Types.ObjectId(userId));
+      } else if (typeof playerId === "object" && "id" in playerId) {
+        return playerId.id.toString() !== userId;
+      }
+      return true;
+    });
+
+    await tournament.save();
+    await this.removePlayerFromTournament(tournamentId, userId);
+  }
+
+  public async kickPlayerFromTeam(
+    tournamentId: string,
+    teamId: string,
+    userId: string
+  ): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId)
+      .select("+password")
+      .exec();
+
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({ message: "Tournament not found" });
+    }
+
+    const team = tournament.teams?.find(
+      (team) => team.id.toString() === teamId
+    );
+    if (team === null || team === undefined) {
+      throw new NotFoundError({
+        message: "Team not found in the tournament"
+      });
+    }
+
+    const playerIndex = team.players.findIndex((playerId) => {
+      if (playerId instanceof Types.ObjectId) {
+        return playerId.equals(new Types.ObjectId(userId));
+      } else if (typeof playerId === "object" && "id" in playerId) {
+        return playerId.id.toString() === userId;
+      }
+      return false;
+    });
+
+    if (playerIndex === -1) {
+      throw new NotFoundError({ message: "Player not found in the team" });
+    }
+
+    team.players.splice(playerIndex, 1);
+
+    await tournament.save();
+    await this.removePlayerFromTournament(tournamentId, userId);
+  }
+
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: string
+    playerId: string,
+    password?: string
   ): Promise<void> {
-    const tournament = await TournamentModel.findById(tournamentId).exec();
+    const tournament = await TournamentModel.findById(tournamentId)
+      .select("+password")
+      .exec();
 
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
@@ -107,7 +291,6 @@ export class TournamentService {
       });
     }
 
-    // Check if the player is already in the tournament
     if (tournament.players.includes(player.id)) {
       throw new BadRequestError({
         message: "Player already registered in the tournament"
@@ -126,6 +309,27 @@ export class TournamentService {
       throw new BadRequestError({
         message: "Tournament has reached its maximum number of players"
       });
+    }
+
+    // Verify the password if the tournament is password-protected
+    if (tournament.passwordEnabled) {
+      if (password === null || password === undefined || password === "") {
+        throw new BadRequestError({
+          message: "Password is required to join this tournament"
+        });
+      }
+
+      // Compare the provided password with the hashed password in the database
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        tournament.password ?? ""
+      );
+
+      if (!isPasswordCorrect) {
+        throw new BadRequestError({
+          message: "Incorrect password"
+        });
+      }
     }
 
     tournament.players.push(player.id);
@@ -344,7 +548,7 @@ export class TournamentService {
     creatorId: string
   ): Promise<void> {
     // Check if the userId is provided
-    if (!userId || userId.trim() === "") {
+    if (userId == null || userId.trim() === "") {
       throw new BadRequestError({
         message: "Player must be selected before proceeding with withdrawal."
       });
@@ -726,14 +930,7 @@ export class TournamentService {
       const totalPlayers =
         tournamentDetails.numberOfTeams * tournamentDetails.playersPerTeam;
 
-      if (
-        tournamentDetails.maxPlayers !== undefined &&
-        totalPlayers > tournamentDetails.maxPlayers
-      ) {
-        throw new BadRequestError({
-          message: `The total number of players (${totalPlayers}) exceeds the maximum allowed (${tournamentDetails.maxPlayers}) for this tournament.`
-        });
-      }
+      tournamentDetails.maxPlayers = totalPlayers;
     }
 
     // If tournament is type preliminary playoff, validate related fields

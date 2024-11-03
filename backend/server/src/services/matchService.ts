@@ -10,7 +10,8 @@ import NotFoundError from "../errors/NotFoundError.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import {
   type CreateMatchRequest,
-  type AddPointRequest
+  type AddPointRequest,
+  type ChangeCourtTimeRequest
 } from "../models/requestModel.js";
 import { type Document, Types } from "mongoose";
 import {
@@ -30,6 +31,53 @@ type rankingStruct = [Types.ObjectId, number, number];
 // the DB has been configured for a replica set, testing transactions
 // is not possible. The transactions have been commented out in the code.
 export class MatchService {
+  public async changeCourtTime(
+    matchId: string,
+    changeCourtTimeRequest: ChangeCourtTimeRequest
+  ): Promise<void> {
+    const match = await MatchModel.findById(matchId).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        code: 404,
+        message: `Match not found for ID: ${matchId}`
+      });
+    }
+
+    let updated = false;
+    // Update the courtNumber if provided and different from current
+    if (
+      changeCourtTimeRequest.courtNumber !== undefined &&
+      changeCourtTimeRequest.courtNumber !== match.courtNumber
+    ) {
+      match.courtNumber = changeCourtTimeRequest.courtNumber;
+      updated = true;
+    }
+
+    // Update the scheduledTime if provided and different from current
+    if (
+      changeCourtTimeRequest.scheduledTime !== undefined &&
+      changeCourtTimeRequest.scheduledTime !== match.scheduledTime
+    ) {
+      match.scheduledTime = changeCourtTimeRequest.scheduledTime;
+      updated = true;
+    }
+
+    // If any updates were made, save the match and emit tournament update
+    if (updated) {
+      await match.save();
+
+      const tournamentService = new TournamentService();
+      const tournamentId = match.tournamentId as Types.ObjectId;
+
+      if (tournamentId !== null) {
+        await tournamentService.emitTournamentUpdate(tournamentId.toString());
+      }
+    } else {
+      console.log("No changes made to court number or scheduled time.");
+    }
+  }
+
   public async createMatch(requestBody: CreateMatchRequest): Promise<Match> {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,

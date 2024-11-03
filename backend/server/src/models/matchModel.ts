@@ -25,6 +25,7 @@ export interface MatchPlayer {
 export interface Match {
   id: Types.ObjectId;
   startTimestamp?: Date;
+  scheduledTime?: string;
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
@@ -82,6 +83,11 @@ const matchSchema = new Schema<Match>(
     endTimestamp: { type: Date, required: false },
     type: { type: String, required: true },
     winner: { type: Schema.Types.ObjectId, required: false },
+    scheduledTime: {
+      type: String,
+      required: true,
+      default: "XX:XX"
+    },
     players: {
       type: [playerSchema],
       required: true

@@ -14,6 +14,7 @@ import { type PointType, type Match } from "../models/matchModel.js";
 import { MatchService } from "../services/matchService.js";
 import {
   AddPointRequest,
+  ChangeCourtTimeRequest,
   CreateMatchRequest,
   ObjectIdString
 } from "../models/requestModel.js";
@@ -53,6 +54,21 @@ export class MatchController extends Controller {
   public async deleteMatch(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
     await this.service.deleteMatchById(matchId);
+  }
+
+  /*
+   * Change the court number of a match or the scheduled Time
+   */
+  @Patch("{matchId}/court-time")
+  @Tags("Match")
+  @Security("jwt")
+  public async changeCourtTime(
+    @Path() matchId: ObjectIdString,
+    @Body() changeCourtTimeRequest: ChangeCourtTimeRequest
+  ): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.changeCourtTime(matchId, changeCourtTimeRequest);
   }
 
   /*

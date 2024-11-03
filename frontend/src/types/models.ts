@@ -39,6 +39,7 @@ export interface Match {
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
+  scheduledTime: string;
   type: MatchType;
   players: MatchPlayer[];
   winner?: string;
@@ -78,10 +79,13 @@ export interface Tournament {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+  passwordEnabled: boolean;
+  password?: string;
 
   numberOfTeams?: number;
   playersPerTeam?: number;
   teams?: Array<{
+    id: string;
     name: string;
     players: User[];
   }>;

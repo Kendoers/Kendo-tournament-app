@@ -37,7 +37,26 @@
     "minimum_players_per_team_error": "Number of players in a team must be at least 3",
     "role_reset": "Official roles reset successfully!",
     "match_reset": "Match reset successfully!",
-    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!"
+    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!",
+    "team_name_requirement": "The name of a team is required!",
+    "team_creation_success": "The team was created successfully!",
+    "team_creation_error": "An error occured while creating a team!",
+    "team_join_success": "You have successfully joined a team!",
+    "team_join_error": "An error occured while joining a team!",
+    "invalid_team_join_data": "Something went wrong while joining a team!",
+    "invalid_team_leave_data": "Something went wrong while leaving a team!",
+    "team_leave_success": "You have successfully left this team!",
+    "team_leave_error": "An error occured while leaving a team!",
+    "max_teams_reached": "The maximum amount of teams has been reached!",
+    "max_players_per_team_reached": "The maximum amount of player in this team has been reached!",
+    "player_kicked_success": "Player has been kicked successfully!",
+    "player_kick_error": "An error occured while kicking a player!",
+    "team_deleted_success": "Team has been delete successfully!",
+    "invite_success": "Players of clubs invited",
+    "invite_error": "Sending invites failed"
+  },
+  "create_team_form": {
+    "team_name_label": "Enter a team name"
   },
   "game_interface": {
     "player": "Player",
@@ -85,7 +104,13 @@
     "save_changes_button": "Save changes",
     "edit_button": "Edit",
     "filter": "Filter",
-    "reset": "Reset"
+    "reset": "Reset",
+    "create_team_button": "Create a team",
+    "join_team_button": "Join team",
+    "leave_team_button": "Leave team",
+    "kick_player_button": "Kick this player",
+    "delete_team_button": "Delete this team",
+    "invite_players": "Invite players"
   },
   "titles": {
     "login": "Sign in",
@@ -100,7 +125,8 @@
     "confirm_tournament_deletion": "Confirm tournament deletion",
     "withdraw_user_from_tournament": "Withdraw player from tournament",
     "confirm_user_withdrawal": "Confirm player withdrawal from tournament",
-    "confirm_tournament_editing": "Confirm tournament editing"
+    "confirm_tournament_editing": "Confirm tournament editing",
+    "create_team_title": "Create a team"
   },
   "login_form": {
     "forgot_password": "Forgot password?",
@@ -164,7 +190,11 @@
     "court_number": "Court",
     "tournament_winner": "Winner of tournament: ",
     "no_winner": "No winner",
-    "tiebreaker": "There is a new tiebreaker in group {{groupNr}}"
+    "tiebreaker": "There is a new tiebreaker in group {{groupNr}}",
+    "match_start_clock": "Match starts",
+    "edit_court_time": "Edit Court and Time",
+    "scheduled_time": "Scheduled Time",
+    "no_scheduled_time": "Scheduled Time not set"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",
@@ -173,13 +203,15 @@
     "user_info": "The information you are signing up with:",
     "user_info_table": "User Information",
     "player_table": "Player Table",
-    "cancel": "Cancel sign up for"
+    "cancel": "Cancel sign up for",
+    "private_tournament_password": "Tournament access key",
+    "password_required": "Access key required"
   },
   "frontpage_labels": {
     "ongoing_tournaments": "Ongoing Tournaments",
     "upcoming_tournaments": "Upcoming Tournaments",
     "past_tournaments": "Past Tournaments",
-    "create_tournament": "Create Tournament",
+    "create_tournament": "CREATE TOURNAMENT",
     "no_tournaments_found": "No tournaments found.",
     "no_upcoming": "No upcoming tournaments.",
     "no_ongoing": "No ongoing tournaments.",
@@ -238,7 +270,9 @@
     "payment_link": "Link to payment site",
     "required_text": "This field is required",
     "swiss": "Swiss",
-    "swiss_rounds": "Number of swiss rounds"
+    "swiss_rounds": "Number of swiss rounds",
+    "enable_password": "Set a key to join the tournament",
+    "password": "Tournament join key"
   },
   "edit_tournament_form": {
     "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"
@@ -247,8 +281,9 @@
     "edit_tournament": "Edit tournament"
   },
   "team_info_labels": {
-    "team_name": "Team names",
-    "players": "Players"
+    "team_name_label": "Team names",
+    "players_label": "Players",
+    "actions_label": "Actions"
   },
   "upcoming_tournament_view": {
     "date_header": "When",
@@ -264,7 +299,9 @@
     "link_to_payment_header": "There is a fee for this tournament, please visit",
     "link_to_site_header": "Organizer's website",
     "attendee_list": "Log in to see the list of attendees",
-    "max_players": "The number of players signed up"
+    "max_players": "The number of players signed up",
+    "max_teams": "The number of teams",
+    "max_players_per_team": "The number of players per team"
   },
   "navigation": {
     "back": "Back",
@@ -400,7 +437,8 @@
     "my_points": "My Points",
     "point_type": "Point Type",
     "points": "Points",
-    "created_tournaments": "Created tournaments"
+    "created_tournaments": "Created tournaments",
+    "invitations": "Tournament invitations"
   },
   "filtering": {
     "options": "Filtering options",
@@ -437,5 +475,13 @@
     "bugs": "Bugs",
     "bugs1": "If you would like to report any bugs or have thoughts on any other things we should add to our site, please tell us in our ",
     "bugs_link": "GitHub Issues tab"
+  },
+  "invite": {
+    "select_club": "Select clubs to invite",
+    "select_club_placeholder": "Clubs",
+    "date": "Date",
+    "check_out": "Check out",
+    "no_invitations": "No invitations",
+    "players": "Players"
   }
 }

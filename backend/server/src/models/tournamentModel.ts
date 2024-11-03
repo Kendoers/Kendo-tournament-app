@@ -1,6 +1,7 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
 import type { Match, MatchTime } from "./matchModel";
 import { type User } from "./userModel";
+import bcrypt from "bcrypt";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -46,14 +47,19 @@ export interface Tournament {
   linkToSite?: string;
   numberOfCourts: number;
   swissRounds?: number;
+  passwordEnabled: boolean;
+  password?: string;
 
   numberOfTeams?: number;
   teams?: Array<{
+    id: Types.ObjectId;
     name: string;
     players: Array<Types.ObjectId | User>;
   }>;
   playersPerTeam?: number;
 }
+
+const SALT_ROUNDS = 10;
 
 const tournamentSchema = new Schema<Tournament & Document>(
   {
@@ -89,6 +95,8 @@ const tournamentSchema = new Schema<Tournament & Document>(
     linkToPay: { type: String },
     linkToSite: { type: String },
     swissRounds: { type: Number },
+    passwordEnabled: { type: Boolean },
+    password: { type: String, required: false, select: false },
 
     teams: [
       {
@@ -107,10 +115,28 @@ const tournamentSchema = new Schema<Tournament & Document>(
       transform(_doc, ret, _options) {
         ret.id = ret._id;
         delete ret._id;
+        delete ret.password;
       }
     }
   }
 );
+
+// Hash password before saving
+tournamentSchema.pre("save", async function (next) {
+  const tournament = this as Tournament & Document;
+
+  // Explicitly check for nullish values and password modification
+  if (
+    tournament.isModified("password") &&
+    tournament.password !== null &&
+    tournament.password !== undefined &&
+    tournament.passwordEnabled
+  ) {
+    tournament.password = await bcrypt.hash(tournament.password, SALT_ROUNDS);
+  }
+
+  next();
+});
 
 export const TournamentModel = mongoose.model<Tournament & Document>(
   "Tournament",

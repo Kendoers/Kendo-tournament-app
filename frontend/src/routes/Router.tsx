@@ -27,6 +27,7 @@ import PasswordControl from "components/modules/PasswordControl/PasswordControl"
 import PrivacyPolicy from "components/modules/Legal/PrivacyPolicy";
 import CancelSignup from "components/modules/Tournaments/Signup/CancelSignup";
 import EditTournametInfo from "components/modules/Tournaments/EditTournament/EditInfo";
+import CreateTeam from "components/modules/Tournaments/OngoingTournament/TeamRoundRobin/CreateTeamView";
 import OwnTournament from "components/modules/Tournaments/OwnTournament";
 import Help from "components/modules/Help/Help";
 
@@ -53,6 +54,8 @@ const routes = createRoutesFromElements(
           path="own-tournament/:tournamentId"
           element={<OwnTournament />}
         />
+
+        <Route path="create-team/:tournamentId" element={<CreateTeam />} />
 
         <Route
           path=":id"

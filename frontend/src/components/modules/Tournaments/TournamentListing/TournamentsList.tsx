@@ -197,37 +197,30 @@ const TournamentList: React.FC = () => {
           navigate("new-tournament");
         }}
         sx={{
-          fontSize: "34px",
+          fontSize: "16px",
           position: "fixed",
           zIndex: "999",
           bottom: "70px",
           right: "20px",
           color: "white",
           backgroundColor: "#db4744",
-          borderRadius: "50%",
-          width: "56px",
-          height: "62px",
+          borderRadius: "25px",
+          width: "270px",
+          height: "50px",
           textTransform: "none",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
           transition: "transform 0.3s",
-
-          "&::after": {
-            content: "'+'",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
+          "&::before": {
+            content: '"+"',
+            fontSize: "30px",
+            position: "absolute",
+            left: "16px"
           },
-
+          "&::after": {
+            content: `"${t("frontpage_labels.create_tournament")}"`
+          },
           "&:hover": {
-            width: "130px",
-            height: "60px",
-            borderRadius: "10px",
-            color: "white",
-            backgroundColor: "#db4744",
-            "&::after": {
-              content: `'${t("frontpage_labels.create_tournament")}'`,
-              fontSize: "16px"
-            }
+            backgroundColor: "#e57373"
           }
         }}
       ></Button>
