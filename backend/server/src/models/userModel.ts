@@ -15,6 +15,7 @@ export interface User {
   danRank?: string;
   underage: boolean;
   guardiansEmail?: string;
+  invitations?: string[];
 
   /* Internal properties */
   password: string;
@@ -57,6 +58,7 @@ const schema = new Schema<User, UserMethods>(
     danRank: { type: String, set: omitEmptyString },
     underage: { type: Boolean, default: false },
     guardiansEmail: { type: String, set: omitEmptyString },
+    invitations: { type: [String], default: [] },
 
     /* Internal properties */
     password: { type: String, required: true, select: false },

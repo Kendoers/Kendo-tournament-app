@@ -51,7 +51,9 @@
     "max_players_per_team_reached": "Joukkueen pelaajien enimmäismäärä on saavutettu!",
     "player_kicked_success": "Pelaaja on potkaistu onnistuneesti!",
     "player_kick_error": "Virhe tapahtui potkaistaessa pelaajaa!",
-    "team_deleted_success": "Joukkue on poistettu onnistuneesti!"
+    "team_deleted_success": "Joukkue on poistettu onnistuneesti!",
+    "invite_success": "Seurojen pelaajat on kutsuttu!",
+    "invite_error": "Kutsujen lähettäminen epäonnistui."
   },
   "create_team_form": {
     "team_name_label": "Kirjoita joukkueen nimi"
@@ -107,7 +109,8 @@
     "join_team_button": "Liity tiimiin",
     "leave_team_button": "Jätä joukkue",
     "kick_player_button": "Poista pelaaja joukkueesta",
-    "delete_team_button": "Poista tämä joukkue"
+    "delete_team_button": "Poista tämä joukkue",
+    "invite_players": "Kutsu pelaajia"
   },
   "titles": {
     "login": "Kirjaudu sisään",
@@ -434,7 +437,8 @@
     "my_points": "Omat pisteet",
     "point_type": "Pistetyyppi",
     "points": "Pisteet",
-    "created_tournaments": "Luodut turnaukset"
+    "created_tournaments": "Luodut turnaukset",
+    "invitations": "Turnaus kutsut"
   },
   "filtering": {
     "options": "Suodatusvalinnat",
@@ -471,5 +475,9 @@
     "bugs": "Bugit",
     "bugs1": "Jos haluat raportoida bugeja tai jos sinulla on ajatuksia asioista, joita meidän pitäisi lisätä sivustollemme, kerro niistä meille ",
     "bugs_link": "GitHubimme Issues -välilehdellä"
+  },
+  "invite": {
+    "select_club": "Valitse kutsuttavat seurat",
+    "select_club_placeholder": "Seurat"
   }
 }

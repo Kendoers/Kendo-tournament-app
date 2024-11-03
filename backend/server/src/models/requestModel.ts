@@ -152,3 +152,8 @@ export interface ChangeCourtTimeRequest {
   courtNumber?: number;
   scheduledTime?: string;
 }
+
+export interface InvitePlayersByClubRequest {
+  clubs: string[];
+  tournamentId: string;
+}

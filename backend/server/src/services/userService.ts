@@ -3,7 +3,8 @@ import BadRequestError from "../errors/BadRequestError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import type {
   EditUserRequest,
-  RegisterRequest
+  RegisterRequest,
+  InvitePlayersByClubRequest
 } from "../models/requestModel.js";
 import { TournamentModel } from "../models/tournamentModel";
 import { TournamentService } from "../services/tournamentService.js";
@@ -128,5 +129,50 @@ export class UserService {
     }
 
     return user;
+  }
+
+  /**
+   * Fetches all unique club names from the users.
+   * @returns A promise that resolves to an array of unique club names.
+   */
+  public async getUniqueClubNames(): Promise<string[]> {
+    try {
+      const clubNames = await UserModel.distinct("clubName", {
+        clubName: { $ne: "" }
+      }).exec();
+
+      return clubNames.sort();
+    } catch (error: any) {
+      throw new Error(`Error fetching club names: ${error.message}`);
+    }
+  }
+
+  // Fetches all invitations for a specific player
+  public async getPlayerInvitations(userId: string): Promise<string[]> {
+    const user = await UserModel.findById(userId).select("invitations").exec();
+    if (!user) {
+      throw new NotFoundError({ message: "User not found" });
+    }
+    return user.invitations || [];
+  }
+
+  // Invites all players belonging to specified clubs to a tournament
+  public async invitePlayersByClub(
+    request: InvitePlayersByClubRequest
+  ): Promise<void> {
+    const { clubs, tournamentId } = request;
+
+    const users = await UserModel.find({ clubName: { $in: clubs } }).exec();
+    const invitation = `${tournamentId}`;
+
+    for (const user of users) {
+      user.invitations = user.invitations ?? [];
+
+      if (!user.invitations.includes(invitation)) {
+        user.invitations.push(invitation);
+      }
+
+      await user.save();
+    }
   }
 }

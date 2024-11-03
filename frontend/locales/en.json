@@ -51,7 +51,9 @@
     "max_players_per_team_reached": "The maximum amount of player in this team has been reached!",
     "player_kicked_success": "Player has been kicked successfully!",
     "player_kick_error": "An error occured while kicking a player!",
-    "team_deleted_success": "Team has been delete successfully!"
+    "team_deleted_success": "Team has been delete successfully!",
+    "invite_success": "Players of clubs invited",
+    "invite_error": "Sending invites failed"
   },
   "create_team_form": {
     "team_name_label": "Enter a team name"
@@ -107,7 +109,8 @@
     "join_team_button": "Join team",
     "leave_team_button": "Leave team",
     "kick_player_button": "Kick this player",
-    "delete_team_button": "Delete this team"
+    "delete_team_button": "Delete this team",
+    "invite_players": "Invite players"
   },
   "titles": {
     "login": "Sign in",
@@ -434,7 +437,8 @@
     "my_points": "My Points",
     "point_type": "Point Type",
     "points": "Points",
-    "created_tournaments": "Created tournaments"
+    "created_tournaments": "Created tournaments",
+    "invitations": "Tournament invitations"
   },
   "filtering": {
     "options": "Filtering options",
@@ -471,5 +475,9 @@
     "bugs": "Bugs",
     "bugs1": "If you would like to report any bugs or have thoughts on any other things we should add to our site, please tell us in our ",
     "bugs_link": "GitHub Issues tab"
+  },
+  "invite": {
+    "select_club": "Select clubs to invite",
+    "select_club_placeholder": "Clubs"
   }
 }

@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Grid, Link } from "@mui/material";
 import CopyToClipboardButton from "./OngoingTournament/CopyToClipboardButton";
 import TeamRoundRobinUpcomingView from "./OngoingTournament/TeamRoundRobin/TeamRoundRobinUpcomingView";
+import InviteButton from "./InviteButton";
 
 const generateTable = (tournament: Tournament): React.ReactNode => {
   const { t } = useTranslation();
@@ -129,6 +130,9 @@ const UpcomingTournamentView: React.FC = () => {
         </Grid>
         <Grid item>
           <CopyToClipboardButton />
+        </Grid>
+        <Grid item>
+          <InviteButton />
         </Grid>
       </Grid>
 
