@@ -97,7 +97,6 @@ const TeamRoundRobinUpcomingView: React.FC = () => {
 
   const handleDeleteTeam = async (teamId: string): Promise<void> => {
     try {
-      console.log("hi");
       await api.tournaments.removeTeamFromTournament(tournament.id, teamId);
       showToast(t("messages.team_deleted_success"), "success");
       window.location.reload();

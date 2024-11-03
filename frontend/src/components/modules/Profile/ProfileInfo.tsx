@@ -93,7 +93,6 @@ const ProfileInfo: React.FC = () => {
 
   const onSubmit = async (data: EditUserRequest): Promise<void> => {
     try {
-      console.log("update user", data);
       await api.user.update(userId, data);
       showToast(t("messages.update_success"), "success");
     } catch (error) {

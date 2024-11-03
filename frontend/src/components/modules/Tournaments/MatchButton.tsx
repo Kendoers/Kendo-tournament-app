@@ -75,7 +75,6 @@ const MatchButton: React.FC<MatchButtonProps> = ({
     if (Object.keys(updates).length > 0) {
       try {
         await api.match.changeCourtAndTime(match.id, updates);
-        console.log("Court and time updated successfully");
       } catch (error) {
         console.error("Error updating court and time:", error);
       }

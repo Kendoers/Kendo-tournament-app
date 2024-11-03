@@ -67,7 +67,6 @@ export const socketEvents = (
   });
 
   socket.on("tournament-updated", (tournamentData: Tournament) => {
-    console.log("misu");
     setValue((state) => {
       return { ...state, tournamentData };
     });

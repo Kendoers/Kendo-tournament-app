@@ -75,7 +75,6 @@ export class TournamentController extends Controller {
     @Path() tournamentId: ObjectIdString,
     @Body() teamData: { name: string }
   ): Promise<Tournament> {
-    console.log("Team added");
     this.setStatus(201);
     const creatorId = request.user.id;
     const teamName = teamData.name;

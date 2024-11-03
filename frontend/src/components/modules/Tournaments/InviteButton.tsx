@@ -42,7 +42,6 @@ const InviteButton: React.FC = () => {
   const handleInvite = async (): Promise<void> => {
     try {
       if (selectedClubs.length > 0) {
-        console.log("Inviting players from clubs:", selectedClubs);
         await api.user.invitePlayersByClub({
           clubs: clubNames,
           tournamentId: tournament.id
