@@ -116,40 +116,43 @@ const Profile: React.FC = () => {
               <Tab label={t("profile.created_tournaments")} value="created_t" />
               <Tab label={t("profile.invitations")} value="invitations" />
             </Tabs>
-            {currentTab === "created_t" && userCreatedTournaments.length > 0 && (
-              <Button
-                type="button"
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  navigate("/tournaments/new-tournament");
-                }}
-                sx={{
-                  fontSize: "14px",
-                  color: "white",
-                  backgroundColor: "#db4744",
-                  borderRadius: "20px",
-                  width: "200px",
-                  height: "40px",
-                  textTransform: "none",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                  transition: "transform 0.3s",
-                  marginLeft: "60px",
-                  "&::before": {
-                    content: '"+"',
-                    fontSize: "24px",
-                    position: "absolute",
-                    left: "12px"
-                  },
-                  "&::after": {
-                    content: `"${t("frontpage_labels.create_tournament")}"`
-                  },
-                  "&:hover": {
-                    backgroundColor: "#e57373"
-                  }
-                }}
-              ></Button>
-            )}
+            {currentTab === "created_t" &&
+              userCreatedTournaments.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => {
+                    navigate("/tournaments/new-tournament");
+                  }}
+                  sx={{
+                    fontSize: "14px",
+                    color: "white",
+                    backgroundColor: "#db4744",
+                    borderRadius: "20px",
+                    textTransform: "none",
+                    padding: "5px 10px",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                    transition: "transform 0.3s",
+                    marginBottom: "10px",
+                    marginLeft: "60px",
+                    "&::before": {
+                      content: '"+"',
+                      fontSize: "20px",
+                      position: "absolute",
+                      left: "10px",
+                      bottom: "50%",
+                      transform: "translateY(50%)"
+                    },
+                    "&::after": {
+                      content: `"${t("frontpage_labels.create_tournament")}"`
+                    },
+                    "&:hover": {
+                      backgroundColor: "#e57373"
+                    }
+                  }}
+                ></Button>
+              )}
           </Box>
         </>
       )}
