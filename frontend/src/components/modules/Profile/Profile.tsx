@@ -105,44 +105,46 @@ const Profile: React.FC = () => {
               <Tab label={t("profile.profile_info")} value="info" />
               <Tab label={t("profile.my_games")} value="games" />
               <Tab label={t("profile.my_points")} value="points" />
-              {userCreatedTournaments.length > 0 && (
-                <Tab
-                  label={t("profile.created_tournaments")}
-                  value="created_t"
-                />
+
+              <Tab label={t("profile.created_tournaments")} value="created_t" />
+
+              {currentTab === "created_t" &&
+              userCreatedTournaments.length > 0 ? (
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => {
+                    navigate("/tournaments/new-tournament");
+                  }}
+                  sx={{
+                    fontSize: "14px",
+                    color: "white",
+                    backgroundColor: "#db4744",
+                    borderRadius: "20px",
+                    width: "200px",
+                    height: "40px",
+                    textTransform: "none",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                    transition: "transform 0.3s",
+                    marginLeft: "60px",
+                    "&::before": {
+                      content: '"+"',
+                      fontSize: "24px",
+                      position: "absolute",
+                      left: "12px"
+                    },
+                    "&::after": {
+                      content: `"${t("frontpage_labels.create_tournament")}"`
+                    },
+                    "&:hover": {
+                      backgroundColor: "#e57373"
+                    }
+                  }}
+                ></Button>
+              ) : (
+                <></>
               )}
-              <Button
-                type="button"
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  navigate("new-tournament");
-                }}
-                sx={{
-                  fontSize: "14px",
-                  color: "white",
-                  backgroundColor: "#db4744",
-                  borderRadius: "20px",
-                  width: "200px",
-                  height: "40px",
-                  textTransform: "none",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                  transition: "transform 0.3s",
-                  marginLeft: "auto",
-                  "&::before": {
-                    content: '"+"',
-                    fontSize: "24px",
-                    position: "absolute",
-                    left: "12px"
-                  },
-                  "&::after": {
-                    content: `"${t("frontpage_labels.create_tournament")}"`
-                  },
-                  "&:hover": {
-                    backgroundColor: "#e57373"
-                  }
-                }}
-              ></Button>
             </Tabs>
           </Box>
         </>
