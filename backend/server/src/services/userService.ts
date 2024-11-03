@@ -141,19 +141,25 @@ export class UserService {
         clubName: { $ne: "" }
       }).exec();
 
-      return clubNames.sort();
+      return clubNames.sort((a, b) => a.localeCompare(b));
     } catch (error: any) {
       throw new Error(`Error fetching club names: ${error.message}`);
     }
   }
 
-  // Fetches all invitations for a specific player
+  /**
+   * Fetches all invitations for a specific player.
+   * @param userId - The ID of the user.
+   * @returns A promise that resolves to an array of invitation strings.
+   */
   public async getPlayerInvitations(userId: string): Promise<string[]> {
     const user = await UserModel.findById(userId).select("invitations").exec();
-    if (!user) {
+
+    if (user == null) {
       throw new NotFoundError({ message: "User not found" });
     }
-    return user.invitations || [];
+
+    return user.invitations ?? [];
   }
 
   // Invites all players belonging to specified clubs to a tournament
