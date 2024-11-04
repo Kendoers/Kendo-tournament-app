@@ -691,6 +691,13 @@ export class TournamentService {
       const startDate = new Date(tournamentDetails.startDate);
       const endDate = new Date(tournamentDetails.endDate);
 
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new BadRequestError({
+          message:
+            "Invalid tournament dates."
+        });
+      }
+
       if (startDate >= endDate) {
         throw new BadRequestError({
           message:
