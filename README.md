@@ -49,10 +49,22 @@ Follow these commit message guidelines:
 ### Pull Request (PR) Process
 
 1. Create a new branch for your feature or bug fix.
-2. Commit and push your changes to your branch.
-3. Open a pull request from your branch to the `develop` branch.
-4. Ensure that your PR has a clear title and description.
-5. Request code review from team members.
+2. Commit changes.
+3. Pull the latest changes to the development branch.
+4. Merge the development branch into the new branch (while on your branch, run: _git merge development_).
+5. Push.
+6. Open a pull request from your branch to the `development` branch.
+7. Ensure that your PR has a clear title and description.
+8. Request code review from team members.
+
+Example scenario with commands:
+1. git checkout -b feature/example-feature  
+2. _implement the feature, commit changes_
+3. git checkout development
+4. git pull
+5. git checkout feature/example-feature
+6. git merge development
+7. git push
 
 ### Git Etiquette
 

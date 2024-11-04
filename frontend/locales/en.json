@@ -18,6 +18,7 @@
     "session_expired_message": "Session Expired: Your login session has expired for security reasons. Please log in again.",
     "tournament_info_not_found": "No data was found for this tournament. Close this to go back to the previous view.",
     "could_not_fetch_tournaments": "Could not fetch any tournaments",
+    "start_date_in_past_error": "Tournament has to start in the future",
     "dismiss": "Dismiss",
     "unexpected_error": "Unexpected error",
     "login_successful": "Login successful!",
@@ -32,8 +33,11 @@
     "copy_success": "Tournament link copied to clipboard!",
     "copy_failure": "Failed to copy tournament link",
     "swiss_rounds_error": "Numbers of swiss rounds must be at least 1",
+    "minimum_teams_error": "Number of teams must be at least 2",
+    "minimum_players_per_team_error": "Number of players in a team must be at least 3",
     "role_reset": "Official roles reset successfully!",
-    "match_reset": "Match reset successfully!"
+    "match_reset": "Match reset successfully!",
+    "withdrawal_success": "Player {{name}} was successfully withdrawn from the tournament!"
   },
   "game_interface": {
     "player": "Player",
@@ -55,8 +59,8 @@
     "reset_roles": "Reset official roles"
   },
   "buttons": {
-    "add_point_player_1": "Add point for player 1",
-    "add_point_player_2": "Add point for player 2",
+    "add_point_player_1": "Add point for",
+    "add_point_player_2": "Add point for",
     "ok_button": "OK",
     "close_button": "Close",
     "start_timer": "Start",
@@ -183,7 +187,8 @@
     "start_date": "Start Date",
     "end_date": "End Date",
     "welcome": "Welcome to KendoApp! Here you can participate, host or follow tournaments!",
-    "winner": "WINNER"
+    "winner": "WINNER",
+    "cancelled": "CANCELLED, NOT ENOUGH PLAYERS"
   },
   "created_tournament": {
     "signed_up": "Signed up",
@@ -207,9 +212,12 @@
     "description": "Description",
     "select_tournament_type": "Select tournament type",
     "round_robin": "Round Robin",
+    "team_round_robin": "Team Round Robin",
     "playoff": "Playoff",
     "preliminary_playoff": "Preliminary groups and playoffs",
     "max_players": "Maximum number of players",
+    "number_of_teams": "Number of teams",
+    "players_per_team": "Number of players per team",
     "different_organizer_info": "Organizer has different information than me",
     "organizer_email": "Organizer's email",
     "organizer_phone_number": "Organizer's phone number",
@@ -237,6 +245,10 @@
   },
   "edit_tournament_labels": {
     "edit_tournament": "Edit tournament"
+  },
+  "team_info_labels": {
+    "team_name": "Team names",
+    "players": "Players"
   },
   "upcoming_tournament_view": {
     "date_header": "When",
@@ -269,6 +281,7 @@
   },
   "types": {
     "round_robin": "Round Robin",
+    "team_round_robin": "Team Round Robin",
     "playoff": "Playoff",
     "preliminary_playoff": "Preliminary and playoff",
     "preliminary": "Preliminary",
@@ -387,7 +400,7 @@
     "my_points": "My Points",
     "point_type": "Point Type",
     "points": "Points",
-    "created_tournaments": "Created tournaments" 
+    "created_tournaments": "Created tournaments"
   },
   "filtering": {
     "options": "Filtering options",
