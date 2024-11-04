@@ -82,6 +82,12 @@ describe("TournamentService", () => {
 
   });
 
+  after(async () => {
+    // TODO: fix test inits so that this isn't necessary
+    // delete testUser3 because it messes with other tests
+    await UserModel.deleteMany({userName: 'testUser3'}).exec();
+  });
+
   beforeEach(async () => {
     // prevent emitting updates
     sinon.stub(TournamentService.prototype, 'emitTournamentUpdate').resolves();
