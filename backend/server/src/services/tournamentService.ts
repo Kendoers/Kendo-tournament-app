@@ -674,12 +674,17 @@ export class TournamentService {
   }
 
   private async validateTournamentDetails(
-    tournamentDetails: CreateTournamentRequest | EditTournamentRequest,
+    request: CreateTournamentRequest | EditTournamentRequest,
     creatorOrUpdaterId: string,
     isUpdate: boolean = false,
     existingTournamentDoc?: HydratedDocument<Tournament>
   ): Promise<void> {
     const MINIMUM_GROUP_SIZE = 3;
+
+    const tournamentDetails = {
+      ...existingTournamentDoc?.toObject(),
+      ...request
+    };
 
     if (
       tournamentDetails.type === TournamentType.RoundRobin &&
@@ -746,6 +751,7 @@ export class TournamentService {
       tournamentDetails.organizerPhone = organizer.phoneNumber;
     }
 
+    // TODO: might be unnecessary with the new validator
     // Additional checks for updates can be added here, e.g., ensuring the tournament hasn't started
     if (isUpdate && existingTournamentDoc !== undefined) {
       const currentDate = new Date();
