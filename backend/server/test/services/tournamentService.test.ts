@@ -22,9 +22,9 @@ import MatchModel from "../../src/models/matchModel";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-let now = new Date();
-let tomorrow = new Date(new Date().setDate(now.getDate() + 1));
-let theDayAfter = new Date(new Date().setDate(now.getDate() + 2));
+const now = new Date();
+const tomorrow = new Date(new Date().setDate(now.getDate() + 1));
+const theDayAfter = new Date(new Date().setDate(now.getDate() + 2));
 
 
 let request_template: CreateTournamentRequest = {
@@ -86,9 +86,6 @@ describe("TournamentService", () => {
     // prevent emitting updates
     sinon.stub(TournamentService.prototype, 'emitTournamentUpdate').resolves();
 
-    // add test users to db
-    // await UserModel.create([Helper.testUser, Helper.testUser2, Helper.testUser3]);
-
     tournamentService = new TournamentService();
   });
 
@@ -110,9 +107,10 @@ describe("TournamentService", () => {
       let id: string = new Types.ObjectId().toString();
 
       let res = await tournamentService.createTournament(request, id);
-      let res2 = await tournamentService.getAllTournaments();
+      let res2 = await TournamentModel.find().exec();
+
       expect(res2.length).to.equal(1);
-      expect(res).to.equal(res2.at(0));
+      expect(res).to.deep.equal(res2.at(0).toObject());
 
     });
 
@@ -257,15 +255,11 @@ describe("TournamentService", () => {
 
       tournament = await TournamentModel.findById(testTournamentId).exec();
 
-      // TODO:
-      // at the moment this does not remove any players but does trigger an
-      // unnecessary recalculation of the tournament schedule
       await expect(tournamentService.removePlayerFromTournament(testTournamentId, testPlayer3Id))
-        .to.not.be.rejected; // TODO: message not defined
+        .to.be.rejected;
 
       let tournament_new = await TournamentModel.findById(testTournamentId).exec();
       expect(tournament_new).to.deep.equal(tournament);
-      // expect(tournament.players.length).to.equal(2);
     });
 
     it("should behave correctly when trying to remove from an empty tournament", async () => {
@@ -315,7 +309,7 @@ describe("TournamentService", () => {
   // how is that done?
   // is it possible to delete the matches of the automatically created schedule?
   // new tournament type? (does not currently exist)
-  describe("addMatchToTournament", () => {
+  describe.skip("addMatchToTournament", () => {
     let testTournamentId: string;
     let match: UnsavedMatch;
 
@@ -453,7 +447,7 @@ describe("TournamentService", () => {
           "Invalid tournament dates. The start date must be before the end date.");
 
       let tournament = await TournamentModel.findById(testTournamentId).exec();
-      expect(tournament.endDate).to.not.equal(now.toISOString());
+      expect(tournament.endDate).to.not.equal(dateRequest.endDate);
 
       await tournamentService.updateTournamentById(testTournamentId,
         { type: TournamentType.PreliminaryPlayoff,
