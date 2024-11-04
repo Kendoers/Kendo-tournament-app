@@ -196,29 +196,34 @@ export class TournamentService {
       });
     }
 
+    if (!tournament.players.includes(player.id)) {
+      throw new BadRequestError({
+        message: "Player not in tournament"
+      });
+    }
+
     // Remove player from tournament
-    if (tournament.players.includes(player.id)) {
-      const index = tournament.players.indexOf(player.id);
-      tournament.players.splice(index, 1);
 
-      // Remove player's matches from match schedule
-      const matchesToRemove: Array<Types.ObjectId | Match> = [];
+    const index = tournament.players.indexOf(player.id);
+    tournament.players.splice(index, 1);
 
-      for (const matchId of tournament.matchSchedule) {
-        const match = await MatchModel.findById(matchId).exec();
-        if (match === undefined || match === null) {
-          continue; // Skip if match doesn't exist
-        }
-        // Check if a match involves the removed player
-        const matchPlayerIds = match.players.map((player) =>
-          player.id.toString()
-        );
-        if (matchPlayerIds.includes(playerId)) {
-          matchesToRemove.push(matchId);
-          // Delete the match
-          const matchIdString = String(matchId);
-          await this.matchService.deleteMatchById(matchIdString);
-        }
+    // Remove player's matches from match schedule
+    const matchesToRemove: Array<Types.ObjectId | Match> = [];
+
+    for (const matchId of tournament.matchSchedule) {
+      const match = await MatchModel.findById(matchId).exec();
+      if (match === undefined || match === null) {
+        continue; // Skip if match doesn't exist
+      }
+      // Check if a match involves the removed player
+      const matchPlayerIds = match.players.map((player) =>
+        player.id.toString()
+      );
+      if (matchPlayerIds.includes(playerId)) {
+        matchesToRemove.push(matchId);
+        // Delete the match
+        const matchIdString = String(matchId);
+        await this.matchService.deleteMatchById(matchIdString);
       }
 
       // Remove match IDs involving the removed player from match schedule
