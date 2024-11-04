@@ -26,6 +26,7 @@ import LogoButton from "./LogoButton";
 // -,- in the menu and the corresponding link
 
 import type { NavigationData, NavigationItem } from "./navigation-bar";
+import { ProfileNavItems } from "./profile-navigation";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
 import { MenuItem } from "@mui/material";
@@ -68,10 +69,6 @@ const NavigationBar: React.FC<Props> = (props) => {
     navigate(routePaths.help);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setAnchorEl(event.currentTarget);
-  };
-
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -106,49 +103,59 @@ const NavigationBar: React.FC<Props> = (props) => {
                     {item.text}
                   </Button>
                 ))}
-                <Button
-                  id="test"
-                  sx={{ color: "#fff", marginRight: 10 }}
-                  aria-controls={open ? "profile-dropdown" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleClick}
-                >
-                  Profile
-                </Button>
-                <Menu
-                  id="profile-dropdown"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={() => {
-                    setAnchorEl(null);
-                  }}
-                  MenuListProps={{
-                    "aria-labelledby": "Profile"
-                  }}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      setAnchorEl(null);
-                    }}
-                  >
-                    test1
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setAnchorEl(null);
-                    }}
-                  >
-                    test2
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setAnchorEl(null);
-                    }}
-                  >
-                    test3
-                  </MenuItem>
-                </Menu>
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      id="test"
+                      sx={{ color: "#fff", marginRight: 10 }}
+                      onMouseEnter={(
+                        event: React.MouseEvent<HTMLButtonElement>
+                      ) => {
+                        setAnchorEl(event.currentTarget); // Open menu when mouse enters the Button
+                        console.log("test enter");
+                      }}
+                      aria-controls={open ? "profile-dropdown" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={() => {
+                        navigate("/profile");
+                      }}
+                    >
+                      Profile
+                    </Button>
+                    <Menu
+                      id="profile-dropdown"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={() => {
+                        setAnchorEl(null); // Close menu when clicking outside
+                      }}
+                      MenuListProps={{
+                        "aria-labelledby": "test",
+                        onMouseEnter: () => {
+                          setAnchorEl(anchorEl); // Keep menu open when hovering over it
+                        },
+                        onMouseLeave: () => {
+                          setAnchorEl(null); // Close menu when mouse leaves the menu
+                        }
+                      }}
+                    >
+                      {ProfileNavItems.map((item) => (
+                        <MenuItem
+                          key={item.text}
+                          onClick={() => {
+                            setAnchorEl(null);
+                            navigate(`/profile?tab=${item.tab}`);
+                          }}
+                        >
+                          {item.text}
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </>
+                ) : (
+                  <></>
+                )}
               </Box>
               <LanguageSwitcher />
               {/* Help Page Button */}
