@@ -5,6 +5,7 @@
 */
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -45,6 +46,7 @@ const NavigationBar: React.FC<Props> = (props) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -121,7 +123,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                         navigate("/profile");
                       }}
                     >
-                      Profile
+                      {t("navigation.profile")}
                     </Button>
                     <Menu
                       id="profile-dropdown"
