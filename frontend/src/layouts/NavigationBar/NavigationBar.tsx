@@ -15,6 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import LanguageSwitcher from "./LanguageSwitcher";
 
+import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import HelpIcon from "@mui/icons-material/Help";
 
@@ -25,8 +26,10 @@ import LogoButton from "./LogoButton";
 // -,- in the menu and the corresponding link
 
 import type { NavigationData, NavigationItem } from "./navigation-bar";
+import { ProfileNavItems } from "./profile-navigation";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
+import { MenuItem } from "@mui/material";
 
 interface Props {
   window?: () => Window;
@@ -40,6 +43,8 @@ const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -57,6 +62,7 @@ const NavigationBar: React.FC<Props> = (props) => {
     }
 
     navigate(navigationItem.link);
+    console.log(navigationItem.text);
   };
 
   const handleHelpButton = (): void => {
@@ -82,13 +88,14 @@ const NavigationBar: React.FC<Props> = (props) => {
                   <MenuIcon />
                 </IconButton>
               </Box>
-              <LanguageSwitcher />
+              <LogoButton logoName={APP_NAME} />
               {/* Navigation bar links */}
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {navigationItems.map((item) => (
                   <Button
+                    id={item.text}
                     key={item.text}
-                    sx={{ color: "#fff" }}
+                    sx={{ color: "#fff", marginRight: 10 }}
                     onClick={async () => {
                       await handleButtonClick(item);
                     }}
@@ -96,8 +103,61 @@ const NavigationBar: React.FC<Props> = (props) => {
                     {item.text}
                   </Button>
                 ))}
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      id="test"
+                      sx={{ color: "#fff", marginRight: 10 }}
+                      onMouseEnter={(
+                        event: React.MouseEvent<HTMLButtonElement>
+                      ) => {
+                        setAnchorEl(event.currentTarget); // Open menu when mouse enters the Button
+                        console.log("test enter");
+                      }}
+                      aria-controls={open ? "profile-dropdown" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={() => {
+                        navigate("/profile");
+                      }}
+                    >
+                      Profile
+                    </Button>
+                    <Menu
+                      id="profile-dropdown"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={() => {
+                        setAnchorEl(null); // Close menu when clicking outside
+                      }}
+                      MenuListProps={{
+                        "aria-labelledby": "test",
+                        onMouseEnter: () => {
+                          setAnchorEl(anchorEl); // Keep menu open when hovering over it
+                        },
+                        onMouseLeave: () => {
+                          setAnchorEl(null); // Close menu when mouse leaves the menu
+                        }
+                      }}
+                    >
+                      {ProfileNavItems.map((item) => (
+                        <MenuItem
+                          key={item.text}
+                          onClick={() => {
+                            setAnchorEl(null);
+                            navigate(`/profile?tab=${item.tab}`);
+                          }}
+                        >
+                          {item.text}
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </>
+                ) : (
+                  <></>
+                )}
               </Box>
-              <LogoButton logoName={APP_NAME} />
+              <LanguageSwitcher />
               {/* Help Page Button */}
               <IconButton
                 color="inherit"

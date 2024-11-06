@@ -17,24 +17,19 @@ export const baseNavItems: NavigationData = [
 
 export const signupData: NavigationData = [
   {
-    text: "navigation.login",
-    link: routePaths.login
-  },
-  {
     text: "navigation.register",
     link: routePaths.register
+  },
+  {
+    text: "navigation.login",
+    link: routePaths.login
   }
 ];
 
 export const unAuthenticatedNavItems: NavigationData =
   baseNavItems.concat(signupData);
 
-export const authenticatedNavItems: NavigationData = baseNavItems.concat([
-  {
-    text: "navigation.profile",
-    link: routePaths.profile
-  }
-]);
+export const authenticatedNavItems: NavigationData = baseNavItems;
 
 export const settings: NavigationData = [
   {
