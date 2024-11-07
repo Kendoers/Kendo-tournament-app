@@ -19,6 +19,7 @@ import { ArrowBack } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import routePaths from "routes/route-paths";
 import { useTranslation } from "react-i18next";
+import { ProfileNavItems } from "layouts/NavigationBar/profile-navigation";
 
 const Layout = (): ReactElement => {
   const { isAuthenticated } = useAuth();
@@ -38,6 +39,11 @@ const Layout = (): ReactElement => {
   }));
 
   const translantedNavItems = navigationItems.map((item) => ({
+    ...item,
+    text: t(item.text)
+  }));
+
+  const translantedProfileNavItems = ProfileNavItems.map((item) => ({
     ...item,
     text: t(item.text)
   }));
@@ -83,6 +89,7 @@ const Layout = (): ReactElement => {
       <NavigationBar
         navigationItems={translantedNavItems}
         settings={translantedSettings}
+        profileNavigationItems={translantedProfileNavItems}
       />
       <Container className="app-container">
         {pathname !== routePaths.homeRoute && (
