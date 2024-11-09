@@ -22,6 +22,7 @@ import {
   useForm,
   useWatch
 } from "react-hook-form-mui";
+import CountrySelect from "../Registeration/CountrySelect/CountrySelect";
 
 const defaultValues: EditUserRequest = {
   firstName: "",
@@ -195,13 +196,7 @@ const ProfileInfo: React.FC = () => {
             }}
           />
 
-          <TextFieldElement
-            name="nationality"
-            label={t("user_info_labels.nationality")}
-            fullWidth
-            margin="normal"
-            disabled={!editingEnabled}
-          />
+          <CountrySelect />
 
           <CheckboxElement
             name="inNationalTeam"

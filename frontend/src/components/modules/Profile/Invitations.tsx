@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Box, CircularProgress, Button } from "@mui/material";
+import { Typography, Box, CircularProgress, Button, Chip } from "@mui/material";
 import api from "api/axios";
 import { useAuth } from "context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -65,60 +65,68 @@ const Invitations: React.FC = () => {
 
   return (
     <Box>
-      {invitations.length > 0 ? (
-        <>
-          {upcomingTournaments.length > 0 ? (
-            upcomingTournaments.map((tournament) => (
-              <Box
-                key={tournament.id}
-                display="flex"
-                flexDirection="column"
-                gap={1}
-                mb={3}
-                p={2}
-                sx={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px"
+      {invitations.length > 0 && upcomingTournaments.length > 0 ? (
+        upcomingTournaments.map((tournament) => {
+          const hasJoined = tournament.players.some(
+            (player) => player.id === userId
+          );
+
+          return (
+            <Box
+              key={tournament.id}
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              mb={3}
+              p={2}
+              sx={{
+                border: "1px solid #ddd",
+                borderRadius: "8px"
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {tournament.name}
+                {hasJoined && (
+                  <Chip
+                    label={t("invite.accepted")}
+                    color="success"
+                    size="small"
+                    sx={{ ml: 1 }}
+                  />
+                )}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>
+                  {t("frontpage_labels.start_date")}:
+                </span>{" "}
+                {new Date(tournament.startDate).toLocaleDateString()}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>
+                  {t("created_tournament.location_header")}:
+                </span>{" "}
+                {tournament.location}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>
+                  {t("invite.players")}:{" "}
+                </span>
+                {tournament.players.length} / {tournament.maxPlayers}
+              </Typography>
+              <Button
+                variant={hasJoined ? "outlined" : "contained"}
+                color={hasJoined ? "secondary" : "primary"}
+                onClick={() => {
+                  navigate(`/tournaments/${tournament.id}`);
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                  {tournament.name}
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: "bold" }}>
-                    {t("frontpage_labels.start_date")}:
-                  </span>{" "}
-                  {new Date(tournament.startDate).toLocaleDateString()}
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: "bold" }}>
-                    {t("created_tournament.location_header")}:
-                  </span>{" "}
-                  {tournament.location}
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: "bold" }}>
-                    {t("invite.players")}:{" "}
-                  </span>
-                  {tournament.players.length} / {tournament.maxPlayers}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    navigate(`/tournaments/${tournament.id}`);
-                  }}
-                >
-                  {t("invite.check_out")}
-                </Button>
-              </Box>
-            ))
-          ) : (
-            <Typography>{t("invite.no_invitations")}</Typography>
-          )}
-        </>
+                {t("invite.check_out")}
+              </Button>
+            </Box>
+          );
+        })
       ) : (
-        <Typography>{t("invite.no_invitations")}</Typography>
+        <Typography p={2}>{t("invite.no_invitations")}</Typography>
       )}
     </Box>
   );

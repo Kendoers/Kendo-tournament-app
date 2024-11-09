@@ -272,7 +272,9 @@
     "swiss": "Swiss",
     "swiss_rounds": "Number of swiss rounds",
     "enable_password": "Set a key to join the tournament",
-    "password": "Tournament join key"
+    "password": "Tournament join key",
+    "change_password": "Change tournament key?",
+    "remove_password": "Remove the key to join the tournament"
   },
   "edit_tournament_form": {
     "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"
@@ -482,6 +484,7 @@
     "date": "Date",
     "check_out": "Check out",
     "no_invitations": "No invitations",
-    "players": "Players"
+    "players": "Players",
+    "accepted": "Accepted"
   }
 }

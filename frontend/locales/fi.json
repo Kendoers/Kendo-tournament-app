@@ -272,7 +272,9 @@
     "swiss": "Sveitsiläinen",
     "swiss_rounds": "Sveitsiläisiä kierroksia",
     "enable_password": "Aseta liittymiskoodi turnaukselle",
-    "password": "Turnauksen liittymiskoodi"
+    "password": "Turnauksen liittymiskoodi",
+    "change_password": "Vaihda liittymiskoodi?",
+    "remove_password": "Poista liittymiskoodi turnauksesta"
   },
   "edit_tournament_form": {
     "confirmation_message": "Oletko varma, että haluat muokata turnausta annetuilla tiedoilla?"
@@ -482,6 +484,7 @@
     "date": "Päivämäärä",
     "check_out": "Tutustu",
     "no_invitations": "Ei kutsuja",
-    "players": "Pelaajat"
+    "players": "Pelaajat",
+    "accepted": "Hyväksytty"
   }
 }
