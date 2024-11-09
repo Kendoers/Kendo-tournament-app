@@ -313,7 +313,7 @@ export class TournamentService {
 
     // Verify the password if the tournament is password-protected
     if (
-      tournament.passwordEnabled === true &&
+      tournament.passwordEnabled &&
       (player.invitations === null ||
         player.invitations === undefined ||
         !player.invitations.includes(tournament.id))
