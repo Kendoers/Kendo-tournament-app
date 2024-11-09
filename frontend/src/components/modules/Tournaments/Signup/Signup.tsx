@@ -45,6 +45,8 @@ const Signup: React.FC = (): ReactElement => {
     void fetchUserData();
   }, [userId]);
 
+  const userInvited = user?.invitations.includes(tournament.id);
+
   const handleSubmit = async (): Promise<void> => {
     try {
       // Check if userId is defined before proceeding
@@ -59,7 +61,7 @@ const Signup: React.FC = (): ReactElement => {
       };
 
       // Include the password only if passwordEnabled is true
-      if (tournament.passwordEnabled) {
+      if (tournament.passwordEnabled && userInvited === false) {
         signupData.password = password;
       }
 
@@ -135,7 +137,7 @@ const Signup: React.FC = (): ReactElement => {
       </Box>
 
       {/* Password Input if Tournament is Private */}
-      {Boolean(tournament.passwordEnabled) && (
+      {Boolean(tournament.passwordEnabled) && userInvited === false && (
         <Box sx={{ marginBottom: "16px" }}>
           <TextField
             label={t("signup_labels.private_tournament_password")}
@@ -161,7 +163,9 @@ const Signup: React.FC = (): ReactElement => {
           }}
           disabled={
             userId === undefined ||
-            (Boolean(tournament.passwordEnabled) && password === "")
+            (Boolean(tournament.passwordEnabled) &&
+              password === "" &&
+              userInvited === false)
           }
         >
           {t("buttons.sign_up_button")}

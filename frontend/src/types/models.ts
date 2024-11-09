@@ -13,6 +13,7 @@ export interface User {
   danRank: string;
   underage: boolean;
   guardiansEmail?: string;
+  invitations: string[];
 }
 
 export type PlayerColor = "red" | "white";

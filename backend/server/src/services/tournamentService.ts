@@ -312,7 +312,10 @@ export class TournamentService {
     }
 
     // Verify the password if the tournament is password-protected
-    if (tournament.passwordEnabled) {
+    if (
+      tournament.passwordEnabled &&
+      !player.invitations?.includes(tournament.id)
+    ) {
       if (password === null || password === undefined || password === "") {
         throw new BadRequestError({
           message: "Password is required to join this tournament"
