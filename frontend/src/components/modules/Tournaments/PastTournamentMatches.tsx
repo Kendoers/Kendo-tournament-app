@@ -210,12 +210,20 @@ const PastTournamentMatches: React.FC = () => {
           onChange={(_, newValue) => {
             handleTabChange(newValue);
           }}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
         >
           <Tab
             label={t("tournament_view_labels.scoreboard")}
             value="scoreboard"
+            sx={{ fontSize: "13px" }}
           />
-          <Tab label={t("tournament_view_labels.matches")} value="matches" />
+          <Tab
+            label={t("tournament_view_labels.matches")}
+            value="matches"
+            sx={{ fontSize: "13px" }}
+          />
         </Tabs>
       )}
 

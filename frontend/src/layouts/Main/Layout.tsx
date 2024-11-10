@@ -16,7 +16,7 @@ import "./Layout.css";
 import { useAuth } from "context/AuthContext";
 import Container from "@mui/material/Container";
 import { ArrowBack } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import routePaths from "routes/route-paths";
 import { useTranslation } from "react-i18next";
 
@@ -88,13 +88,14 @@ const Layout = (): ReactElement => {
         {pathname !== routePaths.homeRoute && (
           <Button
             id="back-button"
-            onClick={() => {
-              handleGoBackWithParams();
+            onClick={handleGoBackWithParams}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              margin: "5px 0"
             }}
-            sx={{ display: "flex", gap: "5px", marginBottom: "6px" }}
           >
-            <ArrowBack />
-            <Typography>{t("navigation.back")}</Typography>
+            <ArrowBack sx={{ fontSize: "20px" }} />
           </Button>
         )}
         <Outlet />

@@ -397,9 +397,20 @@ const PreliminaryPlayoffView: React.FC = () => {
         onChange={(_, newValue) => {
           handleTabChange(newValue);
         }}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
       >
-        <Tab label={t("types.preliminary")} value="preliminary" />
-        <Tab label={t("types.playoff")} value="playoff" />
+        <Tab
+          label={t("types.preliminary")}
+          value="preliminary"
+          sx={{ fontSize: "13px" }}
+        />
+        <Tab
+          label={t("types.playoff")}
+          value="playoff"
+          sx={{ fontSize: "13px" }}
+        />
       </Tabs>
       {currentTab === "preliminary" && (
         <>

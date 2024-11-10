@@ -10,7 +10,10 @@ import {
   TableRow,
   Paper,
   Typography,
-  Grid
+  Select,
+  MenuItem,
+  Button,
+  Box
 } from "@mui/material";
 import { type User, type Match, type Tournament } from "types/models";
 import { useSearchParams } from "react-router-dom";
@@ -24,8 +27,15 @@ import { joinTournament, leaveTournament } from "sockets/emit";
 import PlayerName, { checkSameNames } from "../../PlayerNames";
 import api from "api/axios";
 import useToast from "hooks/useToast";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { allMatchesPlayed, findTournamentWinner } from "utils/TournamentUtils";
 import MatchButton from "../../MatchButton";
+import UpcomingTournamentView from "../../UpcomingTournamentView";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { keyframes } from "@mui/system";
+import { format } from "date-fns";
 
 export interface TournamentPlayer {
   id: string;
@@ -119,29 +129,118 @@ export const Matches: React.FC<{
   pastMatchElements: React.ReactNode[];
 }> = ({ ongoingMatchElements, upcomingMatchElements, pastMatchElements }) => {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery("(max-width:600px)");
+
+  // Toggle states for each match section
+  const [showOngoing, setShowOngoing] = useState(true);
+  const [showUpcoming, setShowUpcoming] = useState(true);
+  const [showPast, setShowPast] = useState(true);
+  const [searchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab");
+
+  useEffect(() => {
+    if (!isMobile) {
+      setShowOngoing(true);
+      setShowUpcoming(true);
+      setShowPast(true);
+    }
+  }, [isMobile]);
+
+  const renderSection = (
+    title: string,
+    show: boolean,
+    setShow: React.Dispatch<React.SetStateAction<boolean>>,
+    elements: React.ReactNode[]
+  ): JSX.Element => (
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap="10px"
+      marginBottom={"15px"}
+      component="div"
+    >
+      <Box
+        display="flex"
+        gap="10px"
+        alignItems="center"
+        justifyContent="space-between"
+        padding={isMobile ? "5px 10px" : "0"}
+        borderRadius={isMobile ? "8px" : "0"}
+        sx={{ backgroundColor: isMobile ? "#FFE1E1" : "transparent" }}
+        component="div"
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: "13px",
+            fontWeight: "bold",
+            justifyContent: isMobile ? "center" : "flex-start"
+          }}
+        >
+          {title}
+        </Typography>
+        {isMobile && (
+          <Button
+            onClick={() => {
+              setShow(!show);
+            }}
+            variant="text"
+            sx={{ fontSize: "20px", color: "black" }}
+          >
+            {show ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+          </Button>
+        )}
+      </Box>
+      {show && (
+        <Box
+          display="flex"
+          gap="15px"
+          justifyContent="space-between"
+          flexWrap="wrap"
+          marginTop="10px"
+          marginLeft="10px"
+          component="div"
+        >
+          {elements.length > 0 ? (
+            elements
+          ) : (
+            <Typography variant="body2" color="textSecondary" fontSize={"13px"}>
+              {t("tournament_view_labels.no_matches")}
+            </Typography>
+          )}
+        </Box>
+      )}
+    </Box>
+  );
 
   return (
-    <div>
-      <div>
-        <Typography variant="h5">
-          {t("tournament_view_labels.ongoing_matches")}
-        </Typography>
-      </div>
-      <div>{ongoingMatchElements}</div>
+    <Box padding="20px 0" component="div">
+      {/* Ongoing and Upcoming Matches */}
+      {currentTab !== "completedMatches" &&
+        renderSection(
+          t("tournament_view_labels.ongoing_matches"),
+          showOngoing,
+          setShowOngoing,
+          ongoingMatchElements
+        )}
 
-      <div>
-        <Typography variant="h5">
-          {t("tournament_view_labels.upcoming_matches")}
-        </Typography>
-      </div>
-      <div>{upcomingMatchElements}</div>
-      <div>
-        <Typography variant="h5">
-          {t("tournament_view_labels.past_matches")}
-        </Typography>
-      </div>
-      <div>{pastMatchElements}</div>
-    </div>
+      {currentTab !== "completedMatches" &&
+        renderSection(
+          t("tournament_view_labels.upcoming_matches"),
+          showUpcoming,
+          setShowUpcoming,
+          upcomingMatchElements
+        )}
+
+      {/* Past Matches */}
+      {currentTab === "completedMatches" &&
+        renderSection(
+          t("tournament_view_labels.past_matches"),
+          showPast,
+          setShowPast,
+          pastMatchElements
+        )}
+    </Box>
   );
 };
 
@@ -253,18 +352,37 @@ export const sortMatches = (
   const ongoingMatches = matches.filter(
     (match) => match.elapsedTime > 0 && match.endTimestamp === undefined
   );
-  const upcomingMatches = matches.filter(
-    (match) =>
-      match.elapsedTime <= 0 &&
-      match.endTimestamp === undefined &&
-      match.winner === undefined
-  );
+
+  // Filter and sort upcoming matches by scheduled time, placing undefined times at the end
+  const upcomingMatches = matches
+    .filter(
+      (match) =>
+        match.elapsedTime <= 0 &&
+        match.endTimestamp === undefined &&
+        match.winner === undefined
+    )
+    .sort((a, b) => {
+      const timeA = a.scheduledTime;
+      const timeB = b.scheduledTime;
+
+      // If `scheduledTime` is undefined, place it at the end
+      if (timeA === null) return 1;
+      if (timeB === null) return -1;
+
+      // Convert `scheduledTime` to Date for comparison
+      const dateA = new Date(`1970-01-01T${timeA}`);
+      const dateB = new Date(`1970-01-01T${timeB}`);
+
+      return dateA.getTime() - dateB.getTime();
+    });
+
   const pastMatches = matches.filter(
     (match) =>
       (match.elapsedTime > 0 && match.endTimestamp !== undefined) ||
       (match.endTimestamp !== undefined && match.winner !== undefined) ||
       (match.elapsedTime === 0 && match.winner !== undefined)
   );
+
   return { ongoingMatches, upcomingMatches, pastMatches };
 };
 
@@ -272,6 +390,7 @@ const RoundRobinTournamentView: React.FC = () => {
   const initialTournamentData = useTournament();
   const { t } = useTranslation();
   const tournament = useTournament();
+  const mobile = useMediaQuery("(max-width:600px)");
 
   const [hasJoined, setHasJoined] = useState(false);
   const initialRender = useRef(true);
@@ -281,12 +400,37 @@ const RoundRobinTournamentView: React.FC = () => {
   const [pastMatches, setPastMatches] = useState<Match[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [haveSameNames, setHaveSameNames] = useState<boolean>(false);
-  const tabTypes = ["scoreboard", "matches"] as const;
+  const [showOnlyUserMatches, setShowOnlyUserMatches] = useState(false);
+  const tabTypes = [
+    "tournamentInfo",
+    "scoreboard",
+    "ongoingUpcomingMatches",
+    "completedMatches"
+  ] as const;
   const defaultTab = "scoreboard";
   const currentTab = searchParams.get("tab") ?? defaultTab;
   const { userId } = useAuth();
   const isUserTheCreator = tournament.creator.id === userId;
   const showToast = useToast();
+
+  // Filter matches based on `showOnlyUserMatches` and `userId`
+  const filteredOngoingMatches = showOnlyUserMatches
+    ? ongoingMatches.filter((match) =>
+        match.players.some((player) => player.id === userId)
+      )
+    : ongoingMatches;
+
+  const filteredUpcomingMatches = showOnlyUserMatches
+    ? upcomingMatches.filter((match) =>
+        match.players.some((player) => player.id === userId)
+      )
+    : upcomingMatches;
+
+  const filteredPastMatches = showOnlyUserMatches
+    ? pastMatches.filter((match) =>
+        match.players.some((player) => player.id === userId)
+      )
+    : pastMatches;
 
   useEffect(() => {
     const result = checkSameNames(tournament);
@@ -347,6 +491,10 @@ const RoundRobinTournamentView: React.FC = () => {
     });
   };
 
+  const handleFilterToggle = (): void => {
+    setShowOnlyUserMatches((prev) => !prev);
+  };
+
   useEffect(() => {
     getPlayerNames(tournamentData, setPlayers);
     const sortedMatches = sortMatches(tournamentData.matchSchedule);
@@ -397,7 +545,7 @@ const RoundRobinTournamentView: React.FC = () => {
     }
   }, [players, tournamentData]);
 
-  const ongoingElements = ongoingMatches.map((match) => (
+  const ongoingElements = filteredOngoingMatches.map((match) => (
     <MatchButton
       key={match.id}
       match={match}
@@ -411,7 +559,7 @@ const RoundRobinTournamentView: React.FC = () => {
     />
   ));
 
-  const upcomingElements = upcomingMatches.map((match) => (
+  const upcomingElements = filteredUpcomingMatches.map((match) => (
     <MatchButton
       key={match.id}
       match={match}
@@ -426,7 +574,7 @@ const RoundRobinTournamentView: React.FC = () => {
     />
   ));
 
-  const pastElements = pastMatches.map((match) => (
+  const pastElements = filteredPastMatches.map((match) => (
     <MatchButton
       key={match.id}
       match={match}
@@ -441,49 +589,191 @@ const RoundRobinTournamentView: React.FC = () => {
     />
   ));
 
+  const flash = keyframes`
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  `;
+
+  const formattedStartDate =
+    tournamentData.startDate !== null
+      ? format(new Date(tournamentData.startDate), "MMM dd, yyyy")
+      : "";
+  const formattedEndDate =
+    tournamentData.endDate !== null
+      ? format(new Date(tournamentData.endDate), "MMM dd, yyyy")
+      : "";
+
   return (
     <>
-      <Grid container alignItems="center" spacing={4}>
-        <Grid item>
-          <Typography variant="h4">{tournamentData.name}</Typography>
-          {allMatchesPlayed(tournamentData) && (
-            <Typography variant="subtitle1">
-              <span>
-                {t("frontpage_labels.winner")}
-                {": "}
+      <Typography
+        variant="body1"
+        fontSize="10px"
+        sx={{ display: "flex", gap: "5px", alignItems: "center" }}
+      >
+        {formattedStartDate}
+        {formattedEndDate !== null && ` - ${formattedEndDate}`}
+      </Typography>
+      <Typography
+        variant="body1"
+        fontSize="10px"
+        sx={{ display: "flex", gap: "5px", alignItems: "center" }}
+      >
+        {tournamentData.location !== null && `${tournamentData.location}`}
+      </Typography>{" "}
+      <Typography variant="h4">{tournamentData.name}</Typography>
+      {allMatchesPlayed(tournamentData) && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%"
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#db4744",
+              width: "90%",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+              color: "white",
+              marginTop: "20px",
+              animation: `${flash} 1.5s infinite alternate`
+            }}
+          >
+            <EmojiEventsIcon
+              sx={{ fontSize: "2rem", marginRight: "8px", color: "#FFD700" }}
+            />
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", fontSize: "1.25rem" }}
+            >
+              {t("frontpage_labels.winner")}
+              {": "}
+              <span
+                style={{
+                  color: "#FFD700",
+                  fontSize: "1.5rem",
+                  fontWeight: "bold"
+                }}
+              >
                 {findTournamentWinner(tournamentData)}
               </span>
             </Typography>
-          )}
-        </Grid>
-        <Grid item>
-          <CopyToClipboardButton />
-        </Grid>
-      </Grid>
-
-      <Tabs
-        value={currentTab}
-        onChange={(_, newValue) => {
-          handleTabChange(newValue);
+          </Box>
+        </Box>
+      )}
+      <div
+        style={{
+          position: "absolute",
+          right: "15px",
+          top: mobile ? "44px" : "64px",
+          transform: "translateY(50%)"
         }}
       >
-        <Tab
-          label={t("tournament_view_labels.scoreboard")}
-          value="scoreboard"
-        />
-        <Tab label={t("tournament_view_labels.matches")} value="matches" />
-      </Tabs>
+        <CopyToClipboardButton />
+      </div>
+      {mobile ? (
+        <Select
+          value={currentTab}
+          onChange={(event) => {
+            handleTabChange(event.target.value);
+          }}
+          style={{ marginBottom: "10px", alignItems: "center", padding: "0" }}
+          sx={{
+            border: "2px solid #db4744",
+            fontSize: "13px",
+            color: "#db4744",
+            margin: "10px 0",
+            width: "100%"
+          }}
+        >
+          <MenuItem value="tournamentInfo" sx={{ fontSize: "13px" }}>
+            {t("tournament_view_labels.tournament_info")}
+          </MenuItem>
+          <MenuItem value="scoreboard" sx={{ fontSize: "13px" }}>
+            {t("tournament_view_labels.scoreboard")}
+          </MenuItem>
+          <MenuItem value="ongoingUpcomingMatches" sx={{ fontSize: "13px" }}>
+            {t("tournament_view_labels.ongoing_upcoming_matches_tab")}
+          </MenuItem>
+          <MenuItem value="completedMatches" sx={{ fontSize: "13px" }}>
+            {t("tournament_view_labels.past_matches_tab")}
+          </MenuItem>
+        </Select>
+      ) : (
+        <>
+          <Tabs
+            value={currentTab}
+            onChange={(_, newValue) => {
+              handleTabChange(newValue);
+            }}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{ margin: "10px 0" }}
+          >
+            <Tab
+              label={t("tournament_view_labels.tournament_info")}
+              value="tournamentInfo"
+              sx={{ fontSize: "13px" }}
+            />
+            <Tab
+              label={t("tournament_view_labels.scoreboard")}
+              value="scoreboard"
+              sx={{ fontSize: "13px" }}
+            />
+            <Tab
+              label={t("tournament_view_labels.ongoing_upcoming_matches_tab")}
+              value="ongoingUpcomingMatches"
+              sx={{ fontSize: "13px" }}
+            />
+            <Tab
+              label={t("tournament_view_labels.past_matches_tab")}
+              value="completedMatches"
+              sx={{ fontSize: "13px" }}
+            />
+          </Tabs>
+        </>
+      )}
+      {(currentTab === "ongoingUpcomingMatches" ||
+        currentTab === "completedMatches") && (
+        <Button
+          variant="outlined"
+          onClick={handleFilterToggle}
+          sx={{ fontSize: "10px", borderRadius: "25px", margin: "10px 0" }}
+        >
+          {showOnlyUserMatches
+            ? t("buttons.show_all_matches")
+            : t("buttons.show_my_matches")}
+        </Button>
+      )}
+      {currentTab === "tournamentInfo" && (
+        <div style={{ padding: "10px 0 0 0" }}>
+          <UpcomingTournamentView ongoing />
+        </div>
+      )}
       {currentTab === "scoreboard" && (
         <Scoreboard players={players} haveSameNames={haveSameNames} />
       )}
-      {currentTab === "matches" && (
+      {currentTab === "ongoingUpcomingMatches" && (
         <Matches
           ongoingMatchElements={ongoingElements}
           upcomingMatchElements={upcomingElements}
+          pastMatchElements={[]}
+        />
+      )}
+      {currentTab === "completedMatches" && (
+        <Matches
+          ongoingMatchElements={[]}
+          upcomingMatchElements={[]}
           pastMatchElements={pastElements}
         />
       )}
-      {isUserTheCreator && currentTab === "matches" && (
+      {isUserTheCreator && currentTab === "ongoingUpcomingMatches" && (
         <DeleteUserFromTournament />
       )}
     </>

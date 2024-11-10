@@ -131,7 +131,7 @@ const Signup: React.FC = (): ReactElement => {
         </Typography>
 
         {/* User info */}
-        <Box sx={{ width: "50%", paddingY: "8px" }}>
+        <Box sx={{ width: "100%", maxWidth: "700px", paddingY: "8px" }}>
           {<UserInfoTable user={user} />}
         </Box>
       </Box>

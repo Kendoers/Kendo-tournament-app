@@ -1,13 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import TournamentCard from "./TournamentCard";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTournaments } from "context/TournamentsContext";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Select from "@mui/material/Select";
 import type { Tournament } from "types/models";
@@ -23,9 +22,9 @@ import {
 } from "utils/sorters";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import FilterTournaments from "../FilterTournaments";
+import NewTournamentButton from "../NewTournamentButton";
 
 const TournamentList: React.FC = () => {
-  const navigate = useNavigate();
   const { past, upcoming, ongoing } = useTournaments();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
@@ -189,50 +188,7 @@ const TournamentList: React.FC = () => {
       </Box>
 
       {/* Floating Create Tournament Button */}
-      <Button
-        type="button"
-        variant="outlined"
-        color="primary"
-        onClick={() => {
-          navigate("new-tournament");
-        }}
-        sx={{
-          fontSize: "16px",
-          position: "fixed",
-          zIndex: "999",
-          bottom: "40px",
-          right: "20px",
-          color: "white",
-          backgroundColor: "#db4744",
-          borderRadius: "25px",
-          width: "270px",
-          height: "50px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "10px",
-          textTransform: "none",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-          transition: "transform 0.3s",
-          "&:hover": {
-            backgroundColor: "#e57373"
-          }
-        }}
-      >
-        <Typography
-          component="span"
-          sx={{
-            fontSize: "24px",
-            lineHeight: "1",
-            transform: "translateY(-10%)"
-          }}
-        >
-          +
-        </Typography>
-        <Typography component="span">
-          {t("frontpage_labels.create_tournament")}
-        </Typography>
-      </Button>
+      <NewTournamentButton />
 
       {/* Tournament Listings */}
       {/* If the device is mobile */}
@@ -243,10 +199,10 @@ const TournamentList: React.FC = () => {
             onChange={(event) => {
               handleTabChange(event.target.value);
             }}
-            style={{ marginBottom: "10px" }}
+            style={{ marginBottom: "10px", alignItems: "center", padding: "0" }}
             sx={{
               border: "2px solid #db4744",
-              fontSize: "20px",
+              fontSize: "13px",
               color: "#db4744"
             }}
           >
@@ -273,6 +229,8 @@ const TournamentList: React.FC = () => {
               handleTabChange(value);
             }}
             variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
             sx={{
               position: "sticky",
               top: 0,
@@ -283,14 +241,17 @@ const TournamentList: React.FC = () => {
             <Tab
               label={t("frontpage_labels.ongoing_tournaments")}
               value={"ongoing"}
+              sx={{ fontSize: "13px" }}
             ></Tab>
             <Tab
               label={t("frontpage_labels.upcoming_tournaments")}
               value={"upcoming"}
+              sx={{ fontSize: "13px" }}
             ></Tab>
             <Tab
               label={t("frontpage_labels.past_tournaments")}
               value={"past"}
+              sx={{ fontSize: "13px" }}
             ></Tab>
           </Tabs>
         </Box>
