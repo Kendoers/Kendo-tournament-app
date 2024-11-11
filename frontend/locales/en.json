@@ -110,7 +110,9 @@
     "leave_team_button": "Leave team",
     "kick_player_button": "Kick this player",
     "delete_team_button": "Delete this team",
-    "invite_players": "Invite players"
+    "invite_players": "Invite players",
+    "show_all_matches": "Show all matches",
+    "show_my_matches": "Show my matches"
   },
   "titles": {
     "login": "Sign in",
@@ -172,9 +174,12 @@
     "round": "Round",
     "scoreboard": "Scoreboard",
     "matches": "Matches",
-    "ongoing_matches": "Ongoing matches:",
-    "upcoming_matches": "Upcoming matches:",
-    "past_matches": "Past matches:",
+    "tournament_info": "Tournament Info",
+    "ongoing_upcoming_matches_tab": "Ongoing and upcoming matches",
+    "past_matches_tab": "Completed matches",
+    "ongoing_matches": "ONGOING MATCHES",
+    "upcoming_matches": "UPCOMING MATCHES",
+    "past_matches": "COMPLETED MATCHES",
     "name": "Name",
     "wins": "Wins",
     "losses": "Losses",
@@ -194,7 +199,9 @@
     "match_start_clock": "Match starts",
     "edit_court_time": "Edit Court and Time",
     "scheduled_time": "Scheduled Time",
-    "no_scheduled_time": "Scheduled Time not set"
+    "no_scheduled_time": "Scheduled Time not set",
+    "ongoing": "Ongoing:",
+    "no_matches": "No matches"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",
@@ -272,7 +279,9 @@
     "swiss": "Swiss",
     "swiss_rounds": "Number of swiss rounds",
     "enable_password": "Set a key to join the tournament",
-    "password": "Tournament join key"
+    "password": "Tournament join key",
+    "change_password": "Change tournament key?",
+    "remove_password": "Remove the key to join the tournament"
   },
   "edit_tournament_form": {
     "confirmation_message": "Are you sure you want to edit the tournament with the provided information?"
@@ -290,7 +299,7 @@
     "type_header": "Type of Tournament",
     "about_header": "About the Tournament",
     "attend_prompt": "Want to attend?",
-    "others_signed_up_header": "Others who have signed up",
+    "others_signed_up_header": "Participants",
     "no_players_signed_up": "No players have signed up yet.",
     "location_header": "Where",
     "tournament_full": "This tournament is already full!",
@@ -482,6 +491,7 @@
     "date": "Date",
     "check_out": "Check out",
     "no_invitations": "No invitations",
-    "players": "Players"
+    "players": "Players",
+    "accepted": "Accepted"
   }
 }

@@ -30,6 +30,7 @@ import {
   CheckboxElement,
   DateTimePickerElement,
   FormContainer,
+  PasswordElement,
   SelectElement,
   TextFieldElement,
   useForm,
@@ -360,7 +361,11 @@ const CreateTournamentForm: React.FC = () => {
         {/* Checkbox to enable password */}
         <CheckboxElement
           name="passwordEnabled"
-          label={t("create_tournament_form.enable_password")}
+          label={
+            passwordEnabled === true
+              ? t("create_tournament_form.remove_password")
+              : t("create_tournament_form.enable_password")
+          }
           onChange={(e) => {
             formContext.resetField("password");
             formContext.setValue("passwordEnabled", e.target.checked);
@@ -369,10 +374,9 @@ const CreateTournamentForm: React.FC = () => {
 
         {/* Password field, shown only if passwordEnabled is true */}
         {passwordEnabled === true && (
-          <TextFieldElement
+          <PasswordElement
             required
             name="password"
-            type="password"
             label={t("create_tournament_form.password")}
             fullWidth
             margin="normal"

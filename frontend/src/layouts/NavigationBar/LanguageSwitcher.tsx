@@ -18,7 +18,15 @@ const LanguageSwitcher: React.FC = () => {
       onChange={changeLanguage}
       label="Language"
       variant="standard"
-      sx={{ color: "#fff" }}
+      disableUnderline
+      sx={{
+        color: "#fff",
+        border: "none",
+        paddingRight: "5px",
+        "& .MuiSelect-icon": {
+          right: "4px"
+        }
+      }}
     >
       <MenuItem value="fi">FI</MenuItem>
       <MenuItem value="en">EN</MenuItem>

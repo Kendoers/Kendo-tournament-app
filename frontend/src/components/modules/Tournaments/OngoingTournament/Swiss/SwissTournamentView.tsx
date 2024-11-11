@@ -172,12 +172,20 @@ const SwissTournamentView: React.FC = () => {
           onChange={(_, newValue) => {
             handleTabChange(newValue);
           }}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
         >
           <Tab
             label={t("tournament_view_labels.scoreboard")}
             value="scoreboard"
+            sx={{ fontSize: "13px" }}
           />
-          <Tab label={t("tournament_view_labels.matches")} value="playoff" />
+          <Tab
+            label={t("tournament_view_labels.matches")}
+            value="playoff"
+            sx={{ fontSize: "13px" }}
+          />
         </Tabs>
 
         {currentTab === "scoreboard" && (

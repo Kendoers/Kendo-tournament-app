@@ -80,7 +80,7 @@ const DeleteUserFromTournament: React.FC = () => {
         color="error"
         variant="outlined"
         onClick={handleOpenDeleteUserDialog}
-        sx={{ marginTop: "16px" }}
+        sx={{ marginTop: "40px", fontSize: "15px" }}
       >
         {t("buttons.withdraw_user")}
       </Button>

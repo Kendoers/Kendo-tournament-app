@@ -56,7 +56,16 @@ const InviteButton: React.FC = () => {
 
   return (
     <>
-      <Button variant="outlined" color="error" onClick={handleInviteClick}>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={handleInviteClick}
+        sx={{
+          borderRadius: "20px",
+          padding: "6px 12px",
+          fontSize: "15px"
+        }}
+      >
         {t("buttons.invite_players")}
       </Button>
 

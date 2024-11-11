@@ -9,6 +9,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  useMediaQuery,
   type ButtonProps
 } from "@mui/material";
 import type { TournamentPlayer } from "./OngoingTournament/RoundRobin/RoundRobinTournamentView";
@@ -56,6 +57,8 @@ const MatchButton: React.FC<MatchButtonProps> = ({
   const handleClose = (): void => {
     setEditMode(false);
   };
+
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   // Function to handle change court time form submit
   const handleSubmit = async (): Promise<void> => {
@@ -142,47 +145,126 @@ const MatchButton: React.FC<MatchButtonProps> = ({
     (_, i) => i + 1
   );
 
+  const isOngoing: boolean =
+    match.elapsedTime > 0 && match.endTimestamp === undefined;
+  const isFinished: boolean =
+    (match.elapsedTime > 0 && match.endTimestamp !== undefined) ||
+    (match.endTimestamp !== undefined && match.winner !== undefined) ||
+    (match.elapsedTime === 0 && match.winner !== undefined);
+
+  const winnerBackgroundColor = "#ABE2A8";
+
+  const player1Styles = {
+    bgcolor:
+      isFinished && match.player1Score === 2
+        ? winnerBackgroundColor
+        : "transparent"
+  };
+  const player2Styles = {
+    bgcolor:
+      isFinished && match.player2Score === 2
+        ? winnerBackgroundColor
+        : "transparent"
+  };
+
   return (
-    <div style={{ marginBottom: "10px", marginTop: "10px" }} key={match.id}>
-      <Box display="flex" alignItems="center" marginBottom={"10px"}>
-        <Button
+    <div
+      style={{
+        marginBottom: "10px",
+        display: "inline-block",
+        minWidth: "260px",
+        width: isMobile ? "100%" : "auto"
+      }}
+      key={match.id}
+    >
+      <Box>
+        {!isFinished &&
+          (isOngoing ? (
+            <Typography variant="body1" marginBottom={"5px"} fontSize={"13px"}>
+              {t("tournament_view_labels.ongoing")}{" "}
+              {`${Math.floor(match.elapsedTime / 60000)}'`}
+            </Typography>
+          ) : match.scheduledTime !== "XX:XX" ? (
+            <Typography variant="body1" marginBottom={"5px"} fontSize={"13px"}>
+              {t("tournament_view_labels.match_start_clock")}
+              {": "}
+              {match.scheduledTime}
+            </Typography>
+          ) : (
+            <Typography variant="body1" marginBottom={"5px"} fontSize={"13px"}>
+              {t("tournament_view_labels.no_scheduled_time")}
+            </Typography>
+          ))}
+
+        {isUserTheCreator && !isFinished && (
+          <Button
+            onClick={handleOpen}
+            style={{ fontSize: "13px", padding: "0px", marginBottom: "5px" }}
+          >
+            {t("tournament_view_labels.edit_court_time")}
+          </Button>
+        )}
+        <Box
           onClick={() => {
             if (match.players.length === 2) {
               navigate(`match/${match.id}`);
-            } else {
-              // No match details to display for a bye
             }
           }}
-          {...props}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
+          border={1}
+          borderRadius={"10px"}
+          gap={1}
+          p={1}
+          sx={{
+            width: "auto",
+            margin: "0 auto",
+            cursor: "pointer",
+            borderColor: isOngoing ? "#28CC3B" : "black"
+          }}
         >
-          {player1Name}
-          {" - "}
-          {player2Name}
-        </Button>
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Typography
+              variant="body1"
+              sx={{
+                display: "inline-flex",
+                padding: "4px 8px",
+                borderRadius: "5px",
+                ...player1Styles
+              }}
+            >
+              {player1Name}{" "}
+              {isOngoing || isFinished ? ` ${match.player1Score}` : ""}
+            </Typography>
+            <Typography variant="body1" sx={{ margin: "0 8px" }}>
+              {" - "}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                display: "inline-flex",
+                padding: "4px 8px",
+                borderRadius: "5px",
+                ...player2Styles
+              }}
+            >
+              {player2Name}{" "}
+              {isOngoing || isFinished ? ` ${match.player2Score}` : ""}
+            </Typography>
+          </Box>
+
+          <Typography variant="body1" fontSize={"15px"}>
+            {t("tournament_view_labels.court_number")}:{" "}
+            {mapNumberToLetter(match.courtNumber)}
+          </Typography>
+        </Box>
       </Box>
-      {match.scheduledTime !== "XX:XX" ? (
-        <Typography variant="body1" marginBottom={"10px"}>
-          {t("tournament_view_labels.match_start_clock")}
-          {": "}
-          {match.scheduledTime}
-        </Typography>
-      ) : (
-        <Typography variant="body1" marginBottom={"10px"}>
-          {t("tournament_view_labels.no_scheduled_time")}
-        </Typography>
-      )}
-      <Typography variant="body1" marginBottom={"10px"}>
-        {t("tournament_view_labels.court_number")}
-        {": "}
-        {mapNumberToLetter(match.courtNumber)}
-      </Typography>
-      {isUserTheCreator && (
-        <Button onClick={handleOpen}>
-          {t("tournament_view_labels.edit_court_time")}
-        </Button>
-      )}
       {officialsInfo !== undefined && match.winner === undefined && (
-        <Typography variant="body2">{officialsInfo}</Typography>
+        <Typography variant="body2" marginTop={"5px"} fontSize={"13px"}>
+          {officialsInfo}
+        </Typography>
       )}
       {/* Modal for editing court and time */}
       <Modal open={editMode} onClose={handleClose}>

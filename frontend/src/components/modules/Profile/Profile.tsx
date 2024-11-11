@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ProfileInfo from "./ProfileInfo";
 import ProfileGames from "./ProfileGames";
 import ProfilePoints from "./ProfilePoints";
@@ -6,20 +6,20 @@ import CreatedTournaments from "./CreatedTournaments";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useTranslation } from "react-i18next";
-import { Box, Container, MenuItem, Select, Button } from "@mui/material";
+import { Box, Container, MenuItem, Select } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import type { Tournament } from "types/models";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Invitations from "./Invitations";
+import NewTournamentButton from "../Tournaments/NewTournamentButton";
 
 const Profile: React.FC = () => {
   const [userCreatedTournaments, setUserCreatedTournaments] = useState<
     Tournament[]
   >([]);
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const mobile = useMediaQuery("(max-width:600px)");
   const { userId } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,31 +68,28 @@ const Profile: React.FC = () => {
     <Container sx={{ position: "relative", paddingBottom: "30px" }}>
       {/* If the device is mobile */}
       {mobile ? (
-        <Fragment>
-          <Select
-            value={currentTab}
-            onChange={(event) => {
-              handleTabChange(event.target.value);
-            }}
-            style={{ marginBottom: "10px", alignItems: "center" }}
-            sx={{
-              border: "2px solid #db4744",
-              fontSize: "20px",
-              color: "#db4744"
-            }}
-          >
-            <MenuItem value="info">{t("profile.profile_info")}</MenuItem>
-            <MenuItem value="games">{t("profile.my_games")}</MenuItem>
-            <MenuItem value="points">{t("profile.my_points")}</MenuItem>
-            {userCreatedTournaments.length > 0 && (
-              <MenuItem value="created_t">
-                {t("profile.created_tournaments")}
-              </MenuItem>
-            )}
-            <MenuItem value="invitations">{t("profile.invitations")}</MenuItem>
-          </Select>
-          <br />
-        </Fragment>
+        <Select
+          value={currentTab}
+          onChange={(event) => {
+            handleTabChange(event.target.value);
+          }}
+          style={{ marginBottom: "10px", alignItems: "center", padding: "0" }}
+          sx={{
+            border: "2px solid #db4744",
+            fontSize: "13px",
+            color: "#db4744"
+          }}
+        >
+          <MenuItem value="info">{t("profile.profile_info")}</MenuItem>
+          <MenuItem value="games">{t("profile.my_games")}</MenuItem>
+          <MenuItem value="points">{t("profile.my_points")}</MenuItem>
+          {userCreatedTournaments.length > 0 && (
+            <MenuItem value="created_t">
+              {t("profile.created_tournaments")}
+            </MenuItem>
+          )}
+          <MenuItem value="invitations">{t("profile.invitations")}</MenuItem>
+        </Select>
       ) : (
         <>
           <Box
@@ -109,50 +106,36 @@ const Profile: React.FC = () => {
               onChange={(_, value) => {
                 handleTabChange(value);
               }}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
             >
-              <Tab label={t("profile.profile_info")} value="info" />
-              <Tab label={t("profile.my_games")} value="games" />
-              <Tab label={t("profile.my_points")} value="points" />
-              <Tab label={t("profile.created_tournaments")} value="created_t" />
-              <Tab label={t("profile.invitations")} value="invitations" />
+              <Tab
+                label={t("profile.profile_info")}
+                value="info"
+                sx={{ fontSize: "13px" }}
+              />
+              <Tab
+                label={t("profile.my_games")}
+                value="games"
+                sx={{ fontSize: "13px" }}
+              />
+              <Tab
+                label={t("profile.my_points")}
+                value="points"
+                sx={{ fontSize: "13px" }}
+              />
+              <Tab
+                label={t("profile.created_tournaments")}
+                value="created_t"
+                sx={{ fontSize: "13px" }}
+              />
+              <Tab
+                label={t("profile.invitations")}
+                value="invitations"
+                sx={{ fontSize: "13px" }}
+              />
             </Tabs>
-            {currentTab === "created_t" &&
-              userCreatedTournaments.length > 0 && (
-                <Button
-                  type="button"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => {
-                    navigate("/tournaments/new-tournament");
-                  }}
-                  sx={{
-                    fontSize: "14px",
-                    color: "white",
-                    backgroundColor: "#db4744",
-                    borderRadius: "20px",
-                    textTransform: "none",
-                    padding: "5px 10px",
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                    transition: "transform 0.3s",
-                    marginBottom: "10px",
-                    marginLeft: "60px",
-                    "&::before": {
-                      content: '"+"',
-                      fontSize: "20px",
-                      position: "absolute",
-                      left: "10px",
-                      bottom: "50%",
-                      transform: "translateY(50%)"
-                    },
-                    "&::after": {
-                      content: `"${t("frontpage_labels.create_tournament")}"`
-                    },
-                    "&:hover": {
-                      backgroundColor: "#e57373"
-                    }
-                  }}
-                ></Button>
-              )}
           </Box>
         </>
       )}
@@ -161,6 +144,9 @@ const Profile: React.FC = () => {
       {currentTab === "points" && <ProfilePoints />}
       {currentTab === "created_t" && <CreatedTournaments />}
       {currentTab === "invitations" && <Invitations />}
+
+      {/* Floating Create Tournament Button */}
+      {currentTab === "created_t" && <NewTournamentButton />}
     </Container>
   );
 };

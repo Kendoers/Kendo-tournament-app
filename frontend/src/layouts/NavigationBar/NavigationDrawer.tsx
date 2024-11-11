@@ -1,4 +1,3 @@
-// See MUI Drawer Navbar example
 import React from "react";
 import { NavLink } from "react-router-dom";
 
@@ -9,12 +8,12 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
 
 import type { NavigationItem, NavigationData } from "./navigation-bar";
 
 interface Props {
   container: (() => HTMLElement) | undefined;
-  // Sets drawerIsOpen:
   toggleDrawer: () => void;
   drawerIsOpen: boolean;
   navigationItems: NavigationData;
@@ -22,20 +21,49 @@ interface Props {
 }
 
 const NavigationDrawer: React.FC<Props> = (props) => {
-  const { toggleDrawer, drawerIsOpen, container, navigationItems } = props;
+  const {
+    toggleDrawer,
+    drawerIsOpen,
+    container,
+    navigationItems,
+    drawerTitle
+  } = props;
+
   const drawer = (
-    <Box onClick={toggleDrawer} sx={{ textAlign: "center" }}>
-      {props.drawerTitle}
-      <Divider />
+    <Box
+      onClick={toggleDrawer}
+      sx={{ textAlign: "center", bgcolor: "#DB4744", height: "100%" }}
+    >
+      {/* Drawer Title */}
+      <Typography
+        variant="h6"
+        sx={{ color: "#fff", padding: "16px", fontWeight: "bold" }}
+      >
+        {drawerTitle}
+      </Typography>
+      <Divider sx={{ bgcolor: "#FF6B6B" }} /> {/* Slightly lighter divider */}
+      {/* Navigation List */}
       <List>
         {navigationItems.map((item: NavigationItem) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
-              sx={{ textAlign: "center" }}
               component={NavLink}
               to={item.link}
+              sx={{
+                textAlign: "center",
+                color: "#fff",
+                "&.active": {
+                  bgcolor: "#B83B39" // Darker shade for active
+                },
+                "&:hover": {
+                  bgcolor: "#C84B4A" // Slightly darker for hover effect
+                }
+              }}
             >
-              <ListItemText primary={item.text} />
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{ fontSize: "1rem", color: "#fff" }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -51,14 +79,16 @@ const NavigationDrawer: React.FC<Props> = (props) => {
         open={drawerIsOpen}
         onClose={toggleDrawer}
         ModalProps={{
-          // Better open performance on mobile.
-          keepMounted: true
+          keepMounted: true // Better open performance on mobile.
         }}
         sx={{
           display: { xs: "block", sm: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
-            width: 240
+            width: 280,
+            bgcolor: "#DB4744", // Main drawer background color
+            color: "#fff",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)"
           }
         }}
       >
