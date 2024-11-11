@@ -16,7 +16,7 @@ import NavigationDrawer from "./NavigationDrawer";
 import NavigationUserMenu from "./NavigationUserMenu";
 import LogoButton from "./LogoButton";
 import { MenuItem, useMediaQuery } from "@mui/material";
-import type { NavigationData, NavigationItem, ProfileNavigationData } from "./navigation-bar";
+import type { NavigationData, NavigationItem } from "./navigation-bar";
 import { ProfileNavItems } from "./profile-navigation";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
@@ -151,7 +151,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                     }
                   }}
                 >
-                  {profileNavigationItems.map((item) => (
+                  {ProfileNavItems.map((item) => (
                     <MenuItem
                       key={item.text}
                       onClick={() => {
