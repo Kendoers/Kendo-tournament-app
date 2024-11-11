@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,7 +16,7 @@ import NavigationDrawer from "./NavigationDrawer";
 import NavigationUserMenu from "./NavigationUserMenu";
 import LogoButton from "./LogoButton";
 import { MenuItem, useMediaQuery } from "@mui/material";
-import type { NavigationData, NavigationItem } from "./navigation-bar";
+import type { NavigationData, NavigationItem, ProfileNavigationData } from "./navigation-bar";
 import { ProfileNavItems } from "./profile-navigation";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
@@ -24,16 +25,18 @@ interface Props {
   window?: () => Window;
   settings: NavigationData;
   navigationItems: NavigationData;
+  profileNavigationItems: ProfileNavigationData;
 }
 
 const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
-  const { window, navigationItems } = props;
+  const { window, navigationItems, profileNavigationItems } = props;
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -42,7 +45,6 @@ const NavigationBar: React.FC<Props> = (props) => {
     setOpenDrawer((prevState) => !prevState);
   };
 
-  // Media query for mobile detection
   const isMobile = useMediaQuery("(max-width:650px)");
 
   const handleButtonClick = async (
@@ -72,7 +74,7 @@ const NavigationBar: React.FC<Props> = (props) => {
           position="static"
           component="nav"
           sx={{
-            height: "100%", // Keep the AppBar height consistent with Box height
+            height: "100%",
             justifyContent: "center"
           }}
         >
@@ -80,8 +82,8 @@ const NavigationBar: React.FC<Props> = (props) => {
             <Toolbar
               disableGutters
               sx={{
-                height: isMobile ? "44px" : "64px", // Fixed Toolbar height
-                alignItems: "center" // Center items vertically
+                height: isMobile ? "44px" : "64px",
+                alignItems: "center"
               }}
             >
               {isMobile ? (
@@ -129,11 +131,8 @@ const NavigationBar: React.FC<Props> = (props) => {
                     aria-controls={open ? "profile-dropdown" : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
-                    onClick={() => {
-                      navigate("/profile");
-                    }}
                   >
-                    Profile
+                    {t("navigation.profile")}
                   </Button>
                 )}
                 <Menu
@@ -153,7 +152,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                     }
                   }}
                 >
-                  {ProfileNavItems.map((item) => (
+                  {profileNavigationItems.map((item) => (
                     <MenuItem
                       key={item.text}
                       onClick={() => {
