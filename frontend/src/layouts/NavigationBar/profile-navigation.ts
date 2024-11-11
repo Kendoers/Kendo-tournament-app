@@ -2,19 +2,19 @@ import type { ProfileNavigationData } from "./navigation-bar";
 
 export const ProfileNavItems: ProfileNavigationData = [
   {
-    text: "Profile info",
+    text: "profile.profile_info",
     tab: "info"
   },
   {
-    text: "My games",
+    text: "profile.my_games",
     tab: "games"
   },
   {
-    text: "My points",
+    text: "profile.my_points",
     tab: "points"
   },
   {
-    text: "Created tournaments",
+    text: "profile.created_tournaments",
     tab: "created_t"
   }
 ];

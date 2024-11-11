@@ -5,6 +5,7 @@
 */
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -25,8 +26,11 @@ import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
 
-import type { NavigationData, NavigationItem } from "./navigation-bar";
-import { ProfileNavItems } from "./profile-navigation";
+import type {
+  NavigationData,
+  NavigationItem,
+  ProfileNavigationData
+} from "./navigation-bar";
 import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
 import { MenuItem } from "@mui/material";
@@ -35,16 +39,18 @@ interface Props {
   window?: () => Window;
   settings: NavigationData;
   navigationItems: NavigationData;
+  profileNavigationItems: ProfileNavigationData;
 }
 
 const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
-  const { window, navigationItems } = props;
+  const { window, navigationItems, profileNavigationItems } = props;
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -62,7 +68,6 @@ const NavigationBar: React.FC<Props> = (props) => {
     }
 
     navigate(navigationItem.link);
-    console.log(navigationItem.text);
   };
 
   const handleHelpButton = (): void => {
@@ -121,7 +126,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                         navigate("/profile");
                       }}
                     >
-                      Profile
+                      {t("navigation.profile")}
                     </Button>
                     <Menu
                       id="profile-dropdown"
@@ -140,7 +145,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                         }
                       }}
                     >
-                      {ProfileNavItems.map((item) => (
+                      {profileNavigationItems.map((item) => (
                         <MenuItem
                           key={item.text}
                           onClick={() => {
