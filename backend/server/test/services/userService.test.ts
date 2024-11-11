@@ -18,14 +18,14 @@ const expect = chai.expect;
 let app: Application;
 let authToken: string;
 
-before(async () => {
+/*before(async () => {
 
     try {
 
-/*        if (mongoose.connection.readyState !== 0) {
+/!*        if (mongoose.connection.readyState !== 0) {
             console.log('Test DB already initialized, closing connection...');
             await Helper.closeTestDb();
-        }*/
+        }*!/
 
         // Create test database
         console.log('Initializing test database in userService.test.ts');
@@ -38,7 +38,7 @@ before(async () => {
     } catch (error) {
         console.error('Failed to work:', error);
     }
-});
+});*/
 
 describe('UserService', () => {
 
@@ -197,10 +197,10 @@ describe('UserService', () => {
         });
     });
 
-        after(async () => {
+/*        after(async () => {
             // Close connection to test database
             await Helper.closeTestDb();
-        });
+        });*/
 
 
 });
