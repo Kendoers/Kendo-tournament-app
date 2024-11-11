@@ -7,38 +7,10 @@ import UserModel from "../../src/models/userModel.ts";
 import { UserService } from "../../src/services/userService.ts";
 import NotFoundError from "../../src/errors/NotFoundError.ts";
 import { EditUserRequest, RegisterRequest } from "../../src/models/requestModel.ts";
-import {Application} from "express";
-import {CreateApp} from "../../src/utility/app";
-import chaiHttp from "chai-http";
-import mongoose from "mongoose";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-let app: Application;
-let authToken: string;
-
-/*before(async () => {
-
-    try {
-
-/!*        if (mongoose.connection.readyState !== 0) {
-            console.log('Test DB already initialized, closing connection...');
-            await Helper.closeTestDb();
-        }*!/
-
-        // Create test database
-        console.log('Initializing test database in userService.test.ts');
-        await Helper.initializeTestDb();
-        // Create app instance
-        //app = CreateApp();
-        //console.log('App created');
-        // Create jwt token for authorization
-        authToken = Helper.createTestJwtToken('test-user@gmail.com');
-    } catch (error) {
-        console.error('Failed to work:', error);
-    }
-});*/
 
 describe('UserService', () => {
 
@@ -70,10 +42,7 @@ describe('UserService', () => {
 
         it('should return user object by ID', async () => {
             getUserDocumentByIdStub.resolves(testUser);
-            //testUser = await UserModel.create(Helper.testUser);
-            //const res = await userService.getUserById(testUser.id);
             const res = await userService.getUserById(testUser);
-            // await expect(userService.getUserById(user.id)).to.eventually.include({email: 'test-user@gmail.com'});
             expect(res).to.include({email: 'test-user@gmail.com'});
             expect(res).to.include({firstName: 'Test'});
             expect(res).to.include({underage: false});
@@ -90,7 +59,6 @@ describe('UserService', () => {
     describe('registerUser', () => {
 
         let registerReq: RegisterRequest;
-        //const endpoint = '/api/user/register';
 
         beforeEach(() => {
             registerReq = {...Helper.testUser3};
@@ -196,12 +164,6 @@ describe('UserService', () => {
             expect(res.email).to.include('deleted_user_');
         });
     });
-
-/*        after(async () => {
-            // Close connection to test database
-            await Helper.closeTestDb();
-        });*/
-
 
 });
 
