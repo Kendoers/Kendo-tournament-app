@@ -113,11 +113,31 @@ const badPassword: any = {
   underage: false
 };
 
+const invalidEmail: any = {
+  email: 'not_an_email',
+  userName: 'testUser',
+  firstName: 'Test',
+  lastName: 'User',
+  phoneNumber: '045123456789',
+  password: 'FooBar123',
+  inNationalTeam: false,
+  underage: false
+};
+
+
 
 function initializeTestDb() {
   return new Promise(async (resolve, reject) => {
     console.log('Creating test database...');
+
+
     try {
+
+      /*if (mongoose.connection.readyState !== 0) {
+        console.log('Test DB is already initialized.');
+        await closeTestDb();
+      }*/
+
       mongo = await MongoMemoryServer.create();
       const mongoUri = mongo.getUri();
 
@@ -139,15 +159,17 @@ async function closeTestDb() {
   await mongoose.disconnect();
   await mongo.stop();
   console.log('Test database disconnected');
-};
+}
+
 
 async function getTestUsers() {
-  return await UserModel.find({});
-};
+  return UserModel.find({});
+}
+
 
 async function getTestUserByEmail(email: string) {
-  return await UserModel.findOne({email: email});
-};
+  return UserModel.findOne({email: email});
+}
 
 /*
 authService.ts
@@ -191,6 +213,7 @@ export {
   testUser3,
   underageUser,
   faultyUnderage,
+  invalidEmail,
   getTestUsers, 
   getTestUserByEmail, 
   initializeTestDb, 

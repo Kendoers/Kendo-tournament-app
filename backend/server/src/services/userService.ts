@@ -8,6 +8,7 @@ import type {
 import UserModel, { type User } from "../models/userModel.js";
 
 export class UserService {
+
   public async getUserById(id: string): Promise<User> {
     return await (await this.getUserDocumentById(id)).toObject();
   }
