@@ -89,7 +89,6 @@ const GameInterface: React.FC = () => {
   const [openPoints, setOpenPoints] = useState(false);
   const [openRoles, setOpenRoles] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
-  const [timer, setTimer] = useState<number>(matchInfo.timerTime);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
   const [hasJoined, setHasJoined] = useState(false);
   const [mostRecentPointType, setMostRecentPointType] =
@@ -107,7 +106,16 @@ const GameInterface: React.FC = () => {
   const [pointMaker, setPointMaker] = useState<boolean>(false);
   const [timeKeeperInfo, setTimeKeeperInfo] = useState<User | null>(null);
   const [pointMakerInfo, setPointMakerInfo] = useState<User | null>(null);
-
+  const [timer, setTimer] = useState<number>(() => {
+    if (matchId !== undefined) {
+      const savedTimer = localStorage.getItem(matchId + "_" + "timer");
+      if (savedTimer != null) {
+        return parseInt(savedTimer);
+      }
+      return 0;
+    }
+    return 0;
+  });
   // Listening to matches websocket
   useEffect(() => {
     if (matchId !== undefined && !hasJoined) {
@@ -291,8 +299,12 @@ const GameInterface: React.FC = () => {
   }, [isLoading, matchInfoFromSocket]);
 
   useEffect(() => {
-    setTimer(matchInfo.timerTime);
+    setTimer(timer);
   }, [matchInfo.elapsedTime, matchInfo.timerTime]);
+
+  useEffect(() => {
+    localStorage.setItem(matchId + "_" + "timer", timer.toString());
+  }, [timer]);
 
   // Handle timer, make it run and stop
   useEffect(() => {
